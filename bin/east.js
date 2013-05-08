@@ -28,6 +28,62 @@ program
 
 
 /**
+ * Migrate
+ */
+program
+	.command('migrate [migrations]')
+	.description('run all or selected migrations')
+	.action(function(names) {
+		var migrator = new Migrator(program);
+		if (!names) {
+			migrator.getNewMigrationNames(migrate);
+		} else {
+			migrate(null, names.split(','));
+		}
+		function migrate(err, names) {
+			if (err) handleError(err);
+			console.log('Target migrations: ', names.join(' '));
+			names.forEach(function(name) {
+				//TODO: execute migration (and do it sequentially)
+				migrator.isMigrationExists(name, function(err, exists) {
+					if (!err && !exists) err = new Error(
+						'Migration doesn`t exists'
+					);
+					if (err) handleError(err);
+					migrator.adapter.markExecuted(name, function(err) {
+						if (err) handleError(err);
+						console.log('migration marked as executed');
+					});
+				});
+			});
+		}
+	});
+
+
+/**
+ * Rollback
+ */
+program
+	.command('rollback <migrations>')
+	.description('rollback selected migrations')
+	.action(function(names) {
+		var migrator = new Migrator(program);
+		rollback(null, names.split(','));
+		function rollback(err, names) {
+			if (err) handleError(err);
+			console.log('Target migrations: ', names.join(' '));
+			names.forEach(function(name) {
+				//TODO: rollback migration (and do it sequentially)
+				migrator.adapter.unmarkExecuted(name, function(err) {
+					if (err) handleError(err);
+					console.log('migration unmarked as executed');
+				});
+			});
+		}
+	});
+
+
+/**
  * List migrations
  */
 program
