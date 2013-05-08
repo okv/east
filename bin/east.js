@@ -52,6 +52,16 @@ program
 
 
 /**
+ * Default command
+ */
+program
+	.command('*')
+	.action(function(command) {
+		handleError(new Error('Unrecognized command `' + command + '`'));
+	});
+
+
+/**
  * Main class
  */
 function App(program) {
@@ -126,5 +136,7 @@ function handleError(err) {
 };
 
 
-/** Let's start party */
+// let's start the party (program entry point)
 program.parse(process.argv);
+// show help if no one command is selected
+if (!program.args.length) program.help();
