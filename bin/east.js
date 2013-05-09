@@ -67,15 +67,15 @@ program
 				console.log('nothing to migrate');
 				return;
 			}
-			console.log('target migrations:\n\t', names.join('\n\t'));
+			console.log('target migrations:\n\t' + names.join('\n\t'));
 			var funcs = names.map(function(name, index) {
 				return function() {
-					console.log('process ' + name)
+					console.log('migrate `' + name + '`')
 					migrator.loadMigration(name, function(err, migration) {
 						if (err) handleError(err);
 						migrator.execute(migration, function(err) {
 							if (err) handleError(err);
-							console.log('migration successfully done')
+							console.log('migration done')
 							// call next
 							if (index < funcs.length - 1) funcs[++index]();
 						});
@@ -92,21 +92,63 @@ program
  * Rollback
  */
 program
-	.command('rollback <migrations>')
-	.description('rollback selected migrations')
+	.command('rollback [migrations]')
+	.description('rollback all or selected migrations')
 	.action(function(names) {
 		var migrator = new Migrator(program);
-		rollback(null, names.split(','));
+		if (!names) {
+			migrator.adapter.getExecutedMigrationNames(rollback);
+		} else {
+			names = names.split(',');
+			migrator.checkMigrationsExists(names, function(err) {
+				if (err) handleError(err);
+				migrator.separateNames(
+					names,
+					function(err, newNames, executedNames) {
+						if (err) handleError(err);
+						newNames.forEach(function(name) {
+							console.log(
+								'skip `' + name + '` because it`s ' +
+								'not executed yet'
+							);
+						});
+						rollback(null, executedNames);
+					}
+				);
+			});
+		}
 		function rollback(err, names) {
 			if (err) handleError(err);
-			console.log('Target migrations: ', names.join(' '));
-			names.forEach(function(name) {
-				//TODO: rollback migration (and do it sequentially)
-				migrator.adapter.unmarkExecuted(name, function(err) {
-					if (err) handleError(err);
-					console.log('migration unmarked as executed');
-				});
+			if (!names || !names.length) {
+				console.log('nothing to rollback');
+				return;
+			}
+			console.log('target migrations:\n\t' + names.join('\n\t'));
+			var funcs = names.map(function(name, index) {
+				function rollbackNext() {
+					if (index < funcs.length - 1) funcs[++index]();
+				}
+				return function() {
+					migrator.loadMigration(name, function(err, migration) {
+						if (err) handleError(err);
+						if (!migration.rollback) {
+							console.log(
+								'skip `' + name + '` cause rollback function ' +
+								'is not set'
+							);
+							rollbackNext();
+						} else {
+							console.log('rollback `' + name + '`')
+							migrator.rollback(migration, function(err) {
+								if (err) handleError(err);
+								console.log('migration successfully rolled back');
+								rollbackNext();
+							});
+						}
+					});
+				};
 			});
+			funcs[0]();
 		}
 	});
 
