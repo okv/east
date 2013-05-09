@@ -40,16 +40,19 @@ program
 			migrator.getNewMigrationNames(migrate);
 		} else {
 			names = names.split(',');
-			if (command.force) {
-				migrate(null, names);
-			} else {
-				getOnlyNewMigrations(names, function(err, names) {
-					if (err) handleError(err);
-					if (names.length) migrate(null, names);
-				});
-			}
+			migrator.checkMigrationsExists(names, function(err) {
+				if (err) handleError(err);
+				if (command.force) {
+					migrate(null, names);
+				} else {
+					excludeExecuted(names, function(err, names) {
+						if (err) handleError(err);
+						migrate(null, names);
+					});
+				}
+			});
 		}
-		function getOnlyNewMigrations(names, callback) {
+		function excludeExecuted(names, callback) {
 			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
 				var executedNamesHash = {};
 				executedNames.forEach(function(name) {
@@ -70,24 +73,21 @@ program
 		}
 		function migrate(err, names) {
 			if (err) handleError(err);
-			console.log('Target migrations: \n\t', names.join('\n\t'));
+			if (!names || !names.length) {
+				console.log('nothing to migrate');
+				return;
+			}
+			console.log('target migrations:\n\t', names.join('\n\t'));
 			var funcs = names.map(function(name, index) {
 				return function() {
 					console.log('process ' + name)
-					// check everething and execute
-					migrator.isMigrationExists(name, function(err, exists) {
-						if (!err && !exists) err = new Error(
-							'Migration doesn`t exists'
-						);
+					migrator.loadMigration(name, function(err, migration) {
 						if (err) handleError(err);
-						migrator.loadMigration(name, function(err, migration) {
+						migrator.execute(migration, function(err) {
 							if (err) handleError(err);
-							migrator.execute(migration, function(err) {
-								if (err) handleError(err);
-								console.log('migration successfully done')
-								// call next
-								if (index < funcs.length - 1) funcs[++index]();
-							});
+							console.log('migration successfully done')
+							// call next
+							if (index < funcs.length - 1) funcs[++index]();
 						});
 					});
 				};
