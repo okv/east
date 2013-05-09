@@ -32,30 +32,68 @@ program
  */
 program
 	.command('migrate [migrations]')
+	.option('-f, --force', 'force to execute already executed migrations')
 	.description('run all or selected migrations')
-	.action(function(names) {
+	.action(function(names, command) {
 		var migrator = new Migrator(program);
 		if (!names) {
 			migrator.getNewMigrationNames(migrate);
 		} else {
-			migrate(null, names.split(','));
+			names = names.split(',');
+			if (command.force) {
+				migrate(null, names);
+			} else {
+				getOnlyNewMigrations(names, function(err, names) {
+					if (err) handleError(err);
+					if (names.length) migrate(null, names);
+				});
+			}
+		}
+		function getOnlyNewMigrations(names, callback) {
+			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
+				var executedNamesHash = {};
+				executedNames.forEach(function(name) {
+					executedNamesHash[name] = 1;
+				});
+				names = names.filter(function(name) {
+					if (name in executedNamesHash) {
+						console.log(
+							'skip `' + name + '` because it`s already executed'
+						);
+						return false;
+					} else {
+						return true;
+					}
+				});
+				callback(null, names);
+			});
 		}
 		function migrate(err, names) {
 			if (err) handleError(err);
-			console.log('Target migrations: ', names.join(' '));
-			names.forEach(function(name) {
-				//TODO: execute migration (and do it sequentially)
-				migrator.isMigrationExists(name, function(err, exists) {
-					if (!err && !exists) err = new Error(
-						'Migration doesn`t exists'
-					);
-					if (err) handleError(err);
-					migrator.adapter.markExecuted(name, function(err) {
+			console.log('Target migrations: \n\t', names.join('\n\t'));
+			var funcs = names.map(function(name, index) {
+				return function() {
+					console.log('process ' + name)
+					// check everething and execute
+					migrator.isMigrationExists(name, function(err, exists) {
+						if (!err && !exists) err = new Error(
+							'Migration doesn`t exists'
+						);
 						if (err) handleError(err);
-						console.log('migration marked as executed');
+						migrator.loadMigration(name, function(err, migration) {
+							if (err) handleError(err);
+							migrator.execute(migration, function(err) {
+								if (err) handleError(err);
+								console.log('migration successfully done')
+								// call next
+								if (index < funcs.length - 1) funcs[++index]();
+							});
+						});
 					});
-				});
+				};
 			});
+			// starts migrations execution
+			funcs[0]();
 		}
 	});
 
@@ -126,5 +164,5 @@ function handleError(err) {
 
 // let's start the party (program entry point)
 program.parse(process.argv);
-// show help if no one command is selected
-if (!program.args.length) program.help();
+// FIXME: 	show help if no one command is selected
+// if (!program.args.length) program.help();
