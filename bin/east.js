@@ -45,30 +45,20 @@ program
 				if (command.force) {
 					migrate(null, names);
 				} else {
-					excludeExecuted(names, function(err, names) {
-						if (err) handleError(err);
-						migrate(null, names);
-					});
+					migrator.separateNames(
+						names,
+						function(err, newNames, executedNames) {
+							if (err) handleError(err);
+							executedNames.forEach(function(name) {
+								console.log(
+									'skip `' + name + '` because it`s ' +
+									'already executed'
+								);
+							});
+							migrate(null, newNames);
+						}
+					);
 				}
-			});
-		}
-		function excludeExecuted(names, callback) {
-			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
-				var executedNamesHash = {};
-				executedNames.forEach(function(name) {
-					executedNamesHash[name] = 1;
-				});
-				names = names.filter(function(name) {
-					if (name in executedNamesHash) {
-						console.log(
-							'skip `' + name + '` because it`s already executed'
-						);
-						return false;
-					} else {
-						return true;
-					}
-				});
-				callback(null, names);
 			});
 		}
 		function migrate(err, names) {
