@@ -97,7 +97,9 @@ program
 	.action(function(names) {
 		var migrator = new Migrator(program);
 		if (!names) {
-			migrator.adapter.getExecutedMigrationNames(rollback);
+			migrator.adapter.getExecutedMigrationNames(function(err, names) {
+				rollback(err, err || names.reverse());
+			});
 		} else {
 			names = names.split(',');
 			migrator.checkMigrationsExists(names, function(err) {
