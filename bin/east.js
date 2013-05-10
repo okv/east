@@ -9,6 +9,7 @@ program
 	.version('0.1.0')
 	.option('--config <path>', 'config file to use')
 	.option('--adapter <name>', 'which db adapter to use')
+	.option('--timeout <timeout>', 'timeout for migrate/rollback')
 	.option('--dir <dir>', 'dir where migrations stored');
 
 
