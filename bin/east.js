@@ -37,13 +37,13 @@ program
 	.action(function(names, command) {
 		var migrator = new Migrator(program);
 		if (!names) {
-			migrator.getNewMigrationNames(migrate);
+			migrator.getNewMigrationNames(connect);
 		} else {
 			names = names.split(',');
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
 				if (command.force) {
-					migrate(null, names);
+					connect(null, names);
 				} else {
 					migrator.separateNames(
 						names,
@@ -55,10 +55,16 @@ program
 									'already executed'
 								);
 							});
-							migrate(null, newNames);
+							connect(null, newNames);
 						}
 					);
 				}
+			});
+		}
+		function connect(err, names) {
+			if (err) handleError(err);
+			migrator.connect(function(err) {
+				migrate(err, names);
 			});
 		}
 		function migrate(err, names) {
@@ -98,7 +104,7 @@ program
 		var migrator = new Migrator(program);
 		if (!names) {
 			migrator.adapter.getExecutedMigrationNames(function(err, names) {
-				rollback(err, err || names.reverse());
+				connect(err, err || names.reverse());
 			});
 		} else {
 			names = names.split(',');
@@ -114,9 +120,15 @@ program
 								'not executed yet'
 							);
 						});
-						rollback(null, executedNames);
+						connect(null, executedNames);
 					}
 				);
+			});
+		}
+		function connect(err, names) {
+			if (err) handleError(err);
+			migrator.connect(function(err) {
+				rollback(err, names);
 			});
 		}
 		function rollback(err, names) {
