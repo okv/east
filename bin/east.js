@@ -7,9 +7,10 @@ var program = require('commander'),
 
 program
 	.version('0.1.0')
-	.option('--config <path>', 'config file to use')
 	.option('--adapter <name>', 'which db adapter to use')
+	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
+	.option('--template <path>', 'path to template for new migrations')
 	.option('--dir <dir>', 'dir where migrations stored');
 
 
@@ -18,13 +19,11 @@ program
  */
 program
 	.command('create <basename>')
-	.description('create migration template')
+	.description('create new migration based on template')
 	.action(function(basename) {
 		var migrator = new Migrator(program),
-			path = migrator.getMigrationPathByName(Date.now() + '_' + basename),
-			templatePath = migrator.adapter.getTemplatePath();
-		fs.createReadStream(templatePath).pipe(fs.createWriteStream(path));
-		console.log('New migration created: ', path);
+			name = migrator.create(basename);
+		console.log('New migration `' + name + '` created');
 	});
 
 
