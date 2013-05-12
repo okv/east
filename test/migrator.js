@@ -16,6 +16,16 @@ describe('migrator', function() {
 				done();
 			});
 		});
+
+		it('unmark all executed', function(done) {
+			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
+				if (err) done(err);
+				executedNames.forEach(function(name) {
+					migrator.adapter.unmarkExecuted(name);
+				});
+				done();
+			});
+		});
 	});
 
 	var baseNames = ['first', 'second', 'third'];
@@ -29,7 +39,11 @@ describe('migrator', function() {
 			done();
 		});
 
-		it('expect that created migrations are loadable', function(done) {
+		it('expect that created migrations are exists', function(done) {
+			migrator.checkMigrationsExists(names, done);
+		});
+
+		it('and loadable', function(done) {
 			var loadedCount = 0;
 			names.forEach(function(name) {
 				migrator.loadMigration(name, function(err, migration) {
@@ -40,13 +54,52 @@ describe('migrator', function() {
 			});
 		});
 
-		it('expect that they listed as `new`', function(done) {
+		it('and lists as `new`', function(done) {
 			migrator.getNewMigrationNames(function(err, newNames) {
 				if (err) done(err);
-				expect(newNames).have.length(names.length);
-				names.forEach(function(name, index) {
-					expect(newNames[index]).contain(name);
-				});
+				expect(newNames).eql(names);
+				done();
+			});
+		});
+	});
+
+	describe('execute', function() {
+		it('execute first of them without errors', function(done) {
+			migrator.loadMigration(names[0], function(err, migration) {
+				if (err) done(err);
+				migrator.execute(migration, done);
+			});
+		});
+
+		it('expect that it lists as `executed`', function(done) {
+			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
+				if (err) done(err);
+				expect(executedNames).eql([names[0]]);
+				done();
+			});
+		});
+	});
+
+	describe('rollback', function() {
+		it('rollback which one that was executed without errors', function(done) {
+			migrator.loadMigration(names[0], function(err, migration) {
+				if (err) done(err);
+				migrator.rollback(migration, done);
+			});
+		});
+
+		it('expect that no `executed` migration at list', function(done) {
+			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
+				if (err) done(err);
+				expect(executedNames).have.length(0);
+				done();
+			});
+		});
+
+		it('expect that all migrations lists as `new` again', function(done) {
+			migrator.getNewMigrationNames(function(err, newNames) {
+				if (err) done(err);
+				expect(newNames).eql(names);
 				done();
 			});
 		});
