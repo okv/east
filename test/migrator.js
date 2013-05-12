@@ -7,12 +7,13 @@ describe('migrator', function() {
 	var migrator = new Migrator();
 
 	describe('clean', function() {
-		it('remove all existing migrations', function() {
+		it('remove all existing migrations', function(done) {
 			migrator.getAllMigrationNames(function(err, allNames) {
 				if (err) done(err);
 				allNames.forEach(function(name) {
 					migrator.remove(name);
 				});
+				done();
 			});
 		});
 	});
