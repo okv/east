@@ -5,6 +5,18 @@ var expect = require('expect.js'),
 
 describe('migrator', function() {
 	var migrator = new Migrator();
+
+	describe('clean', function() {
+		it('remove all existing migrations', function() {
+			migrator.getAllMigrationNames(function(err, allNames) {
+				if (err) done(err);
+				allNames.forEach(function(name) {
+					migrator.remove(name);
+				});
+			});
+		});
+	});
+
 	var baseNames = ['first', 'second', 'third'];
 	var names = null;
 
