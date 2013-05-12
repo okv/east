@@ -22,10 +22,11 @@ describe('migrator', function() {
 	var names = null;
 
 	describe('create', function() {
-		it('expect create without errors', function() {
+		it('expect create without errors', function(done) {
 			names = baseNames.map(function(baseName) {
 				return migrator.create(baseName);
 			});
+			done();
 		});
 
 		it('expect that created migrations are loadable', function(done) {
@@ -52,10 +53,11 @@ describe('migrator', function() {
 	});
 
 	describe('remove', function() {
-		it('expect remove without errors', function() {
+		it('expect remove without errors', function(done) {
 			names.forEach(function(name) {
 				return migrator.remove(name);
 			});
+			done();
 		});
 	});
 });

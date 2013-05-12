@@ -11,7 +11,7 @@
 		"database", "db", "migrate"
 	],
 	"scripts": {
-		"test": "mocha test --reporter spec"
+		"test": "mocha test --reporter spec --bail --async-only"
 	},
 	"bin": {
 		"east": "./bin/east"
