@@ -29,14 +29,21 @@ describe('migrator', function() {
 	});
 
 	var baseNames = ['first', 'second', 'third'];
-	var names = null;
+	var names = [];
 
 	describe('create', function() {
 		it('expect create without errors', function(done) {
-			names = baseNames.map(function(baseName) {
-				return migrator.create(baseName);
+			var funcs = baseNames.map(function(baseName, index) {
+				return function() {
+					migrator.create(baseName, function(err, name) {
+						if (err) done(err);
+						names.push(name);
+						if (index < funcs.length - 1) funcs[++index]();
+					});
+				};
 			});
-			done();
+			funcs.push(done);
+			funcs[0]();
 		});
 
 		it('expect that created migrations are exists', function(done) {

@@ -21,9 +21,14 @@ program
 	.command('create <basename>')
 	.description('create new migration based on template')
 	.action(function(basename) {
-		var migrator = new Migrator(program),
-			name = migrator.create(basename);
-		console.log('New migration `' + name + '` created');
+		var migrator = new Migrator(program);
+		migrator.create(basename, function(err, name) {
+			if (err) handleError(err);
+			console.log(
+				'New migration `' + name + '` created at ' +
+				migrator.getMigrationPathByName(name)
+			);
+		});
 	});
 
 
