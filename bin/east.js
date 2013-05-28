@@ -93,6 +93,9 @@ program
 					});
 				};
 			});
+			funcs.push(function() {
+				migrator.disconnect();
+			});
 			// starts migrations execution
 			funcs[0]();
 		}
@@ -167,6 +170,9 @@ program
 					});
 				};
 			});
+			funcs.push(function() {
+				migrator.disconnect();
+			});
 			funcs[0]();
 		}
 	});
@@ -186,10 +192,14 @@ program
 		var migrator = new Migrator(program),
 			status = command.status || 'new';
 		console.log(status + ' migrations:');
-		migrator.getMigrationNames(status, function(err, migrations) {
+		migrator.connect(function(err) {
 			if (err) handleError(err);
-			migrations.forEach(function(migration) {
-				console.log('\t', migration);
+			migrator.getMigrationNames(status, function(err, migrations) {
+				if (err) handleError(err);
+				migrations.forEach(function(migration) {
+					console.log('\t', migration);
+				});
+				migrator.disconnect();
 			});
 		});
 	});
