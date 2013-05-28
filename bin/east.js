@@ -41,14 +41,20 @@ program
 	.description('run all or selected migrations')
 	.action(function(names, command) {
 		var migrator = new Migrator(program);
-		if (!names) {
-			migrator.getNewMigrationNames(connect);
-		} else {
+		migrator.connect(function(err) {
+			if (err) handleError(err);
+			if (!names) {
+				migrator.getNewMigrationNames(migrate);
+			} else {
+				separateNames(names);
+			}
+		});
+		function separateNames(names) {
 			names = names.split(',');
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
 				if (command.force) {
-					connect(null, names);
+					migrate(null, names);
 				} else {
 					migrator.separateNames(
 						names,
@@ -60,16 +66,10 @@ program
 									'already executed'
 								);
 							});
-							connect(null, newNames);
+							migrate(null, newNames);
 						}
 					);
 				}
-			});
-		}
-		function connect(err, names) {
-			if (err) handleError(err);
-			migrator.connect(function(err) {
-				migrate(err, names);
 			});
 		}
 		function migrate(err, names) {
@@ -110,12 +110,17 @@ program
 	.description('rollback all or selected migrations')
 	.action(function(names) {
 		var migrator = new Migrator(program);
-		if (!names) {
-			migrator.adapter.getExecutedMigrationNames(function(err, names) {
-				connect(err, err || names.reverse());
-			});
-		} else {
-			names = names.split(',');
+		migrator.connect(function(err) {
+			if (err) handleError(err);
+			if (!names) {
+				migrator.adapter.getExecutedMigrationNames(function(err, names) {
+					separateNames(names.reverse());
+				});
+			} else {
+				rollback(null, names.split(','));
+			}
+		});
+		function separateNames(names) {
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
 				migrator.separateNames(
@@ -128,15 +133,9 @@ program
 								'not executed yet'
 							);
 						});
-						connect(null, executedNames);
+						rollback(null, executedNames);
 					}
 				);
-			});
-		}
-		function connect(err, names) {
-			if (err) handleError(err);
-			migrator.connect(function(err) {
-				rollback(err, names);
 			});
 		}
 		function rollback(err, names) {
