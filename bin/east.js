@@ -76,6 +76,7 @@ program
 			if (err) handleError(err);
 			if (!names || !names.length) {
 				console.log('nothing to migrate');
+				migrator.disconnect();
 				return;
 			}
 			console.log('target migrations:\n\t' + names.join('\n\t'));
@@ -117,10 +118,11 @@ program
 					separateNames(names.reverse());
 				});
 			} else {
-				rollback(null, names.split(','));
+				separateNames(names.split(','));
 			}
 		});
 		function separateNames(names) {
+			if (!names || !names.length) rollback(null, names);
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
 				migrator.separateNames(
@@ -142,6 +144,7 @@ program
 			if (err) handleError(err);
 			if (!names || !names.length) {
 				console.log('nothing to rollback');
+				migrator.disconnect();
 				return;
 			}
 			console.log('target migrations:\n\t' + names.join('\n\t'));
