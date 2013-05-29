@@ -11,7 +11,8 @@ program
 	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
 	.option('--template <path>', 'path to template for new migrations')
-	.option('--dir <dir>', 'dir where migrations stored');
+	.option('--dir <dir>', 'dir where migrations stored')
+	.option('--url <url>', 'db connect url');
 
 
 /**
