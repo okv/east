@@ -6,6 +6,10 @@ var expect = require('expect.js'),
 describe('migrator', function() {
 	var migrator = new Migrator();
 
+	it('connect', function(done) {
+		migrator.connect(done);
+	});
+
 	describe('clean', function() {
 		it('remove all existing migrations', function(done) {
 			migrator.getAllMigrationNames(function(err, allNames) {
@@ -20,10 +24,14 @@ describe('migrator', function() {
 		it('unmark all executed', function(done) {
 			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
 				if (err) done(err);
+				if (!executedNames.length) done();
+				var unmarkedCount = 0;
 				executedNames.forEach(function(name) {
-					migrator.adapter.unmarkExecuted(name);
+					migrator.adapter.unmarkExecuted(name, function() {
+						unmarkedCount++;
+						if (unmarkedCount == executedNames.length) done();
+					});
 				});
-				done();
 			});
 		});
 	});
