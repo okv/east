@@ -185,15 +185,14 @@ program
  * List migrations
  */
 program
-	.command('list')
-	.option(
-		'-s, --status <status>', 'which migrations to list (`new`, ' +
-		'`executed` or `all`), `new` by default'
+	.command('list [status]')
+	.description(
+		'list migration with selected status (`new`, `executed` or `all`), ' +
+		'`new` by default'
 	)
-	.description('list migrations')
-	.action(function(command) {
+	.action(function(status) {
 		var migrator = new Migrator(program),
-			status = command.status || 'new';
+			status =status || 'new';
 		console.log(status + ' migrations:');
 		migrator.connect(function(err) {
 			if (err) handleError(err);
