@@ -246,8 +246,13 @@ function handleError(err) {
 	throw err;
 };
 
+// is some command was chosen
+var isCommandInitialized = false;
+
+/** Should run once at every command */
 function initCommand(params, opts) {
 	opts = opts || {};
+	isCommandInitialized = true;
 	var migrator = new Migrator(params);
 	if (!opts.skipDirCheck && !migrator.isDirExists()) {
 		handleError(new Error(
@@ -261,5 +266,5 @@ function initCommand(params, opts) {
 
 // let's start the party (program entry point)
 program.parse(process.argv);
-// FIXME: 	show help if no one command is selected
-// if (!program.args.length) program.help();
+
+if (!isCommandInitialized) program.help();
