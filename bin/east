@@ -193,11 +193,15 @@ program
 	.action(function(status) {
 		var migrator = new Migrator(program),
 			status =status || 'new';
-		console.log(status + ' migrations:');
 		migrator.connect(function(err) {
 			if (err) handleError(err);
 			migrator.getMigrationNames(status, function(err, migrations) {
 				if (err) handleError(err);
+				if (migrations.length) {
+					console.log(status + ' migrations:');
+				} else {
+					console.log('there is no ' + status + ' migrations');
+				}
 				migrations.forEach(function(migration) {
 					console.log('\t', migration);
 				});
