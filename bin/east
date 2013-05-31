@@ -16,6 +16,24 @@ program
 
 
 /**
+ * Init
+ */
+program
+	.command('init')
+	.description('initialize migration system')
+	.action(function() {
+		var migrator = initCommand(program, {skipDirCheck: true});
+		migrator.init(function(err) {
+			if (err) handleError(err);
+			console.log(
+				'initialization successfully done, migration files will be ' +
+				'stored at: `' + migrator.params.dir + '`'
+			);
+		});
+	});
+
+
+/**
  * Create new migration based on template
  */
 program
@@ -228,12 +246,13 @@ function handleError(err) {
 	throw err;
 };
 
-function initCommand(params) {
+function initCommand(params, opts) {
+	opts = opts || {};
 	var migrator = new Migrator(params);
-	if (!migrator.isDirExists()) {
+	if (!opts.skipDirCheck && !migrator.isDirExists()) {
 		handleError(new Error(
 			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist.\n' +
-			'You should run `init` command to create this directory or change\n' +
+			'You should run `init` command to initialize migrations or change\n' +
 			'`dir` option.'
 		));
 	}
