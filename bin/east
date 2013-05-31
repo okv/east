@@ -22,7 +22,7 @@ program
 	.command('create <basename>')
 	.description('create new migration based on template')
 	.action(function(basename) {
-		var migrator = new Migrator(program);
+		var migrator = initCommand(program);
 		migrator.create(basename, function(err, name) {
 			if (err) handleError(err);
 			console.log(
@@ -41,7 +41,7 @@ program
 	.option('-f, --force', 'force to execute already executed migrations')
 	.description('run all or selected migrations')
 	.action(function(names, command) {
-		var migrator = new Migrator(program);
+		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
 			if (!names) {
@@ -111,7 +111,7 @@ program
 	.command('rollback [migrations]')
 	.description('rollback all or selected migrations')
 	.action(function(names) {
-		var migrator = new Migrator(program);
+		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
 			if (!names) {
@@ -191,7 +191,7 @@ program
 		'`new` by default'
 	)
 	.action(function(status) {
-		var migrator = new Migrator(program),
+		var migrator = initCommand(program),
 			status =status || 'new';
 		migrator.connect(function(err) {
 			if (err) handleError(err);
@@ -228,6 +228,17 @@ function handleError(err) {
 	throw err;
 };
 
+function initCommand(params) {
+	var migrator = new Migrator(params);
+	if (!migrator.isDirExists()) {
+		handleError(new Error(
+			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist.\n' +
+			'You should run `init` command to create this directory or change\n' +
+			'`dir` option.'
+		));
+	}
+	return migrator;
+}
 
 // let's start the party (program entry point)
 program.parse(process.argv);
