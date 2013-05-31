@@ -5,7 +5,7 @@ adapters)
 
 ## Installation
 
-```
+```sh
 npm install east -g
 ```
 
@@ -15,7 +15,7 @@ alternatively you could install it locally
 
 go to project dir and run
 
-```
+```sh
 east init
 ```
 
@@ -23,7 +23,7 @@ after that you can `create`, `migrate`, `rollback` your migrations.
 
 Run `east -h` to see all commands:
 
-```
+```sh
 
   Usage: east [options] [command]
 
@@ -69,7 +69,7 @@ located at current directory, e.g.:
 
 into cloned repository run
 
-```
+```sh
 npm test
 ```
 
