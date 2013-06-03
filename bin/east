@@ -12,7 +12,8 @@ program
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
 	.option('--template <path>', 'path to template for new migrations')
 	.option('--dir <dir>', 'dir where migrations stored')
-	.option('--url <url>', 'db connect url');
+	.option('--url <url>', 'db connect url')
+	.option('--trace', 'if error occured stacktrace will be shown');
 
 
 /**
@@ -243,7 +244,12 @@ program
  * Helpers used above
  */
 function handleError(err) {
-	throw err;
+	if (err.message && !program.trace) {
+		console.log(err.message);
+	} else {
+		console.log(err.stack || err);	
+	}
+	process.exit(1);
 };
 
 // is some command was chosen
