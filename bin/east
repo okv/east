@@ -13,7 +13,7 @@ program
 	.option('--template <path>', 'path to template for new migrations')
 	.option('--dir <dir>', 'dir where migrations stored')
 	.option('--url <url>', 'db connect url')
-	.option('--trace', 'if error occured stacktrace will be shown');
+	.option('--trace', 'if error occured stack trace will be shown');
 
 
 /**
