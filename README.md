@@ -88,7 +88,7 @@ exports.rollback = function(client, done) {
 };
 ```
 
-`client` is client for current db and determined by adapter (see [adapters](/adapters) section)
+`client` is client for current db and determined by adapter (see [adapters](#adapters) section)
 `done` is function which should be called at the end of migration (if any
 error occured you can pass it as first argument)
 migration also can be synchronous - declare only client at `migrate` or `rollback`
@@ -116,7 +116,7 @@ exports.rollback = function(client, done) {
 
 ```
 
-or you can use special adapter for database (see [adapters](/adapters) section)
+or you can use special adapter for database (see [adapters](#adapters) section)
 
 ### migrate
 
@@ -211,7 +211,7 @@ Default adapter store executed migration names at file `.migrations` which is
 located at migrations dir.
 
 Other adapters:
-    * [mongodb](https://github.com/okv/east-mongo)
+* [mongodb](https://github.com/okv/east-mongo)
 
 
 ## Running test
