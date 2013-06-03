@@ -1,7 +1,7 @@
 # east
 
 east - node.js database migration tool for different databases (extensible via
-adapters)
+[adapters](#adapters))
 
 ## Installation
 
@@ -88,11 +88,11 @@ exports.rollback = function(client, done) {
 };
 ```
 
-`client` is client for current db and determined by adapter (see [adapters](#adapters) section)
+`client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)  
 `done` is function which should be called at the end of migration (if any
-error occured you can pass it as first argument)
-migration also can be synchronous - declare only client at `migrate` or `rollback`
-`rollback` function is optional and may be omitted
+error occured you can pass it as first argument)  
+migration also can be synchronous - declare only client at `migrate` or `rollback`  
+`rollback` function is optional and may be omitted  
 
 Migration file is normal node.js module and you can migrate any database e.g.
 
@@ -158,7 +158,7 @@ skip `2_doSomethingElse` because it`s already executed
 nothing to migrate
 ```
 
-you can pass `--force` option to execute already executed migrations.
+you can pass `--force` option to execute already executed migrations.  
 This is useful while you develop and test your migration.
 
 ### rollback
@@ -203,12 +203,12 @@ east list executed
 ```
 
 
-## adapters
+## Adapters
 
 adapter determines where executed migration names will be stored and what will be
 passed to `migrate` and `rollback` function as `client`.
 Default adapter store executed migration names at file `.migrations` which is
-located at migrations dir.
+located at migrations directory and pass `null` as `client`.
 
 Other adapters:
 * [mongodb](https://github.com/okv/east-mongo)
