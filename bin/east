@@ -66,11 +66,14 @@ program
 			if (!names) {
 				migrator.getNewMigrationNames(migrate);
 			} else {
-				separateNames(names);
+				names = names.split(',');
+				migrator.normalizeNames(names, function(err, names) {
+					if (err) handleError(err);
+					separateNames(names);
+				});
 			}
 		});
 		function separateNames(names) {
-			names = names.split(',');
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
 				if (command.force) {
@@ -138,7 +141,11 @@ program
 					separateNames(names.reverse());
 				});
 			} else {
-				separateNames(names.split(','));
+				names = names.split(',');
+				migrator.normalizeNames(names, function(err, names) {
+					if (err) handleError(err);
+					separateNames(names);
+				});
 			}
 		});
 		function separateNames(names) {
