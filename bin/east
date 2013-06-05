@@ -106,7 +106,7 @@ program
 					migrator.loadMigration(name, function(err, migration) {
 						if (err) handleError(err);
 						migrator.execute(migration, function(err) {
-							if (err) handleError(err);
+							if (err) handleError(err, {trace: true});
 							console.log('migration done')
 							// call next
 							if (index < funcs.length - 1) funcs[++index]();
@@ -184,7 +184,7 @@ program
 						} else {
 							console.log('rollback `' + name + '`')
 							migrator.rollback(migration, function(err) {
-								if (err) handleError(err);
+								if (err) handleError(err, {trace: true});
 								console.log('migration successfully rolled back');
 								rollbackNext();
 							});
@@ -243,11 +243,12 @@ program
 /**
  * Helpers used above
  */
-function handleError(err) {
-	if (err.message && !program.trace) {
+function handleError(err, opts) {
+	opts = opts || {};
+	if (err.message && !opts.trace && !program.trace) {
 		console.log(err.message);
 	} else {
-		console.log(err.stack || err);	
+		console.log(err.stack || err);
 	}
 	process.exit(1);
 };
