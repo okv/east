@@ -128,4 +128,42 @@ describe('migrator', function() {
 			done();
 		});
 	});
+
+	var migration = {};
+	migration.name = '9999_test';
+	migration.migrate = function(client, done) {
+		done();
+	};
+	migration.rollback = function(client, done) {
+		done();
+	};
+
+	describe('validate', function() {
+		it('valid migration should be ok', function(done) {
+			migrator.validateMigration(migration, done);
+		});
+	});
+
+	['execute', 'rollback'].forEach(function(action) {
+		describe(action, function() {
+			it('good migration should be ok', function(done) {
+				migrator[action](migration, done);
+			});
+
+			it('migration which produce eror should pass it', function(done) {
+				migration[action == 'execute' ? 'migrate' : 'rollback' ] =
+					function(client, done) {
+						done(new Error('Test ' + action + ' error'));
+					};
+				migrator[action](migration, function(err) {
+					expect(err).ok();
+					expect(err).a(Error);
+					expect(err).have.property(
+						'message', 'Test ' + action + ' error'
+					);
+					done();
+				});
+			});
+		});
+	});
 });
