@@ -144,7 +144,8 @@ migrate `2_doSomethingElse`
 migration done
 ```
 
-selected migrations can be executed by passing their names as argument
+selected migrations can be executed by passing their names (or numbers or
+basenames or paths) as argument
 
 ```sh
 east migrate 1_doSomething,2_doSomethingElse
