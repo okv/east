@@ -91,7 +91,7 @@ exports.rollback = function(client, done) {
 `client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)  
 `done` is function which should be called at the end of migration (if any
 error occured you can pass it as first argument)  
-migration also can be synchronous - declare only client at `migrate` or `rollback`  
+migration also can be synchronous - declare only `client` at `migrate` or `rollback`  
 `rollback` function is optional and may be omitted  
 
 Migration file is normal node.js module and you can migrate any database e.g.
@@ -148,7 +148,7 @@ selected migrations can be executed by passing their names (or numbers or
 basenames or paths) as argument
 
 ```sh
-east migrate 1_doSomething,2_doSomethingElse
+east migrate 1_doSomething,2
 ```
 
 in our case this command will skip all of them
@@ -189,7 +189,7 @@ migration successfully rolled back
 east list
 ```
 
-shows new migration e.g.
+shows new migrations e.g.
 
 ```sh
 new migrations:
