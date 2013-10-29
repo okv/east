@@ -17,7 +17,8 @@
 		"east": "./bin/east"
 	},
 	"dependencies": {
-		"commander": "1.1.1"
+		"commander": "1.1.1",
+		"progress": "1.1.2"
 	},
 	"devDependencies": {
 		"mocha": "1.9.0",
