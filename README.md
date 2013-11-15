@@ -216,7 +216,7 @@ Other adapters:
 * [sqlite](https://github.com/2do2go/east-sqlite)
 
 
-## Running test
+## Run tests
 
 into cloned repository run
 
