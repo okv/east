@@ -213,6 +213,7 @@ located at migrations directory and pass `null` as `client`.
 
 Other adapters:
 * [mongodb](https://github.com/okv/east-mongo)
+* [sqlite](https://github.com/2do2go/east-sqlite)
 
 
 ## Running test
