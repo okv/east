@@ -2,11 +2,12 @@
 
 var program = require('commander'),
 	fs = require('fs'),
-	Migrator = require('../lib/migrator');
+	Migrator = require('../lib/migrator'),
+	path = require('path');
 
 
 program
-	.version('0.1.0')
+	.version(require(path.join(__dirname, '..', 'package.json')).version)
 	.option('--adapter <name>', 'which db adapter to use')
 	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
