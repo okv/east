@@ -224,3 +224,7 @@ into cloned repository run
 npm test
 ```
 
+
+## License
+
+MIT

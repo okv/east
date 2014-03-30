@@ -3,6 +3,7 @@
 	"description": "node.js database migration tool",
 	"version": "0.1.9",
 	"author": "Oleg Korobenko <oleg.korobenko@gmail.com>",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/okv/east.git"
