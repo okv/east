@@ -25,14 +25,18 @@ describe('migrator', function() {
 		it('unmark all executed', function(done) {
 			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
 				if (err) done(err);
-				if (!executedNames.length) done();
-				var unmarkedCount = 0;
-				executedNames.forEach(function(name) {
-					migrator.adapter.unmarkExecuted(name, function() {
-						unmarkedCount++;
-						if (unmarkedCount == executedNames.length) done();
-					});
+				if (!executedNames.length) return done();
+
+				var funcs = executedNames.map(function(name, index) {
+					return function() {
+						migrator.adapter.unmarkExecuted(name, function(err) {
+							if (err) done(err);
+							if (index < funcs.length - 1) funcs[++index]();
+						});
+					};
 				});
+				funcs.push(done);
+				funcs[0]();
 			});
 		});
 	});
