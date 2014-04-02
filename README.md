@@ -31,8 +31,8 @@ Run `east -h` to see all commands:
 
     init                   initialize migration system
     create <basename>      create new migration based on template
-    migrate [options] [migrations] run all or selected migrations
-    rollback [migrations]  rollback all or selected migrations
+    migrate [options]      run all or selected migrations
+    rollback               rollback all or selected migrations
     list [status]          list migration with selected status (`new`, `executed` or `all`), `new` by default
     *                     
 
@@ -46,7 +46,7 @@ Run `east -h` to see all commands:
     --template <path>    path to template for new migrations
     --dir <dir>          dir where migrations stored
     --url <url>          db connect url
-    --trace              if error occured stack trace will be shown
+    --trace              verbose mode (including error stack trace)
 
 ```
 
@@ -148,7 +148,7 @@ selected migrations can be executed by passing their names (or numbers or
 basenames or paths) as argument
 
 ```sh
-east migrate 1_doSomething,2
+east migrate 1_doSomething 2
 ```
 
 in our case this command will skip all of them

@@ -3,7 +3,8 @@
 var program = require('commander'),
 	fs = require('fs'),
 	Migrator = require('../lib/migrator'),
-	path = require('path');
+	path = require('path'),
+	utils = require('../lib/utils');
 
 
 program
@@ -57,18 +58,19 @@ program
  * Migrate
  */
 program
-	.command('migrate [migrations]')
+	.command('migrate')
+	.usage('[options] [migration1 ... migrationN]')
 	.option('-f, --force', 'force to execute already executed migrations')
 	.description('run all or selected migrations')
-	.action(function(names, command) {
+	.action(function() {
+		var args = utils.parseCommandArgs(arguments);
 		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
-			if (!names) {
+			if (!args.items.length) {
 				migrator.getNewMigrationNames(migrate);
 			} else {
-				names = names.split(',');
-				migrator.normalizeNames(names, function(err, names) {
+				migrator.normalizeNames(args.items, function(err, names) {
 					if (err) handleError(err);
 					separateNames(names);
 				});
@@ -77,7 +79,7 @@ program
 		function separateNames(names) {
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
-				if (command.force) {
+				if (args.command.force) {
 					migrate(null, names);
 				} else {
 					migrator.separateNames(
@@ -131,19 +133,20 @@ program
  * Rollback
  */
 program
-	.command('rollback [migrations]')
+	.command('rollback')
+	.usage('[migration1 ... migrationN]')
 	.description('rollback all or selected migrations')
-	.action(function(names) {
+	.action(function() {
+		var args = utils.parseCommandArgs(arguments);
 		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
-			if (!names) {
+			if (!args.items.length) {
 				migrator.adapter.getExecutedMigrationNames(function(err, names) {
 					separateNames(names.reverse());
 				});
 			} else {
-				names = names.split(',');
-				migrator.normalizeNames(names, function(err, names) {
+				migrator.normalizeNames(args.items, function(err, names) {
 					if (err) handleError(err);
 					separateNames(names);
 				});
