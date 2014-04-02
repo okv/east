@@ -36,7 +36,7 @@ describe('migrator', function() {
 		});
 	});
 
-	var baseNames = ['first', 'second', 'third'];
+	var baseNames = ['first', 'second', 'third', 'second'];
 	var names = [];
 
 	describe('create', function() {
@@ -115,6 +115,49 @@ describe('migrator', function() {
 			migrator.getNewMigrationNames(function(err, newNames) {
 				if (err) done(err);
 				expect(newNames).eql(names);
+				done();
+			});
+		});
+	});
+
+	describe('names normalization', function() {
+		it('by full name should be ok', function(done) {
+			var name = names[0];
+			migrator.normalizeNames([name], function(err, normalizedNames) {
+				if (err) done(err);
+				expect(normalizedNames[0]).equal(name);
+				done();
+			});
+		});
+
+		it('by number should be ok', function(done) {
+			var number = 1,
+				name = names[0];
+			migrator.normalizeNames([number], function(err, normalizedNames) {
+				if (err) done(err);
+				expect(normalizedNames[0]).equal(name);
+				done();
+			});
+		});
+
+		it('by basename should be ok', function(done) {
+			var baseName = baseNames[0],
+				name = names[0];
+			migrator.normalizeNames([baseName], function(err, normalizedNames) {
+				if (err) done(err);
+				expect(normalizedNames[0]).equal(name);
+				done();
+			});
+		});
+
+		it('by ambiguous basename should return an error', function(done) {
+			var baseName = baseNames[1];
+			migrator.normalizeNames([baseName], function(err, normalizedNames) {
+				expect(err).ok();
+				expect(err).an(Error);
+				expect(err.message).contain(
+					'Specified migration name `' + baseName + '` is ambiguous'
+				);
 				done();
 			});
 		});
