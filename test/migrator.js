@@ -1,7 +1,8 @@
 'use strict';
 
 var expect = require('expect.js'),
-	Migrator = require('../lib/migrator');
+	Migrator = require('../lib/migrator'),
+	Path = require('path');
 
 describe('migrator', function() {
 	var migrator = new Migrator();
@@ -121,6 +122,16 @@ describe('migrator', function() {
 	});
 
 	describe('names normalization', function() {
+		it('by path should be ok', function(done) {
+			var name = names[0],
+				path = Path.join('migrations', name);
+			migrator.normalizeNames([name], function(err, normalizedNames) {
+				if (err) done(err);
+				expect(normalizedNames[0]).equal(name);
+				done();
+			});
+		});
+
 		it('by full name should be ok', function(done) {
 			var name = names[0];
 			migrator.normalizeNames([name], function(err, normalizedNames) {
