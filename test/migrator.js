@@ -82,7 +82,7 @@ describe('migrator', function() {
 		it('execute first of them without errors', function(done) {
 			migrator.loadMigration(names[0], function(err, migration) {
 				if (err) done(err);
-				migrator.execute(migration, done);
+				migrator.migrate(migration, done);
 			});
 		});
 
@@ -187,17 +187,16 @@ describe('migrator', function() {
 		});
 	});
 
-	['execute', 'rollback'].forEach(function(action) {
+	['migrate', 'rollback'].forEach(function(action) {
 		describe(action, function() {
 			it('good migration should be ok', function(done) {
 				migrator[action](migration, done);
 			});
 
 			it('migration which produce eror should pass it', function(done) {
-				migration[action == 'execute' ? 'migrate' : 'rollback' ] =
-					function(client, done) {
-						done(new Error('Test ' + action + ' error'));
-					};
+				migration[action] = function(client, done) {
+					done(new Error('Test ' + action + ' error'));
+				};
 				migrator[action](migration, function(err) {
 					expect(err).ok();
 					expect(err).a(Error);

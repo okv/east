@@ -109,7 +109,7 @@ program
 					console.log('migrate `' + name + '`')
 					migrator.loadMigration(name, function(err, migration) {
 						if (err) handleError(err);
-						migrator.execute(migration, function(err) {
+						migrator.migrate(migration, function(err) {
 							if (err) handleError(err, {trace: true});
 							console.log('migration done')
 							// call next
