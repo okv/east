@@ -63,14 +63,14 @@ program
 	.option('-f, --force', 'force to execute already executed migrations')
 	.description('run all or selected migrations')
 	.action(function() {
-		var args = utils.parseCommandArgs(arguments);
+		var params = utils.parseCommandParams(arguments);
 		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
-			if (!args.items.length) {
+			if (!params.items.length) {
 				migrator.getNewMigrationNames(migrate);
 			} else {
-				migrator.normalizeNames(args.items, function(err, names) {
+				migrator.normalizeNames(params.items, function(err, names) {
 					if (err) handleError(err);
 					separateNames(names);
 				});
@@ -79,7 +79,7 @@ program
 		function separateNames(names) {
 			migrator.checkMigrationsExists(names, function(err) {
 				if (err) handleError(err);
-				if (args.command.force) {
+				if (params.command.force) {
 					migrate(null, names);
 				} else {
 					migrator.separateNames(
@@ -137,16 +137,16 @@ program
 	.usage('[migration1 ... migrationN]')
 	.description('rollback all or selected migrations')
 	.action(function() {
-		var args = utils.parseCommandArgs(arguments);
+		var params = utils.parseCommandParams(arguments);
 		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
-			if (!args.items.length) {
+			if (!params.items.length) {
 				migrator.adapter.getExecutedMigrationNames(function(err, names) {
 					separateNames(names.reverse());
 				});
 			} else {
-				migrator.normalizeNames(args.items, function(err, names) {
+				migrator.normalizeNames(params.items, function(err, names) {
 					if (err) handleError(err);
 					separateNames(names);
 				});
