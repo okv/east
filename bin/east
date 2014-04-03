@@ -44,6 +44,10 @@ program
 	.description('create new migration based on template')
 	.action(function(basename) {
 		var migrator = initCommand(program);
+		// TODO: remove after removing of fallbackCommaSeparatedNames
+		if (~basename.indexOf(',')) handleError(new Error(
+			'Basename should not contain commas'
+		));
 		migrator.create(basename, function(err, name) {
 			if (err) handleError(err);
 			console.log(
@@ -64,6 +68,7 @@ program
 	.description('run all or selected migrations')
 	.action(function() {
 		var params = utils.parseCommandParams(arguments);
+		params.items = fallbackCommaSeparatedNames(params.items);
 		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
@@ -138,6 +143,7 @@ program
 	.description('rollback all or selected migrations')
 	.action(function() {
 		var params = utils.parseCommandParams(arguments);
+		params.items = fallbackCommaSeparatedNames(params.items);
 		var migrator = initCommand(program);
 		migrator.connect(function(err) {
 			if (err) handleError(err);
@@ -210,6 +216,17 @@ program
 		}
 	});
 
+function fallbackCommaSeparatedNames(names) {
+	var length = names.length;
+	if (length == 1) {
+		names = names[0].split(',');
+		if (names.length > length) console.log(
+			'DEPRECATION WARNING: target migrations separated by comma will ' +
+			'not be supported in future versions (use space instead)'
+		);			
+	}
+	return names;
+}
 
 /**
  * List migrations
