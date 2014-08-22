@@ -11,6 +11,50 @@ describe('migrator', function() {
 		migrator.connect(done);
 	});
 
+	describe('adapter', function() {
+		var tryLoad,
+			mockAdapter = function() {
+				this.getTemplatePath = function() {};
+			};
+
+		before(function() {
+			tryLoad = Migrator.prototype._tryLoadAdapter;
+		});
+
+		it('expect be loaded migrator-related first and than CWD-related', function(done) {
+			var paths = [];
+			Migrator.prototype._tryLoadAdapter = function(path) {
+				paths.push(path);
+				return paths.length === 2 ? mockAdapter : new Error('Whatever.');
+			};
+
+			new Migrator({
+				adapter: 'X'
+			});
+
+			expect(paths[0]).eql('X');
+			expect(paths[1].substr(-2, 2)).eql('/X');
+			done();
+		});
+
+		it('expect to throw when both paths can not be resolved', function(done) {
+			Migrator.prototype._tryLoadAdapter = function() {
+				return new Error('Whatever.');
+			};
+
+			expect(function() {
+				new Migrator({
+					adapter: 'X'
+				});
+			}).to.throwError(/Whatever./);
+			done();
+		});
+
+		after(function() {
+			Migrator.prototype._tryLoadAdapter = tryLoad;
+		});
+	});
+
 	describe('clean', function() {
 		it('remove all existing migrations', function(done) {
 			migrator.getAllMigrationNames(function(err, allNames) {
