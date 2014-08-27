@@ -64,6 +64,19 @@ located at current directory, e.g.:
 
 ```
 
+`.eastrc` also can be a regular nodejs script (instead of json file):
+
+```js
+
+var path = require('path');
+
+module.exports = {
+    dir: path.join(__dirname, 'dbmigration'),
+    template: './lib/node/utils/customMigrationTemplate.js'
+};
+
+```
+
 ### create
 
 ```sh
