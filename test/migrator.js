@@ -142,6 +142,17 @@ describe('migrator', function() {
 				done();
 			});
 		});
+
+		it(
+			'execution of the same migration (as `migrate --force` do) ' +
+			'should passes without errors',
+			function(done) {
+				migrator.loadMigration(names[0], function(err, migration) {
+					if (err) done(err);
+					migrator.migrate(migration, done);
+				});
+			}
+		);
 	});
 
 	describe('rollback', function() {
