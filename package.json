@@ -1,6 +1,6 @@
 {
 	"name": "east",
-	"description": "node.js database migration tool",
+	"description": "node.js database migration tool for mongodb, sqlite, postgres, mysql",
 	"version": "0.2.3",
 	"author": "Oleg Korobenko <oleg.korobenko@gmail.com>",
 	"license": "MIT",
@@ -9,7 +9,8 @@
 		"url": "git://github.com/okv/east.git"
 	},
 	"keywords": [
-		"database", "db", "migrate"
+		"migrate", "migration", "database", "db", "mongodb", "sqlite",
+		"postgres", "mysql"
 	],
 	"scripts": {
 		"test": "cd test && mocha ./ --reporter spec --async-only"
