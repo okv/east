@@ -153,6 +153,14 @@ describe('migrator', function() {
 				});
 			}
 		);
+
+		it('expect that it still lists as `executed`', function(done) {
+			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
+				if (err) done(err);
+				expect(executedNames).eql([names[0]]);
+				done();
+			});
+		});
 	});
 
 	describe('rollback', function() {
