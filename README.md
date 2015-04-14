@@ -34,7 +34,7 @@ Run `east -h` to see all commands:
     migrate [options]      run all or selected migrations
     rollback               rollback all or selected migrations
     list [status]          list migration with selected status (`new`, `executed` or `all`), `new` by default
-    *                     
+    *
 
   Options:
 
@@ -101,11 +101,11 @@ exports.rollback = function(client, done) {
 };
 ```
 
-`client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)  
+`client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)
 `done` is function which should be called at the end of migration (if any
-error occured you can pass it as first argument)  
-migration also can be synchronous - declare only `client` at `migrate` or `rollback`  
-`rollback` function is optional and may be omitted  
+error occured you can pass it as first argument)
+migration also can be synchronous - declare only `client` at `migrate` or `rollback`
+`rollback` function is optional and may be omitted
 
 Migration file is normal node.js module and you can migrate any database e.g.
 
@@ -172,7 +172,7 @@ skip `2_doSomethingElse` because it`s already executed
 nothing to migrate
 ```
 
-you can pass `--force` option to execute already executed migrations.  
+you can pass `--force` option to execute already executed migrations.
 This is useful while you develop and test your migration.
 
 ### rollback
@@ -237,6 +237,25 @@ into cloned repository run
 ```sh
 npm test
 ```
+
+## Creating and testing own adapter
+
+For writing your own adapter you should implement methods for connection,
+mark transaction as executed, etc see details inside [built-in adapter](lib/adapter)
+and [other adapters](#adapters).
+
+You also can run tests from current repository against your adapter:
+1. Clone current repository
+2. Create file `.eastrc` inside `test` directory with path and parameters for
+your adapter e.g.
+```js
+{
+    "adapter": "../../east-mysql/lib/adapter",
+    "url": "mysql://user:password@localhost/east_test_db",
+    "createDbOnConnect": true
+}
+```
+3. Run `npm test` at root of the cloned repository.
 
 
 ## License
