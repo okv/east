@@ -228,6 +228,7 @@ Other adapters:
 * [mongodb](https://github.com/okv/east-mongo)
 * [sqlite](https://github.com/2do2go/east-sqlite)
 * [postgres](https://github.com/2do2go/east-postgres)
+* [mysql](https://github.com/riggerthegeek/east-mysql)
 
 
 ## Run tests
