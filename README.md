@@ -242,13 +242,15 @@ npm test
 ## Creating and testing own adapter
 
 For writing your own adapter you should implement methods for connection,
-mark transaction as executed, etc see details inside [built-in adapter](lib/adapter)
+mark transaction as executed, etc see details inside [built-in adapter](lib/adapter.js)
 and [other adapters](#adapters).
 
 You also can run tests from current repository against your adapter:
-1. Clone current repository
-2. Create file `.eastrc` inside `test` directory with path and parameters for
+
+* Clone current repository
+* Create file `.eastrc` inside `test` directory with path and parameters for
 your adapter e.g.
+
 ```js
 {
     "adapter": "../../east-mysql/lib/adapter",
@@ -256,7 +258,8 @@ your adapter e.g.
     "createDbOnConnect": true
 }
 ```
-3. Run `npm test` at root of the cloned repository.
+
+* Run `npm test` at root of the cloned repository.
 
 
 ## License
