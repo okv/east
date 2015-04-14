@@ -12,7 +12,7 @@
 		"database", "db", "migrate"
 	],
 	"scripts": {
-		"test": "mocha test --reporter spec --bail --async-only"
+		"test": "cd test && mocha ./ --reporter spec --bail --async-only"
 	},
 	"bin": {
 		"east": "./bin/east"

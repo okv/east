@@ -7,7 +7,7 @@ var expect = require('expect.js'),
 describe('migrator', function() {
 	var migrator = new Migrator();
 
-	it('connect', function(done) {
+	it('connect using adapter ' + migrator.params.adapter, function(done) {
 		migrator.connect(done);
 	});
 
