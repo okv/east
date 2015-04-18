@@ -144,10 +144,11 @@ describe('migrator', function() {
 		});
 
 		it(
-			'execution of the same migration (as `migrate --force` do) ' +
-			'should passes without errors',
+			'execution of the same migration with force flag should passes ' +
+			'without errors',
 			function(done) {
 				migrator.loadMigration(names[0], function(err, migration) {
+					migration.force = true;
 					if (err) done(err);
 					migrator.migrate(migration, done);
 				});
