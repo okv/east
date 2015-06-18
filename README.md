@@ -32,7 +32,7 @@ Run `east -h` to see all commands:
     init                   initialize migration system
     create <basename>      create new migration based on template
     migrate [options]      run all or selected migrations
-    rollback               rollback all or selected migrations
+    rollback [options]     rollback all or selected migrations
     list [status]          list migration with selected status (`new`, `executed` or `all`), `new` by default
     *
 
