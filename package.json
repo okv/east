@@ -20,7 +20,8 @@
 	},
 	"dependencies": {
 		"commander": "1.1.1",
-		"progress": "1.1.2"
+		"progress": "1.1.2",
+		"async":"1.4.2"
 	},
 	"devDependencies": {
 		"mocha": "1.9.0",
