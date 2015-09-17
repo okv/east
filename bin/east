@@ -5,7 +5,8 @@
 var program = require('commander'),
 	Migrator = require('../lib/migrator'),
 	path = require('path'),
-	utils = require('../lib/utils');
+	utils = require('../lib/utils'),
+	async = require("async");
 
 
 program
@@ -114,8 +115,8 @@ program
 			if (!params.command.silent) {
 				console.log('target migrations:\n\t' + names.join('\n\t'));
 			}
-			var funcs = names.map(function(name, index) {
-				return function() {
+			var funcs = names.map(function(name) {
+				return function(done) {
 					if (!params.command.silent) {
 						console.log('migrate `' + name + '`');
 					}
@@ -127,17 +128,18 @@ program
 							if (!params.command.silent) {
 								console.log('migration done');
 							}
-							// call next
-							if (index < funcs.length - 1) funcs[++index]();
+							done()
 						});
 					});
 				};
 			});
-			funcs.push(function() {
-				migrator.disconnect();
+			funcs.push(function(done) {
+				migrator.disconnect(done);
 			});
-			// starts migrations execution
-			funcs[0]();
+			async.series(funcs, function(){
+				console.log("jobs completed")
+				process.exit()
+			})
 		}
 	});
 
