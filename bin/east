@@ -58,6 +58,9 @@ program
 		});
 	});
 
+function exit() {
+	process.exit();
+}
 
 /**
  * Migrate
@@ -67,6 +70,11 @@ program
 	.usage('[options] [migration1 ... migrationN]')
 	.option('-f, --force', 'force to execute already executed migrations')
 	.option('-s, --silent', 'prevent output of detailed log of migrations')
+	.option(
+		'--no-exit',
+		'require a clean shutdown of the event loop: process.exit will not be ' +
+		'called after all migrations'
+	)
 	.description('run all or selected migrations')
 	.action(function() {
 		var params = utils.parseCommandParams(arguments);
@@ -134,7 +142,7 @@ program
 				};
 			});
 			funcs.push(function() {
-				migrator.disconnect();
+				migrator.disconnect(params.command.exit ? exit : utils.noop);
 			});
 			// starts migrations execution
 			funcs[0]();
@@ -149,6 +157,11 @@ program
 	.command('rollback')
 	.usage('[migration1 ... migrationN]')
 	.option('-s, --silent', 'prevent output of detailed log of migrations')
+	.option(
+		'--no-exit',
+		'require a clean shutdown of the event loop: process.exit will not be ' +
+		'called after all migrations'
+	)
 	.description('rollback all or selected migrations')
 	.action(function() {
 		var params = utils.parseCommandParams(arguments);
@@ -223,7 +236,7 @@ program
 				};
 			});
 			funcs.push(function() {
-				migrator.disconnect();
+				migrator.disconnect(params.command.exit ? exit : utils.noop);
 			});
 			funcs[0]();
 		}
