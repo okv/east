@@ -175,6 +175,9 @@ nothing to migrate
 you can pass `--force` option to execute already executed migrations.
 This is useful while you develop and test your migration.
 
+You also can export `tags` array from migration and then migrate only
+migrations with selected tag specified by `--tag` option.
+
 ### rollback
 
 `rollback` has similar to `migrate` command syntax but executes `rollback`

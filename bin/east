@@ -69,6 +69,7 @@ program
 	.command('migrate')
 	.usage('[options] [migration1 ... migrationN]')
 	.option('-f, --force', 'force to execute already executed migrations')
+	.option('-t, --tag <value>', 'execute only migrations with selected tag')
 	.option('-s, --silent', 'prevent output of detailed log of migrations')
 	.option(
 		'--no-exit',
@@ -119,25 +120,47 @@ program
 				migrator.disconnect();
 				return;
 			}
+			var tag = params.command.tag;
 			if (!params.command.silent) {
-				console.log('target migrations:\n\t' + names.join('\n\t'));
+				console.log(
+					'target migrations' +
+					(tag ? ' (will be filtered by tag `' + tag + '`)' : '') +
+					':\n\t' + names.join('\n\t'));
 			}
 			var funcs = names.map(function(name, index) {
 				return function() {
 					if (!params.command.silent) {
-						console.log('migrate `' + name + '`');
+						console.log('load `' + name + '`');
 					}
+					var callNext = function() {
+						if (index < funcs.length - 1) funcs[++index]();
+					};
 					migrator.loadMigration(name, function(err, migration) {
 						if (err) handleError(err);
-						migration.force = params.command.force;
-						migrator.migrate(migration, function(err) {
-							if (err) handleError(err, {trace: true});
+						if (
+							(!tag) ||
+							(tag && migration.tags && migration.tags.indexOf(tag) !== -1)
+						) {
 							if (!params.command.silent) {
-								console.log('migration done');
+								console.log('migrate `' + name + '`');
 							}
-							// call next
-							if (index < funcs.length - 1) funcs[++index]();
-						});
+							migration.force = params.command.force;
+							migrator.migrate(migration, function(err) {
+								if (err) handleError(err, {trace: true});
+								if (!params.command.silent) {
+									console.log('migration done');
+								}
+								callNext();
+							});
+						} else {
+							if (!params.command.silent) {
+								console.log(
+									'migration `' + name +
+									'` skipped because of missed tag'
+								);
+							}
+							callNext();
+						}
 					});
 				};
 			});
