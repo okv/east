@@ -2,14 +2,40 @@
 
 var expect = require('expect.js'),
 	Migrator = require('../lib/migrator'),
-	Path = require('path');
+	Path = require('path'),
+	Steppy = require('twostep').Steppy;
 
 describe('migrator', function() {
 	var migrator = new Migrator();
 
-	it('connect using adapter ' + migrator.params.adapter, function(done) {
-		migrator.connect(done);
+	before(function(done) {
+		Steppy(
+			function() {
+				migrator.connect(this.slot());
+			},
+			function() {
+				migrator.getAllMigrationNames(this.slot());
+
+				migrator.adapter.getExecutedMigrationNames(this.slot());
+			},
+			function(err, allNames, executedNames) {
+				// remove all existing migrations
+				allNames.forEach(function(name) {
+					migrator.remove(name);
+				});
+
+				// unmark all executed
+				var unmarkGroup = this.makeGroup();
+				executedNames.forEach(function(name) {
+					migrator.adapter.unmarkExecuted(name, unmarkGroup.slot());
+				});
+			},
+			done
+		);
 	});
+
+	// just output currently used adapter
+	it('uses adapter ' + migrator.params.adapter, function() {});
 
 	describe('adapter', function() {
 		var tryLoad,
@@ -55,217 +81,329 @@ describe('migrator', function() {
 		});
 	});
 
-	describe('clean', function() {
-		it('remove all existing migrations', function(done) {
-			migrator.getAllMigrationNames(function(err, allNames) {
-				if (err) done(err);
-				allNames.forEach(function(name) {
-					migrator.remove(name);
-				});
-				done();
-			});
-		});
-
-		it('unmark all executed', function(done) {
-			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
-				if (err) done(err);
-				if (!executedNames.length) return done();
-
-				var funcs = executedNames.map(function(name, index) {
-					return function() {
-						migrator.adapter.unmarkExecuted(name, function(err) {
-							if (err) done(err);
-							if (index < funcs.length - 1) funcs[++index]();
-						});
-					};
-				});
-				funcs.push(done);
-				funcs[0]();
-			});
-		});
-	});
-
-	var baseNames = ['first', 'second', 'third', 'second'];
-	var names = [];
+	var baseNames = ['first', 'second', 'third', 'second'],
+		names = [];
 
 	describe('create', function() {
-		it('expect create without errors', function(done) {
-			var funcs = baseNames.map(function(baseName, index) {
-				return function() {
-					migrator.create(baseName, function(err, name) {
-						if (err) done(err);
-						names.push(name);
-						if (index < funcs.length - 1) funcs[++index]();
+		it('should create migrations sequentially without errors', function(done) {
+			Steppy(
+				function() {
+					var funcs = baseNames.map(function(baseName) {
+						return function() {
+							var stepCallback = this.slot();
+							migrator.create(baseName, function(err, name) {
+								names.push(name);
+								stepCallback(err, name);
+							});
+						};
 					});
-				};
-			});
-			funcs.push(done);
-			funcs[0]();
+					funcs.push(this.slot());
+
+					Steppy.apply(null, funcs);
+				},
+				done
+			);
 		});
 
-		it('expect that created migrations are exists', function(done) {
+		it('created migrations should have sequential numbers', function() {
+			var expectedNames = baseNames.map(function(baseName, index) {
+				return String(index + 1) + '_' + baseName;
+			});
+			expect(names).eql(expectedNames);
+		});
+
+		it('created migrations should exist', function(done) {
 			migrator.checkMigrationsExists(names, done);
 		});
 
-		it('and loadable', function(done) {
-			var loadedCount = 0;
-			names.forEach(function(name) {
-				migrator.loadMigration(name, function(err, migration) {
-					if (err) done(err);
-					loadedCount++;
-					if (loadedCount == names.length) done();
-				});
-			});
+		it('created migrations should be loadable', function(done) {
+			Steppy(
+				function() {
+					var loadGroup = this.makeGroup();
+					names.forEach(function(name) {
+						migrator.loadMigration(name, loadGroup.slot());
+					});
+				},
+				done
+			);
 		});
 
-		it('and lists as `new`', function(done) {
-			migrator.getNewMigrationNames(function(err, newNames) {
-				if (err) done(err);
-				expect(newNames).eql(names);
-				done();
-			});
+		it('created migrations should be listed as `new`', function(done) {
+			Steppy(
+				function() {
+					migrator.getNewMigrationNames(this.slot());
+				},
+				function(err, newNames) {
+					expect(newNames).eql(names);
+					this.pass(null);
+				},
+				done
+			);
 		});
 	});
 
 	describe('execute', function() {
-		it('execute first of them without errors', function(done) {
-			migrator.loadMigration(names[0], function(err, migration) {
-				if (err) done(err);
-				migrator.migrate(migration, done);
-			});
+		it('execute migration without errors', function(done) {
+			Steppy(
+				function() {
+					migrator.loadMigration(names[0], this.slot());
+				},
+				function(err, migration) {
+					migrator.migrate(migration, this.slot());
+				},
+				done
+			);
 		});
 
-		it('expect that it lists as `executed`', function(done) {
-			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
-				if (err) done(err);
-				expect(executedNames).eql([names[0]]);
-				done();
-			});
+		it('migration should be listed as `executed` after that', function(done) {
+			Steppy(
+				function() {
+					migrator.adapter.getExecutedMigrationNames(this.slot());
+				},
+				function(err, executedNames) {
+					expect(executedNames).eql([names[0]]);
+					this.pass(null);
+				},
+				done
+			);
 		});
 
 		it(
 			'execution of the same migration with force flag should passes ' +
 			'without errors',
 			function(done) {
-				migrator.loadMigration(names[0], function(err, migration) {
-					migration.force = true;
-					if (err) done(err);
-					migrator.migrate(migration, done);
-				});
+				Steppy(
+					function() {
+						migrator.loadMigration(names[0], this.slot());
+					},
+					function(err, migration) {
+						migration.force = true;
+						migrator.migrate(migration, this.slot());
+					},
+					done
+				);
 			}
 		);
 
-		it('expect that it still lists as `executed`', function(done) {
-			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
-				if (err) done(err);
-				expect(executedNames).eql([names[0]]);
-				done();
-			});
+		it('migration should still be listed as `executed`', function(done) {
+			Steppy(
+				function() {
+					migrator.adapter.getExecutedMigrationNames(this.slot());
+				},
+				function(err, executedNames) {
+					expect(executedNames).eql([names[0]]);
+					this.pass(null);
+				},
+				done
+			);
 		});
 	});
 
 	describe('rollback', function() {
-		it('rollback which one that was executed without errors', function(done) {
-			migrator.loadMigration(names[0], function(err, migration) {
-				if (err) done(err);
-				migrator.rollback(migration, done);
-			});
+		it('rollback executed migration without errors', function(done) {
+			Steppy(
+				function() {
+					migrator.loadMigration(names[0], this.slot());
+				},
+				function(err, migration) {
+					migrator.rollback(migration, this.slot());
+				},
+				done
+			);
 		});
 
 		it('expect that no `executed` migration at list', function(done) {
-			migrator.adapter.getExecutedMigrationNames(function(err, executedNames) {
-				if (err) done(err);
-				expect(executedNames).have.length(0);
-				done();
-			});
+			Steppy(
+				function() {
+					migrator.adapter.getExecutedMigrationNames(this.slot());
+				},
+				function(err, executedNames) {
+					expect(executedNames).have.length(0);
+					this.pass(null);
+				},
+				done
+			);
 		});
 
 		it('expect that all migrations lists as `new` again', function(done) {
-			migrator.getNewMigrationNames(function(err, newNames) {
-				if (err) done(err);
-				expect(newNames).eql(names);
-				done();
-			});
+			Steppy(
+				function() {
+					migrator.getNewMigrationNames(this.slot());
+				},
+				function(err, newNames) {
+					expect(newNames).eql(names);
+					this.pass(null);
+				},
+				done
+			);
 		});
 	});
 
 	describe('names normalization', function() {
+
+		var expectNomrmalizedName = function(inputName, expectedName, callback) {
+			Steppy(
+				function() {
+					migrator.normalizeNames([inputName], this.slot());
+				},
+				function(err, normalizedNames) {
+					expect(normalizedNames[0]).equal(expectedName);
+					this.pass(null);
+				},
+				callback
+			);
+		};
+
 		it('by path should be ok', function(done) {
 			var name = names[0],
 				path = Path.join('migrations', name);
-			migrator.normalizeNames([name], function(err, normalizedNames) {
-				if (err) done(err);
-				expect(normalizedNames[0]).equal(name);
-				done();
-			});
+			expectNomrmalizedName(path, name, done);
 		});
 
 		it('by full name should be ok', function(done) {
 			var name = names[0];
-			migrator.normalizeNames([name], function(err, normalizedNames) {
-				if (err) done(err);
-				expect(normalizedNames[0]).equal(name);
-				done();
-			});
+			expectNomrmalizedName(name, name, done);
 		});
 
 		it('by number should be ok', function(done) {
 			var number = 1,
 				name = names[0];
-			migrator.normalizeNames([number], function(err, normalizedNames) {
-				if (err) done(err);
-				expect(normalizedNames[0]).equal(name);
-				done();
-			});
+			expectNomrmalizedName(number, name, done);
 		});
 
 		it('by basename should be ok', function(done) {
 			var baseName = baseNames[0],
 				name = names[0];
-			migrator.normalizeNames([baseName], function(err, normalizedNames) {
-				if (err) done(err);
-				expect(normalizedNames[0]).equal(name);
-				done();
-			});
+			expectNomrmalizedName(baseName, name, done);
 		});
 
 		it('by ambiguous basename should return an error', function(done) {
 			var baseName = baseNames[1];
-			migrator.normalizeNames([baseName], function(err, normalizedNames) {
-				expect(err).ok();
-				expect(err).an(Error);
-				expect(err.message).contain(
-					'Specified migration name `' + baseName + '` is ambiguous'
-				);
-				done();
-			});
+			Steppy(
+				function() {
+					migrator.normalizeNames([baseName], this.slot());
+
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err).an(Error);
+					expect(err.message).contain(
+						'Specified migration name `' + baseName + '` is ambiguous'
+					);
+					done();
+				}
+			);
 		});
 	});
 
 	describe('remove', function() {
-		it('expect remove without errors', function(done) {
+		it('expect remove without errors', function() {
 			names.forEach(function(name) {
 				return migrator.remove(name);
 			});
-			done();
+		});
+
+		it('removed migrations should not exist', function(done) {
+			Steppy(
+				function() {
+					var existGroup = this.makeGroup()
+					names.forEach(function(name) {
+						migrator.isMigrationExists(name, existGroup.slot());
+					});
+				},
+				function(err, existResults) {
+					existResults.forEach(function(existResult) {
+						expect(existResult).equal(false);
+					});
+					this.pass(null);
+				},
+				done
+			);
 		});
 	});
 
-	var migration = {};
-	migration.name = '9999_test';
-	migration.migrate = function(client, done) {
-		done();
-	};
-	migration.rollback = function(client, done) {
-		done();
+	var makeMigration = function() {
+		var migration = {};
+		migration.name = '9999_test';
+		migration.migrate = function(client, done) {
+			done();
+		};
+		migration.rollback = function(client, done) {
+			done();
+		};
+		return migration;
 	};
 
+	var migration;
+
 	describe('validate', function() {
+
 		it('valid migration should be ok', function(done) {
+			migration = makeMigration();
+			migrator.validateMigration(migration, done);
+		});
+
+		var expectValidationError = function(migration, errorMessage, callback) {
+			Steppy(
+				function() {
+					migrator.validateMigration(migration, this.slot());
+				},
+				function(err) {
+					expect(err).ok();
+					expect(err.message).eql(errorMessage);
+					callback();
+				}
+			);
+		};
+
+		var errorMessage;
+		it('non object migration should fail', function(done) {
+			errorMessage = 'migration is not an object'
+			expectValidationError(1, errorMessage, done);
+		});
+
+		it('migration without migrate function should fail', function(done) {
+			migration = makeMigration();
+			delete migration.migrate;
+			errorMessage = '`migrate` function is not set';
+			expectValidationError(migration, errorMessage, done);
+		});
+
+		it('migration with non function migrate should fail', function(done) {
+			migration = makeMigration();
+			migration.migrate = 1;
+			errorMessage = '`migrate` is not a function';
+			expectValidationError(migration, errorMessage, done);
+		});
+
+		it('migration without rollback should be ok', function(done) {
+			migration = makeMigration();
+			delete migration.rollback;
+			migrator.validateMigration(migration, done);
+		});
+
+		it('migration with non function rollback should fail', function(done) {
+			migration = makeMigration();
+			migration.rollback = 1;
+			errorMessage = '`rollback` set but it`s not a function';
+			expectValidationError(migration, errorMessage, done);
+		});
+
+		it('migration with non array tags should fail', function(done) {
+			migration = makeMigration();
+			migration.tags = 1;
+			errorMessage = '`tags` set but it`s not an array';
+			expectValidationError(migration, errorMessage, done);
+		});
+
+		it('migration with tags array should be ok', function(done) {
+			migration = makeMigration();
+			migration.tags = ['one', 'two'];
 			migrator.validateMigration(migration, done);
 		});
 	});
 
+	migration = makeMigration();
 	['migrate', 'rollback'].forEach(function(action) {
 		describe(action, function() {
 			it('good migration should be ok', function(done) {
@@ -287,4 +425,5 @@ describe('migrator', function() {
 			});
 		});
 	});
+
 });

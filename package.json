@@ -13,7 +13,7 @@
 		"postgres", "mysql"
 	],
 	"scripts": {
-		"test": "cd test && mocha ./ --reporter spec --async-only"
+		"test": "cd test && mocha ./ --reporter spec"
 	},
 	"bin": {
 		"east": "./bin/east"
@@ -24,6 +24,7 @@
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",
-		"expect.js": "0.3.1"
+		"expect.js": "0.3.1",
+		"twostep": "0.4.1"
 	}
 }
