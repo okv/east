@@ -3,7 +3,8 @@
 var expect = require('expect.js'),
 	Migrator = require('../lib/migrator'),
 	Path = require('path'),
-	Steppy = require('twostep').Steppy;
+	Steppy = require('twostep').Steppy,
+	utils = require('../lib/utils');
 
 describe('migrator', function() {
 	var migrator = new Migrator();
@@ -322,7 +323,7 @@ describe('migrator', function() {
 		});
 	});
 
-	var makeMigration = function() {
+	var makeMigration = function(params) {
 		var migration = {};
 		migration.name = '9999_test';
 		migration.migrate = function(client, done) {
@@ -331,7 +332,7 @@ describe('migrator', function() {
 		migration.rollback = function(client, done) {
 			done();
 		};
-		return migration;
+		return utils.extend(migration, params);
 	};
 
 	var migration;
@@ -426,4 +427,80 @@ describe('migrator', function() {
 		});
 	});
 
+	describe('filter', function() {
+
+		var migrationNamesHash = {
+			one: makeMigration({name: 'one', tags: ['one']}),
+			two: makeMigration({name: 'two', tags: ['one', 'two']}),
+			three: makeMigration({name: 'three', tags: []}),
+			four: makeMigration()
+		};
+
+		describe('by tag', function() {
+			var loadMigration;
+			before(function() {
+				loadMigration = Migrator.prototype.loadMigration;
+
+				Migrator.prototype.loadMigration = function(name, callback) {
+					callback(null, migrationNamesHash[name]);
+				};
+			});
+
+			it('should get two', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: 'one'
+						}, this.slot());
+					},
+					function(err, filterResult) {
+						expect(filterResult).eql({names: ['one', 'two']});
+						this.pass(null);
+					},
+					done
+				);
+			});
+
+			it('should get one', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: 'two'
+						}, this.slot());
+					},
+					function(err, filterResult) {
+						expect(filterResult).eql({names: ['two']});
+						this.pass(null);
+					},
+					done
+				);
+			});
+
+			it('should get nothing', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: 'three'
+						}, this.slot());
+					},
+					function(err, filterResult) {
+						expect(filterResult).eql({names: []});
+						this.pass(null);
+					},
+					done
+				);
+			});
+
+			after(function() {
+				Migrator.prototype.loadMigration = loadMigration;
+			});
+		});
+
+	});
 });
