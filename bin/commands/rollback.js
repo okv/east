@@ -22,21 +22,23 @@ Command.prototype._getTargetMigrationNames = function(separated) {
 };
 
 Command.prototype._processSeparated = function(separated) {
+	var self = this;
 	separated.newNames.forEach(function(name) {
-		console.log('skip `' + name + '` because it`s not executed yet');
+		self.logger.log('skip `' + name + '` because it`s not executed yet');
 	});
 };
 
 Command.prototype._executeMigration = function(migration, callback) {
+	var self = this;
 	if (migration.rollback) {
-		console.log('rollback `' + migration.name + '`');
+		self.logger.log('rollback `' + migration.name + '`');
 		this.migrator.rollback(migration, function(err) {
 			if (err) return callback(err);
-			console.log('migration successfully rolled back');
+			self.logger.log('migration successfully rolled back');
 			callback();
 		});
 	} else {
-		console.log(
+		self.logger.log(
 			'skip `' + migration.name + '` because rollback function is not set'
 		);
 		callback();

@@ -30,12 +30,12 @@ Command.prototype._execute = function(params, callback) {
 		},
 		function(err, names) {
 			if (names.length) {
-				console.log(params.status + ' migrations:');
+				self.logger.info(params.status + ' migrations:');
 			} else {
-				console.log('there is no ' + params.status + ' migrations');
+				self.logger.info('there is no ' + params.status + ' migrations');
 			}
 			names.forEach(function(name) {
-				console.log('\t', name);
+				self.logger.info('\t', name);
 			});
 		},
 		callback

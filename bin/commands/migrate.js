@@ -20,16 +20,18 @@ Command.prototype._getTargetMigrationNames = function(separated) {
 };
 
 Command.prototype._processSeparated = function(separated) {
+	var self = this;
 	separated.executedNames.forEach(function(name) {
-		console.log('skip `' + name + '` because it`s already executed');
+		self.logger.log('skip `' + name + '` because it`s already executed');
 	});
 };
 
 Command.prototype._executeMigration = function(migration, callback) {
-	console.log('migrate `' + migration.name + '`');
+	var self = this;
+	self.logger.log('migrate `' + migration.name + '`');
 	this.migrator.migrate(migration, function(err) {
 		if (err) return callback(err);
-		console.log('migration done');
+		self.logger.log('migration done');
 		callback();
 	});
 };

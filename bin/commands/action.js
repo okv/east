@@ -74,11 +74,11 @@ Command.prototype._execute = function(params, callback) {
 		},
 		function(err, names) {
 			if (!names || !names.length) {
-				console.log('nothing to ' + self._name);
+				self.logger.info('nothing to ' + self._name);
 				return;
 			}
 
-			console.log('target migrations' + ':\n\t' + names.join('\n\t'));
+			self.logger.log('target migrations' + ':\n\t' + names.join('\n\t'));
 
 			var funcs = names.map(function(name) {
 				return function() {
@@ -102,7 +102,7 @@ Command.prototype._fallbackCommaSeparatedNames = function(names) {
 	var length = names.length;
 	if (length == 1) {
 		names = names[0].split(',');
-		if (names.length > length) console.log(
+		if (names.length > length) this.logger.info(
 			'DEPRECATION WARNING: target migrations separated by comma will ' +
 			'not be supported in future versions (use space instead)'
 		);

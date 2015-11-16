@@ -50,11 +50,33 @@ Command.prototype.asyncAction = function(func) {
 	});
 };
 
+/*
+ * Init logger. Log levels: debug, log, info, error
+ * `debug` could be enabled by --trace
+ * `log` could be supressed by --silent
+ * `info`, `error` will be shown anyway
+ */
+Command.prototype._initLogger = function(params) {
+	var logger = utils.extend({}, console);
+
+	logger.debug = params.trace ? logger.log : utils.noop;
+
+	if (params.silent) {
+		logger.log = utils.noop;
+	}
+
+	this.logger = logger;
+};
+
 Command.prototype.init = function(params, opts) {
+	opts = opts || {};
+
 	Command.initialized = true;
 
-	opts = opts || {};
+	this._initLogger(this.parent);
+
 	var migrator = new Migrator(params);
+
 	if (!opts.skipDirCheck && !migrator.isDirExists()) {
 		handleError(new Error(
 			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist.\n' +
@@ -62,15 +84,17 @@ Command.prototype.init = function(params, opts) {
 			'`dir` option.'
 		));
 	}
-	if (params.trace) console.log('current parameters', migrator.params);
+
+	this.logger.debug('current parameters:', migrator.params);
+
 	return migrator;
 };
 
 Command.prototype.onError = function(err) {
 	if (this.trace || this.parent.trace) {
-		console.log(err.stack || err);
+		this.logger.error(err.stack || err);
 	} else {
-		console.log(err.message);
+		this.logger.error(err.message);
 	}
 	process.exit(1);
 };
