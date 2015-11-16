@@ -106,7 +106,10 @@ program
 // Default command
 program
 	.command(new Command('*'))
-	.asyncAction(function(name, command, callback) {
+	// all unmatched args goes below, if you type `./bin foo bar` then arguments
+	// will be (foo, bar, command, callback)
+	.asyncAction(function(name) {
+		var callback = arguments[arguments.length - 1];
 		callback(new Error('Unrecognized command `' + name + '`'));
 	});
 
