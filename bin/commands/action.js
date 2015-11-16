@@ -75,7 +75,7 @@ Command.prototype._execute = function(params, callback) {
 		function(err, names) {
 			if (!names || !names.length) {
 				self.logger.info('nothing to ' + self._name);
-				return;
+				return callback();
 			}
 
 			self.logger.log('target migrations' + ':\n\t' + names.join('\n\t'));

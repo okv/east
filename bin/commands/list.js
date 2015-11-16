@@ -37,6 +37,7 @@ Command.prototype._execute = function(params, callback) {
 			names.forEach(function(name) {
 				self.logger.info('\t', name);
 			});
+			this.pass(null);
 		},
 		callback
 	);	

@@ -38,13 +38,19 @@ Command.prototype.asyncAction = function(func) {
 		var args = utils.slice(arguments);
 		Steppy(
 			function() {
-				self.migrator = self.init(self.parent, self._initParams);
+				self.init(self.parent, self._initParams);
 
 				args.push(this.slot());
 				func.apply(self, args);
 			},
 			function(err) {
-				if (err) self.onError(err);
+				if (err) {
+					self.onError(err);
+					process.exit(1);
+				} else {
+					if (self.parent.exit) process.exit();
+				}
+
 			}
 		);
 	});
@@ -87,7 +93,7 @@ Command.prototype.init = function(params, opts) {
 
 	this.logger.debug('current parameters:', migrator.params);
 
-	return migrator;
+	this.migrator = migrator;
 };
 
 Command.prototype.onError = function(err) {
@@ -96,7 +102,6 @@ Command.prototype.onError = function(err) {
 	} else {
 		this.logger.error(err.message);
 	}
-	process.exit(1);
 };
 
 Command.prototype._filterMigrationNames = function(params, callback) {

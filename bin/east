@@ -20,7 +20,12 @@ program
 	.option('--dir <dir>', 'dir where migrations stored')
 	.option('--url <url>', 'db connect url')
 	.option('--trace', 'verbose mode (includes error stack trace)')
-	.option('--silent', 'prevent output of detailed log');
+	.option('--silent', 'prevent output of detailed log')
+	.option(
+		'--no-exit',
+		'require a clean shutdown of the event loop: process.exit will not be ' +
+		'called at the end'
+	);
 
 program
 	.command(new Command('init', {initParams: {skipDirCheck: true}}))
@@ -28,11 +33,15 @@ program
 	.asyncAction(function(callback) {
 		var self = this;
 		self.migrator.init(function(err) {
-			if (err) return callback(err);
-			self.logger.info(
-				'initialization successfully done, migration files will be ' +
-				'stored at: `' + self.migrator.params.dir + '`'
-			);
+			if (err) {
+				callback(err);
+			} else {
+				self.logger.info(
+					'initialization successfully done, migration files will be ' +
+					'stored at: `' + self.migrator.params.dir + '`'
+				);
+				callback();
+			}
 		});
 	});
 
@@ -53,50 +62,33 @@ program.command(new Command('create <basename>'))
 					'New migration `' + name + '` created at ' +
 					self.migrator.getMigrationPathByName(name)
 				);
+				this.pass(null);
 			},
 			callback
 		);
 	});
 
+// async action handler for migrate and rollback commands
+var actionCommandAsyncAction = function(names, command, callback) {
+	this.execute({
+		items: this._fallbackCommaSeparatedNames(names),
+		command: command
+	}, callback);
+};
+
 program
 	.command(new MigrateCommand('migrate [migrations...]'))
 	.option('-f, --force', 'force to execute already executed migrations')
 	.option('-t, --tag <value>', 'execute only migrations with selected tag')
-	.option(
-		'--no-exit',
-		'require a clean shutdown of the event loop: process.exit will not be ' +
-		'called after all migrations'
-	)
 	.description('run all or selected migrations')
-	.asyncAction(function(names, command, callback) {
-		this.execute({
-			items: this._fallbackCommaSeparatedNames(names),
-			command: command
-		}, function(err) {
-			if (err) return callback(err);
-			if (command.exit) process.exit();
-		});
-	});
+	.asyncAction(actionCommandAsyncAction);
 
 program
 	.command(new RollbackCommand('rollback [migrations...]'))
 	.option('-f, --force', 'force to rollback not yet executed migrations')
 	.option('-t, --tag <value>', 'rollback only migrations with selected tag')
-	.option(
-		'--no-exit',
-		'require a clean shutdown of the event loop: process.exit will not be ' +
-		'called after all migrations'
-	)
 	.description('rollback all or selected migrations')
-	.asyncAction(function(names, command, callback) {
-		this.execute({
-			items: this._fallbackCommaSeparatedNames(names),
-			command: command
-		}, function(err) {
-			if (err) return callback(err);
-			if (command.exit) process.exit();
-		});
-	});
+	.asyncAction(actionCommandAsyncAction);
 
 program
 	.command(new ListCommand('list [status]'))
