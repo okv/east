@@ -419,7 +419,9 @@ describe('migrator', function() {
 					expect(err).ok();
 					expect(err).a(Error);
 					expect(err).have.property(
-						'message', 'Test ' + action + ' error'
+						'message',
+						'Error during ' + action + ' "' + migration.name +
+						'": Test ' + action + ' error'
 					);
 					done();
 				});
