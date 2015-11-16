@@ -3,7 +3,6 @@
 'use strict';
 
 var BaseCommand = require('commander').Command,
-	path = require('path'),
 	Steppy = require('twostep').Steppy,
 	Command = require('./commands/base').Command,
 	MigrateCommand = require('./commands/migrate').Command,
@@ -13,7 +12,7 @@ var BaseCommand = require('commander').Command,
 var program = new Command();
 
 program
-	.version(require(path.join(__dirname, '..', 'package.json')).version)
+	.version(require('../package.json').version)
 	.option('--adapter <name>', 'which db adapter to use')
 	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
