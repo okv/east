@@ -84,11 +84,11 @@ Command.prototype.init = function(params, opts) {
 	var migrator = new Migrator(params);
 
 	if (!opts.skipDirCheck && !migrator.isDirExists()) {
-		handleError(new Error(
+		throw new Error(
 			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist.\n' +
 			'You should run `init` command to initialize migrations or change\n' +
 			'`dir` option.'
-		));
+		);
 	}
 
 	this.logger.debug('current parameters:', migrator.params);
