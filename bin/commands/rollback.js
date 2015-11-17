@@ -1,8 +1,7 @@
 'use strict';
 
 var BaseCommand = require('./action').Command,
-	inherits = require('util').inherits,
-	Steppy = require('twostep').Steppy;
+	inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	BaseCommand.call(this, nameAndArgs, params);
