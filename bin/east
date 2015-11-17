@@ -30,8 +30,9 @@ program
 program
 	.command(new Command('init', {initParams: {skipDirCheck: true}}))
 	.description('initialize migration system')
-	.asyncAction(function(callback) {
-		var self = this;
+	.asyncAction(function() {
+		var callback = arguments[arguments.length - 1],
+			self = this;
 		self.migrator.init(function(err) {
 			if (err) {
 				callback(err);
