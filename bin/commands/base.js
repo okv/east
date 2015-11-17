@@ -21,15 +21,10 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-var originalCommand = Command.prototype.command;
 Command.prototype.command = function(command) {
-	if (command instanceof BaseCommand) {
-		this.commands.push(command);
-		command.parent = this;
-		return command;
-	} else {
-		return originalCommand.apply(this, arguments);
-	}
+	this.commands.push(command);
+	command.parent = this;
+	return command;
 };
 
 Command.prototype.asyncAction = function(func) {
