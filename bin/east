@@ -2,354 +2,120 @@
 
 'use strict';
 
-var program = require('commander'),
-	Migrator = require('../lib/migrator'),
-	path = require('path'),
-	utils = require('../lib/utils');
+var BaseCommand = require('commander').Command,
+	Steppy = require('twostep').Steppy,
+	Command = require('./commands/base').Command,
+	MigrateCommand = require('./commands/migrate').Command,
+	RollbackCommand = require('./commands/rollback').Command,
+	ListCommand = require('./commands/list').Command;
 
+var program = new Command();
 
 program
-	.version(require(path.join(__dirname, '..', 'package.json')).version)
+	.version(require('../package.json').version)
 	.option('--adapter <name>', 'which db adapter to use')
 	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
 	.option('--template <path>', 'path to template for new migrations')
 	.option('--dir <dir>', 'dir where migrations stored')
 	.option('--url <url>', 'db connect url')
-	.option('--trace', 'verbose mode (including error stack trace)');
+	.option('--trace', 'verbose mode (includes error stack trace)')
+	.option('--silent', 'prevent output of detailed log')
+	.option(
+		'--no-exit',
+		'require a clean shutdown of the event loop: process.exit will not be ' +
+		'called at the end'
+	);
 
-
-/**
- * Init
- */
 program
-	.command('init')
+	.command(new Command('init', {initParams: {skipDirCheck: true}}))
 	.description('initialize migration system')
-	.action(function() {
-		var migrator = initCommand(program, {skipDirCheck: true});
-		migrator.init(function(err) {
-			if (err) handleError(err);
-			console.log(
-				'initialization successfully done, migration files will be ' +
-				'stored at: `' + migrator.params.dir + '`'
-			);
-		});
+	.asyncAction(function() {
+		var callback = arguments[arguments.length - 1],
+			self = this;
+
+		Steppy(
+			function() {
+				self.migrator.init(this.slot());
+			},
+			function() {
+				self.logger.info(
+					'initialization successfully done, migration files will be ' +
+					'stored at: `' + self.migrator.params.dir + '`'
+				);
+				this.pass(null);
+			},
+			callback
+		);
 	});
 
-
-/**
- * Create new migration based on template
- */
-program
-	.command('create <basename>')
+program.command(new Command('create <basename>'))
 	.description('create new migration based on template')
-	.action(function(basename) {
-		var migrator = initCommand(program);
-		// TODO: remove after removing of fallbackCommaSeparatedNames
-		if (~basename.indexOf(',')) handleError(new Error(
-			'Basename should not contain commas'
-		));
-		migrator.create(basename, function(err, name) {
-			if (err) handleError(err);
-			console.log(
-				'New migration `' + name + '` created at ' +
-				migrator.getMigrationPathByName(name)
-			);
-		});
+	.asyncAction(function(basename, command, callback) {
+		var self = this;
+		Steppy(
+			function() {
+				// TODO: remove after removing of fallbackCommaSeparatedNames
+				if (~basename.indexOf(',')) throw new Error(
+					'Basename should not contain commas'
+				);
+				self.migrator.create(basename, this.slot());
+			},
+			function(err, name) {
+				self.logger.info(
+					'New migration `' + name + '` created at ' +
+					self.migrator.getMigrationPathByName(name)
+				);
+				this.pass(null);
+			},
+			callback
+		);
 	});
 
-function exit() {
-	process.exit();
-}
+// async action handler for migrate and rollback commands
+var actionCommandAsyncAction = function(names, command, callback) {
+	this.execute({names: names, command: command}, callback);
+};
 
-/**
- * Migrate
- */
 program
-	.command('migrate')
-	.usage('[options] [migration1 ... migrationN]')
+	.command(new MigrateCommand('migrate [migrations...]'))
 	.option('-f, --force', 'force to execute already executed migrations')
 	.option('-t, --tag <value>', 'execute only migrations with selected tag')
-	.option('-s, --silent', 'prevent output of detailed log of migrations')
-	.option(
-		'--no-exit',
-		'require a clean shutdown of the event loop: process.exit will not be ' +
-		'called after all migrations'
-	)
 	.description('run all or selected migrations')
-	.action(function() {
-		var params = utils.parseCommandParams(arguments);
-		params.items = fallbackCommaSeparatedNames(params.items);
-		var migrator = initCommand(program);
-		migrator.connect(function(err) {
-			if (err) handleError(err);
-			if (!params.items.length) {
-				migrator.getNewMigrationNames(migrate);
-			} else {
-				migrator.normalizeNames(params.items, function(err, names) {
-					if (err) handleError(err);
-					separateNames(names);
-				});
-			}
-		});
-		function separateNames(names) {
-			migrator.checkMigrationsExists(names, function(err) {
-				if (err) handleError(err);
-				if (params.command.force) {
-					migrate(null, names);
-				} else {
-					migrator.separateNames(
-						names,
-						function(err, newNames, executedNames) {
-							if (err) handleError(err);
-							if (!params.command.silent) {
-								executedNames.forEach(function(name) {
-									console.log('skip `' + name + '` because it`s already executed');
-								});
-							}
-							migrate(null, newNames);
-						}
-					);
-				}
-			});
-		}
-		function migrate(err, names) {
-			if (err) handleError(err);
-			if (!names || !names.length) {
-				console.log('nothing to migrate');
-				migrator.disconnect();
-				return;
-			}
-			var tag = params.command.tag;
-			if (!params.command.silent) {
-				console.log(
-					'target migrations' +
-					(tag ? ' (will be filtered by tag `' + tag + '`)' : '') +
-					':\n\t' + names.join('\n\t'));
-			}
-			var funcs = names.map(function(name, index) {
-				return function() {
-					if (!params.command.silent) {
-						console.log('load `' + name + '`');
-					}
-					var callNext = function() {
-						if (index < funcs.length - 1) funcs[++index]();
-					};
-					migrator.loadMigration(name, function(err, migration) {
-						if (err) handleError(err);
-						if (
-							(!tag) ||
-							(tag && migration.tags && migration.tags.indexOf(tag) !== -1)
-						) {
-							if (!params.command.silent) {
-								console.log('migrate `' + name + '`');
-							}
-							migration.force = params.command.force;
-							migrator.migrate(migration, function(err) {
-								if (err) handleError(err, {trace: true});
-								if (!params.command.silent) {
-									console.log('migration done');
-								}
-								callNext();
-							});
-						} else {
-							if (!params.command.silent) {
-								console.log(
-									'migration `' + name +
-									'` skipped because of missed tag'
-								);
-							}
-							callNext();
-						}
-					});
-				};
-			});
-			funcs.push(function() {
-				migrator.disconnect(params.command.exit ? exit : utils.noop);
-			});
-			// starts migrations execution
-			funcs[0]();
-		}
-	});
+	.asyncAction(actionCommandAsyncAction);
 
-
-/**
- * Rollback
- */
 program
-	.command('rollback')
-	.usage('[migration1 ... migrationN]')
-	.option('-s, --silent', 'prevent output of detailed log of migrations')
-	.option(
-		'--no-exit',
-		'require a clean shutdown of the event loop: process.exit will not be ' +
-		'called after all migrations'
-	)
+	.command(new RollbackCommand('rollback [migrations...]'))
+	.option('-f, --force', 'force to rollback not yet executed migrations')
+	.option('-t, --tag <value>', 'rollback only migrations with selected tag')
 	.description('rollback all or selected migrations')
-	.action(function() {
-		var params = utils.parseCommandParams(arguments);
-		params.items = fallbackCommaSeparatedNames(params.items);
-		var migrator = initCommand(program);
-		migrator.connect(function(err) {
-			if (err) handleError(err);
-			if (!params.items.length) {
-				migrator.adapter.getExecutedMigrationNames(function(err, names) {
-					separateNames(names.reverse());
-				});
-			} else {
-				migrator.normalizeNames(params.items, function(err, names) {
-					if (err) handleError(err);
-					separateNames(names);
-				});
-			}
-		});
-		function separateNames(names) {
-			if (!names || !names.length) rollback(null, names);
-			migrator.checkMigrationsExists(names, function(err) {
-				if (err) handleError(err);
-				migrator.separateNames(
-					names,
-					function(err, newNames, executedNames) {
-						if (err) handleError(err);
-						if (!params.command.silent) {
-							newNames.forEach(function(name) {
-								console.log('skip `' + name + '` because it`s not executed yet');
-							});
-						}
-						rollback(null, executedNames);
-					}
-				);
-			});
-		}
-		function rollback(err, names) {
-			if (err) handleError(err);
-			if (!names || !names.length) {
-				console.log('nothing to rollback');
-				migrator.disconnect();
-				return;
-			}
-			if (!params.command.silent) {
-				console.log('target migrations:\n\t' + names.join('\n\t'));
-			}
-			var funcs = names.map(function(name, index) {
-				function rollbackNext() {
-					if (index < funcs.length - 1) funcs[++index]();
-				}
-				return function() {
-					migrator.loadMigration(name, function(err, migration) {
-						if (err) handleError(err);
-						if (!migration.rollback) {
-							if (!params.command.silent) {
-								console.log('skip `' + name + '` cause rollback function is not set');
-							}
-							rollbackNext();
-						} else {
-							if (!params.command.silent) {
-								console.log('rollback `' + name + '`');
-							}
-							migrator.rollback(migration, function(err) {
-								if (err) handleError(err, {trace: true});
-								if (!params.command.silent) {
-									console.log('migration successfully rolled back');
-								}
-								rollbackNext();
-							});
-						}
-					});
-				};
-			});
-			funcs.push(function() {
-				migrator.disconnect(params.command.exit ? exit : utils.noop);
-			});
-			funcs[0]();
-		}
-	});
+	.asyncAction(actionCommandAsyncAction);
 
-function fallbackCommaSeparatedNames(names) {
-	var length = names.length;
-	if (length == 1) {
-		names = names[0].split(',');
-		if (names.length > length) console.log(
-			'DEPRECATION WARNING: target migrations separated by comma will ' +
-			'not be supported in future versions (use space instead)'
-		);
-	}
-	return names;
-}
-
-/**
- * List migrations
- */
 program
-	.command('list [status]')
+	.command(new ListCommand('list [status]'))
+	.option('-t, --tag <value>', 'list only migrations with selected tag')
 	.description(
 		'list migration with selected status (`new`, `executed` or `all`), ' +
 		'`new` by default'
 	)
-	.action(function(status) {
-		var migrator = initCommand(program);
+	.asyncAction(function(status, command, callback) {
 		status = status || 'new';
-		migrator.connect(function(err) {
-			if (err) handleError(err);
-			migrator.getMigrationNames(status, function(err, migrations) {
-				if (err) handleError(err);
-				if (migrations.length) {
-					console.log(status + ' migrations:');
-				} else {
-					console.log('there is no ' + status + ' migrations');
-				}
-				migrations.forEach(function(migration) {
-					console.log('\t', migration);
-				});
-				migrator.disconnect();
-			});
-		});
+		this.execute({status: status, command: command}, callback);
 	});
 
 
-/**
- * Default command
- */
+// Default command
 program
-	.command('*')
-	.action(function(command) {
-		handleError(new Error('Unrecognized command `' + command + '`'));
+	.command(new Command('*'))
+	// all unmatched args goes below, if you type `./bin foo bar` then arguments
+	// will be (foo, bar, command, callback)
+	.asyncAction(function(name) {
+		var callback = arguments[arguments.length - 1];
+		callback(new Error('Unrecognized command `' + name + '`'));
 	});
 
-
-/**
- * Helpers used above
- */
-function handleError(err, opts) {
-	opts = opts || {};
-	if (err.message && !opts.trace && !program.trace) {
-		console.log(err.message);
-	} else {
-		console.log(err.stack || err);
-	}
-	process.exit(1);
-}
-
-// is some command was chosen
-var isCommandInitialized = false;
-
-/** Should run once at every command */
-function initCommand(params, opts) {
-	opts = opts || {};
-	isCommandInitialized = true;
-	var migrator = new Migrator(params);
-	if (!opts.skipDirCheck && !migrator.isDirExists()) {
-		handleError(new Error(
-			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist.\n' +
-			'You should run `init` command to initialize migrations or change\n' +
-			'`dir` option.'
-		));
-	}
-	if (params.trace) console.log('current parameters', migrator.params);
-	return migrator;
-}
 
 // let's start the party (program entry point)
 program.parse(process.argv);
 
-if (!isCommandInitialized) program.help();
+if (!Command.isInitialized()) program.help();
