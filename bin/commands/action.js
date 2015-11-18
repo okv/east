@@ -20,7 +20,7 @@ Command.prototype._validateMigrationNames = function(params, callback) {
 	var self = this;
 	Steppy(
 		function() {
-			self.migrator.normalizeNames(params.items, this.slot());
+			self.migrator.normalizeNames(params.names, this.slot());
 		},
 		function(err, names) {
 			this.pass(names);
@@ -55,7 +55,7 @@ Command.prototype._execute = function(params, callback) {
 	var self = this;
 	Steppy(
 		function() {
-			if (params.items.length) {
+			if (params.names.length) {
 				self._validateMigrationNames(params, this.slot());
 			} else {
 				self._getDefaultMigrationNames(this.slot());
