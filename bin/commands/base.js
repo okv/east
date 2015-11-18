@@ -80,8 +80,8 @@ Command.prototype.init = function(params, opts) {
 
 	if (!opts.skipDirCheck && !migrator.isDirExists()) {
 		throw new Error(
-			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist.\n' +
-			'You should run `init` command to initialize migrations or change\n' +
+			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist. ' +
+			'You should run `init` command to initialize migrations or change ' +
 			'`dir` option.'
 		);
 	}
