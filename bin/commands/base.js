@@ -119,8 +119,8 @@ Command.prototype.execute = function(params, callback) {
 			self._execute(params, this.slot());
 		},
 		function(err) {
-			self.migrator.disconnect(function() {
-				callback(err)
+			self.migrator.disconnect(function(disconnectErr) {
+				callback(err || disconnectErr);
 			});
 		}
 	);
