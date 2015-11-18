@@ -74,10 +74,7 @@ program.command(new Command('create <basename>'))
 
 // async action handler for migrate and rollback commands
 var actionCommandAsyncAction = function(names, command, callback) {
-	this.execute({
-		names: this._fallbackCommaSeparatedNames(names),
-		command: command
-	}, callback);
+	this.execute({names: names, command: command}, callback);
 };
 
 program

@@ -56,7 +56,11 @@ Command.prototype._execute = function(params, callback) {
 	Steppy(
 		function() {
 			if (params.names.length) {
-				self._validateMigrationNames(params, this.slot());
+				var names = self._fallbackCommaSeparatedNames(params.names);
+				self._validateMigrationNames({
+					names: names,
+					command: params.command
+				}, this.slot());
 			} else {
 				self._getDefaultMigrationNames(this.slot());
 			}
