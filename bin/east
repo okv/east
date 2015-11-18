@@ -33,17 +33,20 @@ program
 	.asyncAction(function() {
 		var callback = arguments[arguments.length - 1],
 			self = this;
-		self.migrator.init(function(err) {
-			if (err) {
-				callback(err);
-			} else {
+
+		Steppy(
+			function() {
+				self.migrator.init(this.slot());
+			},
+			function() {
 				self.logger.info(
 					'initialization successfully done, migration files will be ' +
 					'stored at: `' + self.migrator.params.dir + '`'
 				);
-				callback();
-			}
-		});
+				this.pass(null);
+			},
+			callback
+		);
 	});
 
 program.command(new Command('create <basename>'))
