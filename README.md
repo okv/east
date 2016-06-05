@@ -5,6 +5,15 @@ east - node.js database migration tool for different databases (extensible via
 
 east connects to the db using particular adapter (mongodb, postgres, mysql, etc), keeps track of executed migrations by storing their names inside db and makes connect to the db available inside `migrate` and `rollback` functions. east encourages you to use for migrations driver/syntax with which you are already familiar with (apparently you use it for work with db at your application) and doesn't provide universal api for working with any kind of database.
 
+[![Build Status](https://travis-ci.org/okv/east.svg?branch=master)](https://travis-ci.org/okv/east)
+
+## Node.js compatibility
+
+east itself requires node.js >= 0.8 to work.
+
+Please note that particular adapter may have another requirements (see
+documentation for specific adapter).
+
 ## Installation
 
 ```sh
