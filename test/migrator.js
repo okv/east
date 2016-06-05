@@ -267,7 +267,7 @@ describe('migrator', function() {
 		});
 
 		it('by number should be ok', function(done) {
-			var number = 1,
+			var number = '1',
 				name = names[0];
 			expectNomrmalizedName(number, name, done);
 		});
