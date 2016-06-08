@@ -40,5 +40,5 @@ Command.prototype._execute = function(params, callback) {
 			this.pass(null);
 		},
 		callback
-	);	
+	);
 };

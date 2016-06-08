@@ -48,21 +48,23 @@ describe('migrator', function() {
 			tryLoad = Migrator.prototype._tryLoadAdapter;
 		});
 
-		it('expect be loaded migrator-related first and than CWD-related', function(done) {
-			var paths = [];
-			Migrator.prototype._tryLoadAdapter = function(path) {
-				paths.push(path);
-				return paths.length === 2 ? mockAdapter : new Error('Whatever.');
-			};
+		it('expect be loaded migrator-related first and than CWD-related',
+			function(done) {
+				var paths = [];
+				Migrator.prototype._tryLoadAdapter = function(path) {
+					paths.push(path);
+					return paths.length === 2 ? mockAdapter : new Error('Whatever.');
+				};
 
-			new Migrator({
-				adapter: 'X'
-			});
+				new Migrator({
+					adapter: 'X'
+				});
 
-			expect(paths[0]).eql('X');
-			expect(paths[1].substr(-2, 2)).eql('/X');
-			done();
-		});
+				expect(paths[0]).eql('X');
+				expect(paths[1].substr(-2, 2)).eql('/X');
+				done();
+			}
+		);
 
 		it('expect to throw when both paths can not be resolved', function(done) {
 			Migrator.prototype._tryLoadAdapter = function() {
@@ -307,7 +309,7 @@ describe('migrator', function() {
 		it('removed migrations should not exist', function(done) {
 			Steppy(
 				function() {
-					var existGroup = this.makeGroup()
+					var existGroup = this.makeGroup();
 					names.forEach(function(name) {
 						migrator.isMigrationExists(name, existGroup.slot());
 					});
@@ -359,7 +361,7 @@ describe('migrator', function() {
 
 		var errorMessage;
 		it('non object migration should fail', function(done) {
-			errorMessage = 'migration is not an object'
+			errorMessage = 'migration is not an object';
 			expectValidationError(1, errorMessage, done);
 		});
 
