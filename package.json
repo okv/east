@@ -1,32 +1,39 @@
 {
-	"name": "east",
-	"description": "node.js database migration tool for mongodb, sqlite, postgres, mysql, couchdb",
-	"version": "0.5.0",
-	"author": "Oleg Korobenko <oleg.korobenko@gmail.com>",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/okv/east.git"
-	},
-	"keywords": [
-		"migrate", "migration", "database", "db", "mongodb", "sqlite",
-		"postgres", "mysql", "couchdb"
-	],
-	"scripts": {
-		"test": "cd test && mocha ./ --reporter spec",
-		"lint": "jshint ./"
-	},
-	"bin": {
-		"east": "./bin/east"
-	},
-	"dependencies": {
-		"commander": "2.9.0",
-		"progress": "1.1.8",
-		"twostep": "0.4.1"
-	},
-	"devDependencies": {
-		"mocha": "2.3.3",
-		"expect.js": "0.3.1",
-		"jshint": "2.4.4"
-	}
+  "name": "east",
+  "description": "node.js database migration tool for mongodb, sqlite, postgres, mysql, couchdb",
+  "version": "0.5.0",
+  "author": "Oleg Korobenko <oleg.korobenko@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/okv/east.git"
+  },
+  "keywords": [
+    "migrate",
+    "migration",
+    "database",
+    "db",
+    "mongodb",
+    "sqlite",
+    "postgres",
+    "mysql",
+    "couchdb"
+  ],
+  "scripts": {
+    "test": "cd test && mocha ./ --reporter spec",
+    "lint": "jshint ./"
+  },
+  "bin": {
+    "east": "./bin/east"
+  },
+  "dependencies": {
+    "commander": "2.9.0",
+    "progress": "1.1.8",
+    "twostep": "0.4.1"
+  },
+  "devDependencies": {
+    "mocha": "2.3.3",
+    "expect.js": "0.3.1",
+    "jshint": "2.4.4"
+  }
 }
