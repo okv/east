@@ -9,7 +9,7 @@ east connects to the db using particular adapter (mongodb, postgres, mysql, etc)
 
 ## Node.js compatibility
 
-east itself requires node.js >= 0.8 to work.
+east itself requires node.js >= 0.10 to work.
 
 Please note that particular adapter may have another requirements (see
 documentation for specific adapter).

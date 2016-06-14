@@ -13,7 +13,8 @@
 		"postgres", "mysql"
 	],
 	"scripts": {
-		"test": "cd test && mocha ./ --reporter spec"
+		"test": "cd test && mocha ./ --reporter spec",
+		"lint": "jshint ./"
 	},
 	"bin": {
 		"east": "./bin/east"
@@ -25,6 +26,7 @@
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",
-		"expect.js": "0.3.1"
+		"expect.js": "0.3.1",
+		"jshint": "2.4.4"
 	}
 }
