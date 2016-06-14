@@ -249,7 +249,7 @@ Other adapters:
 * [sqlite](https://github.com/2do2go/east-sqlite)
 * [postgres](https://github.com/2do2go/east-postgres)
 * [mysql](https://github.com/riggerthegeek/east-mysql)
-* [couchdb](https://www.npmjs.com/package/east-couchbase)
+* [couchdb](https://github.com/ramiel/east-couchbase)
 
 
 ## Run tests
