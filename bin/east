@@ -80,20 +80,26 @@ var actionCommandAsyncAction = function(names, command, callback) {
 program
 	.command(new MigrateCommand('migrate [migrations...]'))
 	.option('-f, --force', 'force to execute already executed migrations')
-	.option('-t, --tag <value>', 'execute only migrations with selected tag')
+	.option(
+		'-t, --tag <expression>', 'execute only migrations that satisfied expression'
+	)
 	.description('run all or selected migrations')
 	.asyncAction(actionCommandAsyncAction);
 
 program
 	.command(new RollbackCommand('rollback [migrations...]'))
 	.option('-f, --force', 'force to rollback not yet executed migrations')
-	.option('-t, --tag <value>', 'rollback only migrations with selected tag')
+	.option(
+		'-t, --tag <expression>', 'rollback only migrations that satisfied expression'
+	)
 	.description('rollback all or selected migrations')
 	.asyncAction(actionCommandAsyncAction);
 
 program
 	.command(new ListCommand('list [status]'))
-	.option('-t, --tag <value>', 'list only migrations with selected tag')
+	.option(
+		'-t, --tag <expression>', 'list only migrations that satisfied expression'
+	)
 	.description(
 		'list migration with selected status (`new`, `executed` or `all`), ' +
 		'`new` by default'
