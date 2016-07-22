@@ -450,7 +450,24 @@ describe('migrator', function() {
 				};
 			});
 
-			it('should get two', function(done) {
+			it('with wrong tag expression, should fail', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: 'one *'
+						}, this.slot());
+					},
+					function(err) {
+						expect(err).ok();
+						expect(err.message).contain('expression is invalid');
+						done();
+					}
+				);
+			});
+
+			it('with tag one, should get proper migrations', function(done) {
 				Steppy(
 					function() {
 						migrator.filterMigrationNames({
@@ -467,7 +484,7 @@ describe('migrator', function() {
 				);
 			});
 
-			it('should get one', function(done) {
+			it('with tag two, should get proper migrations', function(done) {
 				Steppy(
 					function() {
 						migrator.filterMigrationNames({
@@ -484,7 +501,7 @@ describe('migrator', function() {
 				);
 			});
 
-			it('should get nothing', function(done) {
+			it('with tag with no migrations, should get nothing', function(done) {
 				Steppy(
 					function() {
 						migrator.filterMigrationNames({
@@ -501,7 +518,7 @@ describe('migrator', function() {
 				);
 			});
 
-			it('should get migrations with tags one or two', function(done) {
+			it('with tag one or two, should get proper migrations', function(done) {
 				Steppy(
 					function() {
 						migrator.filterMigrationNames({
@@ -518,7 +535,7 @@ describe('migrator', function() {
 				);
 			});
 
-			it('should get migrations with tags one and two', function(done) {
+			it('with tag one and two, should get proper migrations', function(done) {
 				Steppy(
 					function() {
 						migrator.filterMigrationNames({
@@ -535,7 +552,7 @@ describe('migrator', function() {
 				);
 			});
 
-			it('should get migrations without tag two', function(done) {
+			it('with tag not two, should get proper migrations', function(done) {
 				Steppy(
 					function() {
 						migrator.filterMigrationNames({
