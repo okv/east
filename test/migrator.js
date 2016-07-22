@@ -501,6 +501,57 @@ describe('migrator', function() {
 				);
 			});
 
+			it('should get migrations with tags one or two', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: 'one | two'
+						}, this.slot());
+					},
+					function(err, filterResult) {
+						expect(filterResult).eql({names: ['one', 'two']});
+						this.pass(null);
+					},
+					done
+				);
+			});
+
+			it('should get migrations with tags one and two', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: 'one & two'
+						}, this.slot());
+					},
+					function(err, filterResult) {
+						expect(filterResult).eql({names: ['two']});
+						this.pass(null);
+					},
+					done
+				);
+			});
+
+			it('should get migrations without tag two', function(done) {
+				Steppy(
+					function() {
+						migrator.filterMigrationNames({
+							by: 'tag',
+							names: utils.keys(migrationNamesHash),
+							tag: '!two'
+						}, this.slot());
+					},
+					function(err, filterResult) {
+						expect(filterResult).eql({names: ['one', 'three', '9999_test']});
+						this.pass(null);
+					},
+					done
+				);
+			});
+
 			after(function() {
 				Migrator.prototype.loadMigration = loadMigration;
 			});
