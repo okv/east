@@ -193,7 +193,7 @@ you can pass `--force` option to execute already executed migrations.
 This is useful while you develop and test your migration.
 
 You also can export `tags` array from migration and then migrate only
-migrations that satisfied expression specified by `--tag` option. Expression
+migrations that satisfied expression specified by option `--tag`. Expression
 consists of tag names and boolean operators `&`, `|` and `!`. For example,
 following command will migrate all migrations that have tag `tag1` and not have
 tag `tag2`:
