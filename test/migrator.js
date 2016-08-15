@@ -461,7 +461,7 @@ describe('migrator', function() {
 					},
 					function(err) {
 						expect(err).ok();
-						expect(err.message).contain('expression is invalid');
+						expect(err.message).contain('unexpected token "*"');
 						done();
 					}
 				);
