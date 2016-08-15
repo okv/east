@@ -1,7 +1,7 @@
 {
   "name": "east",
   "description": "node.js database migration tool for mongodb, sqlite, postgres, mysql, couchdb",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "Oleg Korobenko <oleg.korobenko@gmail.com>",
   "license": "MIT",
   "repository": {
