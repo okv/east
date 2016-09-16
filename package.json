@@ -30,7 +30,7 @@
     "commander": "2.9.0",
     "expressionify": "0.9.3",
     "progress": "1.1.8",
-    "twostep": "0.4.1"
+    "twostep": "0.4.2"
   },
   "devDependencies": {
     "mocha": "2.3.3",
