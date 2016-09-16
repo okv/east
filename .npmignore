@@ -1,2 +1,6 @@
 .npmignore
 test
+migrations
+.jshintignore
+.jshintrc
+.travis.yml
