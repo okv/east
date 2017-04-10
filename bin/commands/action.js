@@ -26,22 +26,24 @@ Command.prototype._validateMigrationNames = function(params, callback) {
 			this.pass(names);
 			self.migrator.checkMigrationsExists(names, this.slot());
 		},
-		function(err, names) {
-			if (params.command.force) {
-				// quit early
-				return callback(null, names);
-			} else {
-				var stepCallback = this.slot();
-				self.migrator.separateNames(
-					names,
-					function(err, newNames, executedNames) {
-						stepCallback(err, {
-							newNames: newNames,
-							executedNames: executedNames
-						});
-					}
-				);
-			}
+		callback
+	);
+};
+
+Command.prototype._separateMigrationNames = function(params, callback) {
+	var self = this;
+	Steppy(
+		function(err) {
+			var stepCallback = this.slot();
+			self.migrator.separateNames(
+				params.names,
+				function(err, newNames, executedNames) {
+					stepCallback(err, {
+						newNames: newNames,
+						executedNames: executedNames
+					});
+				}
+			);
 		},
 		function(err, separated) {
 			this.pass(self._getTargetMigrationNames(separated));
@@ -62,7 +64,7 @@ Command.prototype._execute = function(params, callback) {
 					command: params.command
 				}, this.slot());
 			} else {
-				self._getDefaultMigrationNames(this.slot());
+				self._getDefaultMigrationNames(params, this.slot());
 			}
 		},
 		function(err, names) {
@@ -74,6 +76,16 @@ Command.prototype._execute = function(params, callback) {
 				}, this.slot());
 			} else {
 				this.pass(names);
+			}
+		},
+		function(err, names) {
+			if (params.command.force) {
+				this.pass(names);
+			} else {
+				self._separateMigrationNames({
+					names: names,
+					command: params.command
+				}, this.slot());
 			}
 		},
 		function(err, names) {

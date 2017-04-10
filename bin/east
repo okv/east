@@ -79,6 +79,11 @@ var actionCommandAsyncAction = function(names, command, callback) {
 
 program
 	.command(new MigrateCommand('migrate [migrations...]'))
+	.option(
+		'-s, --status <name>', 'which migrations execute by default (when ' +
+		'particular migrations are not set), default status is `new`',
+		'new'
+	)
 	.option('-f, --force', 'force to execute already executed migrations')
 	.option(
 		'-t, --tag <expression>', 'execute only migrations that satisfied expression'
@@ -88,6 +93,11 @@ program
 
 program
 	.command(new RollbackCommand('rollback [migrations...]'))
+	.option(
+		'-s, --status <name>', 'which migrations execute by default (when ' +
+		'particular migrations are not set), default status is `executed`',
+		'executed'
+	)
 	.option('-f, --force', 'force to rollback not yet executed migrations')
 	.option(
 		'-t, --tag <expression>', 'rollback only migrations that satisfied expression'
