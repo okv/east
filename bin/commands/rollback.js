@@ -11,7 +11,8 @@ inherits(Command, BaseCommand);
 exports.Command = Command;
 
 Command.prototype._getDefaultMigrationNames = function(params, callback) {
-	this.migrator.getMigrationNames(params.command.status, function(err, names) {
+	var status = params.command.status || 'executed';
+	this.migrator.getMigrationNames(status, function(err, names) {
 		callback(err, names && names.reverse());
 	});
 };

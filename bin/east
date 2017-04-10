@@ -81,8 +81,7 @@ program
 	.command(new MigrateCommand('migrate [migrations...]'))
 	.option(
 		'-s, --status <name>', 'which migrations execute by default (when ' +
-		'particular migrations are not set), default status is `new`',
-		'new'
+		'particular migrations are not set), default status is `new`'
 	)
 	.option('-f, --force', 'force to execute already executed migrations')
 	.option(
@@ -95,8 +94,7 @@ program
 	.command(new RollbackCommand('rollback [migrations...]'))
 	.option(
 		'-s, --status <name>', 'which migrations execute by default (when ' +
-		'particular migrations are not set), default status is `executed`',
-		'executed'
+		'particular migrations are not set), default status is `executed`'
 	)
 	.option('-f, --force', 'force to rollback not yet executed migrations')
 	.option(

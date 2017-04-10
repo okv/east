@@ -58,6 +58,13 @@ Command.prototype._execute = function(params, callback) {
 	Steppy(
 		function() {
 			if (params.names.length) {
+				if (params.command.status) {
+					throw new Error(
+						'`status` option cannot be used when particular ' +
+						'migrations are specified'
+					);
+				}
+
 				var names = self._fallbackCommaSeparatedNames(params.names);
 				self._validateMigrationNames({
 					names: names,
