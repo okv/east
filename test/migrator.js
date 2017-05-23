@@ -20,9 +20,11 @@ describe('migrator', function() {
 				migrator.adapter.getExecutedMigrationNames(this.slot());
 			},
 			function(err, allNames, executedNames) {
+				var removeGroup = this.makeGroup();
+
 				// remove all existing migrations
 				allNames.forEach(function(name) {
-					migrator.remove(name);
+					migrator.remove(name, removeGroup.slot());
 				});
 
 				// unmark all executed
@@ -300,10 +302,17 @@ describe('migrator', function() {
 	});
 
 	describe('remove', function() {
-		it('expect remove without errors', function() {
-			names.forEach(function(name) {
-				return migrator.remove(name);
-			});
+		it('expect remove without errors', function(done) {
+			Steppy(
+				function() {
+					var removeGroup = this.makeGroup();
+
+					names.forEach(function(name) {
+						return migrator.remove(name, removeGroup.slot());
+					});
+				},
+				done
+			);
 		});
 
 		it('removed migrations should not exist', function(done) {
