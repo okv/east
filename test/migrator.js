@@ -2,7 +2,7 @@
 
 var expect = require('expect.js'),
 	Migrator = require('../lib/migrator'),
-	Path = require('path'),
+	pathUtils = require('path'),
 	Steppy = require('twostep').Steppy,
 	utils = require('../lib/utils');
 
@@ -261,7 +261,7 @@ describe('migrator', function() {
 
 		it('by path should be ok', function(done) {
 			var name = names[0],
-				path = Path.join('migrations', name);
+				path = pathUtils.join('migrations', name);
 			expectNomrmalizedName(path, name, done);
 		});
 
