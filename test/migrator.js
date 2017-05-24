@@ -9,6 +9,45 @@ var expect = require('expect.js'),
 describe('migrator', function() {
 	var migrator = new Migrator();
 
+	var createMigrations = function(baseNames, callback) {
+		var names = [];
+
+		Steppy(
+			function() {
+				var funcs = baseNames.map(function(baseName) {
+					return function() {
+						var stepCallback = this.slot();
+						migrator.create(baseName, function(err, name) {
+							names.push(name);
+							stepCallback(err, name);
+						});
+					};
+				});
+				funcs.push(this.slot());
+
+				Steppy.apply(null, funcs);
+			},
+			function() {
+				this.pass(names);
+			},
+			callback
+		);
+
+	};
+
+	var removeMigrations = function(names, callback) {
+		Steppy(
+			function() {
+				var removeGroup = this.makeGroup();
+
+				names.forEach(function(name) {
+					return migrator.remove(name, removeGroup.slot());
+				});
+			},
+			callback
+		);
+	};
+
 	before(function(done) {
 		Steppy(
 			function() {
@@ -20,12 +59,8 @@ describe('migrator', function() {
 				migrator.adapter.getExecutedMigrationNames(this.slot());
 			},
 			function(err, allNames, executedNames) {
-				var removeGroup = this.makeGroup();
-
 				// remove all existing migrations
-				allNames.forEach(function(name) {
-					migrator.remove(name, removeGroup.slot());
-				});
+				removeMigrations(allNames, this.slot());
 
 				// unmark all executed
 				var unmarkGroup = this.makeGroup();
@@ -38,7 +73,8 @@ describe('migrator', function() {
 	});
 
 	// just output currently used adapter
-	it('uses adapter ' + migrator.params.adapter, function() {});
+	it('uses adapter ' + migrator.params.adapter, function() {
+	});
 
 	describe('adapter', function() {
 		var tryLoad,
@@ -86,25 +122,23 @@ describe('migrator', function() {
 		});
 	});
 
-	var baseNames = ['first', 'second', 'third', 'second'],
-		names = [];
-
 	describe('create', function() {
+		var baseNames = ['first', 'second', 'third', 'second'],
+			names = [];
+
+		after(function(done) {
+			removeMigrations(names, done);
+		});
+
 		it('should create migrations sequentially without errors', function(done) {
 			Steppy(
 				function() {
-					var funcs = baseNames.map(function(baseName) {
-						return function() {
-							var stepCallback = this.slot();
-							migrator.create(baseName, function(err, name) {
-								names.push(name);
-								stepCallback(err, name);
-							});
-						};
-					});
-					funcs.push(this.slot());
+					createMigrations(baseNames, this.slot());
+				},
+				function(err, migrationNames) {
+					names = migrationNames;
 
-					Steppy.apply(null, funcs);
+					this.pass(null);
 				},
 				done
 			);
@@ -147,7 +181,68 @@ describe('migrator', function() {
 		});
 	});
 
+	describe('getAllMigrationNames', function() {
+		var expectedNames = [];
+
+		before(function(done) {
+			Steppy(
+				function() {
+					var baseNames = [],
+						zCharcode = 'z'.charCodeAt(0);
+
+					for (var index = 0; index < 12; index++) {
+						var baseName = String.fromCharCode(zCharcode - index);
+
+						baseNames.push(baseName);
+					}
+
+					createMigrations(baseNames, this.slot());
+				},
+				function(err, migrationNames) {
+					expectedNames = migrationNames;
+
+					this.pass(null);
+				},
+				done
+			);
+		});
+
+		after(function(done) {
+			removeMigrations(expectedNames, done);
+		});
+
+		it('should return numeric sorted names', function(done) {
+			migrator.getAllMigrationNames(function(err, names) {
+				expect(err).not.ok();
+				expect(names).eql(expectedNames);
+
+				done();
+			});
+		});
+	});
+
 	describe('execute', function() {
+		var baseNames = ['first', 'second', 'third', 'second'],
+			names = [];
+
+		before(function(done) {
+			Steppy(
+				function() {
+					createMigrations(baseNames, this.slot());
+				},
+				function(err, migrationNames) {
+					names = migrationNames;
+
+					this.pass(null);
+				},
+				done
+			);
+		});
+
+		after(function(done) {
+			removeMigrations(names, done);
+		});
+
 		it('execute migration without errors', function(done) {
 			Steppy(
 				function() {
@@ -205,6 +300,27 @@ describe('migrator', function() {
 	});
 
 	describe('rollback', function() {
+		var baseNames = ['first', 'second', 'third', 'second'],
+			names = [];
+
+		before(function(done) {
+			Steppy(
+				function() {
+					createMigrations(baseNames, this.slot());
+				},
+				function(err, migrationNames) {
+					names = migrationNames;
+
+					this.pass(null);
+				},
+				done
+			);
+		});
+
+		after(function(done) {
+			removeMigrations(names, done);
+		});
+
 		it('rollback executed migration without errors', function(done) {
 			Steppy(
 				function() {
@@ -245,6 +361,26 @@ describe('migrator', function() {
 	});
 
 	describe('names normalization', function() {
+		var baseNames = ['first', 'second', 'third', 'second'],
+			names = [];
+
+		before(function(done) {
+			Steppy(
+				function() {
+					createMigrations(baseNames, this.slot());
+				},
+				function(err, migrationNames) {
+					names = migrationNames;
+
+					this.pass(null);
+				},
+				done
+			);
+		});
+
+		after(function(done) {
+			removeMigrations(names, done);
+		});
 
 		var expectNomrmalizedName = function(inputName, expectedName, callback) {
 			Steppy(
@@ -302,17 +438,25 @@ describe('migrator', function() {
 	});
 
 	describe('remove', function() {
-		it('expect remove without errors', function(done) {
+		var baseNames = ['first', 'second', 'third', 'second'],
+			names = [];
+
+		before(function(done) {
 			Steppy(
 				function() {
-					var removeGroup = this.makeGroup();
+					createMigrations(baseNames, this.slot());
+				},
+				function(err, migrationNames) {
+					names = migrationNames;
 
-					names.forEach(function(name) {
-						return migrator.remove(name, removeGroup.slot());
-					});
+					this.pass(null);
 				},
 				done
 			);
+		});
+
+		it('expect remove without errors', function(done) {
+			removeMigrations(names, done);
 		});
 
 		it('removed migrations should not exist', function(done) {
