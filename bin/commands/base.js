@@ -29,13 +29,20 @@ Command.prototype.command = function(command) {
 
 Command.prototype.asyncAction = function(func) {
 	var self = this;
+
 	self.action(function() {
 		var args = utils.slice(arguments);
+
 		Steppy(
 			function() {
-				self.init(self.parent, self._initParams);
+				var initParams = utils.extend({}, self._initParams);
+				initParams.migratorParams = self.parent;
 
+				self.init(initParams, this.slot());
+			},
+			function() {
 				args.push(this.slot());
+
 				func.apply(self, args);
 			},
 			function(err) {
@@ -69,26 +76,42 @@ Command.prototype._initLogger = function(params) {
 	this.logger = logger;
 };
 
-Command.prototype.init = function(params, opts) {
-	opts = opts || {};
+Command.prototype.init = function(params, callback) {
+	var self = this;
 
-	Command.initialized = true;
+	Steppy(
+		function() {
+			Command.initialized = true;
 
-	this._initLogger(this.parent);
+			self._initLogger(self.parent);
 
-	var migrator = new Migrator(params);
+			var migrator = new Migrator(params.migratorParams);
 
-	if (!opts.skipDirCheck && !migrator.isDirExists()) {
-		throw new Error(
-			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist. ' +
-			'You should run `init` command to initialize migrations or change ' +
-			'`dir` option.'
-		);
-	}
+			this.pass(migrator);
 
-	this.logger.debug('current parameters:', migrator.params);
+			if (params.skipDirCheck) {
+				this.pass(true);
+			} else {
+				migrator.isDirExists(this.slot());
+			}
+		},
+		function(err, migrator, dirExists) {
+			if (!dirExists) {
+				throw new Error(
+					'Migrations directory: ' + migrator.params.dir + ' doesn`t exist. ' +
+					'You should run `init` command to initialize migrations or change ' +
+					'`dir` option.'
+				);
+			}
 
-	this.migrator = migrator;
+			self.logger.debug('current parameters:', migrator.params);
+
+			self.migrator = migrator;
+
+			this.pass(null);
+		},
+		callback
+	);
 };
 
 Command.prototype.onError = function(err) {
