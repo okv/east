@@ -33,7 +33,15 @@ Command.prototype.asyncAction = function(func) {
 		var args = utils.slice(arguments);
 		Steppy(
 			function() {
-				self.init(self.parent, self._initParams);
+				var initParams = utils.pick(
+					self.parent,
+					[
+						'config', 'dir', 'timeout', 'template', 'adapter',
+						'url', 'trace', 'silent'
+					]
+				);
+
+				self.init(initParams, self._initParams);
 
 				args.push(this.slot());
 				func.apply(self, args);
@@ -74,7 +82,7 @@ Command.prototype.init = function(params, opts) {
 
 	Command.initialized = true;
 
-	this._initLogger(this.parent);
+	this._initLogger(params);
 
 	var migrator = new Migrator(params);
 
