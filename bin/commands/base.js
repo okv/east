@@ -36,7 +36,14 @@ Command.prototype.asyncAction = function(func) {
 		Steppy(
 			function() {
 				var initParams = utils.extend({}, self._initParams);
-				initParams.migratorParams = self.parent;
+
+				initParams.migratorParams = utils.pick(
+					self.parent,
+					[
+						'config', 'dir', 'timeout', 'template', 'adapter',
+						'url', 'trace', 'silent'
+					]
+				);
 
 				self.init(initParams, this.slot());
 			},
