@@ -31,22 +31,16 @@ program
 	.command(new Command('init', {initParams: {skipDirCheck: true}}))
 	.description('initialize migration system')
 	.asyncAction(function() {
-		var callback = arguments[arguments.length - 1],
-			self = this;
-
-		Steppy(
-			function() {
-				self.migrator.init(this.slot());
-			},
-			function() {
-				self.logger.info(
+		return Promise.resolve()
+			.then(() => {
+				return this.migrator.init();
+			})
+			.then(() => {
+				this.logger.info(
 					'initialization successfully done, migration files will be ' +
 					'stored at: `' + self.migrator.params.dir + '`'
 				);
-				this.pass(null);
-			},
-			callback
-		);
+			});
 	});
 
 program.command(new Command('create <basename>'))
@@ -114,7 +108,7 @@ program
 	)
 	.asyncAction(function(status, command, callback) {
 		status = status || 'new';
-		this.execute({status: status, command: command}, callback);
+		return this.execute({status: status, command: command}, callback);
 	});
 
 
@@ -132,4 +126,4 @@ program
 // let's start the party (program entry point)
 program.parse(process.argv);
 
-if (!Command.isInitialized()) program.help();
+// if (!Command.isInitialized()) program.help();

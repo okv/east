@@ -33,8 +33,8 @@ Command.prototype.asyncAction = function(func) {
 	self.action(function() {
 		var args = utils.slice(arguments);
 
-		Steppy(
-			function() {
+		Promise.resolve()
+			.then(() => {
 				var initParams = utils.extend({}, self._initParams);
 
 				initParams.migratorParams = utils.pick(
@@ -45,23 +45,20 @@ Command.prototype.asyncAction = function(func) {
 					]
 				);
 
-				self.init(initParams, this.slot());
-			},
-			function() {
-				args.push(this.slot());
-
-				func.apply(self, args);
-			},
-			function(err) {
-				if (err) {
-					self.onError(err);
-					process.exit(1);
-				} else {
-					if (self.parent.exit) process.exit();
+				return self.init(initParams);
+			})
+			.then(() => {
+				return func.apply(self, args);
+			})
+			.then(() => {
+				if (self.parent.exit) {
+					process.exit();
 				}
-
-			}
-		);
+			})
+			['catch']((err) => {
+				self.onError(err);
+				process.exit(1);
+			});
 	});
 };
 
@@ -83,26 +80,24 @@ Command.prototype._initLogger = function(params) {
 	this.logger = logger;
 };
 
-Command.prototype.init = function(params, callback) {
-	var self = this;
+Command.prototype.init = function(params) {
+	let migrator;
 
-	Steppy(
-		function() {
+	return Promise.resolve()
+		.then(() => {
 			Command.initialized = true;
 
-			self._initLogger(self.parent);
+			this._initLogger(this.parent);
 
-			var migrator = new Migrator(params.migratorParams);
-
-			this.pass(migrator);
+			migrator = new Migrator(params.migratorParams);
 
 			if (params.skipDirCheck) {
-				this.pass(true);
+				return true;
 			} else {
-				migrator.isDirExists(this.slot());
+				return migrator.isDirExists();
 			}
-		},
-		function(err, migrator, dirExists) {
+		})
+		.then((dirExists) => {
 			if (!dirExists) {
 				throw new Error(
 					'Migrations directory: ' + migrator.params.dir + ' doesn`t exist. ' +
@@ -111,14 +106,10 @@ Command.prototype.init = function(params, callback) {
 				);
 			}
 
-			self.logger.debug('current parameters:', migrator.params);
+			this.logger.debug('current parameters:', migrator.params);
 
-			self.migrator = migrator;
-
-			this.pass(null);
-		},
-		callback
-	);
+			this.migrator = migrator;
+		});
 };
 
 Command.prototype.onError = function(err) {
@@ -129,31 +120,31 @@ Command.prototype.onError = function(err) {
 	}
 };
 
-Command.prototype._filterMigrationNames = function(params, callback) {
-	this.migrator.filterMigrationNames({
-		by: params.by,
-		names: params.names,
-		tag: params.tag
-	}, function(err, filterResult) {
-		callback(err, filterResult && filterResult.names);
-	});
+Command.prototype._filterMigrationNames = function(params) {
+	return Promise.resolve()
+		.then(() => {
+			return this.migrator.filterMigrationNames({
+				by: params.by,
+				names: params.names,
+				tag: params.tag
+			});
+		})
+		.then((filterResult) => {
+			return filterResult && filterResult.names;
+		});
 };
 
-Command.prototype.execute = function(params, callback) {
-	var self = this;
-	Steppy(
-		function() {
-			self.migrator.connect(this.slot());
-		},
-		function() {
-			self._execute(params, this.slot());
-		},
-		function(err) {
-			self.migrator.disconnect(function(disconnectErr) {
-				callback(err || disconnectErr);
-			});
-		}
-	);
+Command.prototype.execute = function(params) {
+	return Promise.resolve()
+		.then(() => {
+			return this.migrator.connect();
+		})
+		.then(() => {
+			return this._execute(params);
+		})
+		.then(() => {
+			return this.migrator.disconnect();
+		});
 };
 
 Command.isInitialized = function() {
