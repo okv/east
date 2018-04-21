@@ -2,7 +2,7 @@
 
 var BaseCommand = require('./base').Command,
 	inherits = require('util').inherits,
-	Steppy = require('twostep').Steppy;
+	pMap = require('p-map');
 
 /**
  * Basic action (migrate or rollback) command
@@ -16,39 +16,31 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._validateMigrationNames = function(params, callback) {
-	var self = this;
-	Steppy(
-		function() {
-			self.migrator.normalizeNames(params.names, this.slot());
-		},
-		function(err, names) {
-			this.pass(names);
-			self.migrator.checkMigrationsExists(names, this.slot());
-		},
-		callback
-	);
+Command.prototype._validateMigrationNames = function(params) {
+	return Promise.resolve()
+		.then(() => {
+			return this.migrator.normalizeNames(params.names);
+		})
+		.then((names) => {
+			return this.migrator.checkMigrationsExists(names);
+		});
 };
 
-Command.prototype._separateMigrationNames = function(params, callback) {
-	var self = this;
-	Steppy(
-		function(err) {
-			self.migrator.separateNames(params.names, this.slot());
-		},
-		function(err, separated) {
-			this.pass(self._getTargetMigrationNames(separated));
+Command.prototype._separateMigrationNames = function(params) {
+	return Promise.resolve()
+		.then(() => {
+			return this.migrator.separateNames(params.names);
+		})
+		.then((separated) => {
+			this._processSeparated(separated);
 
-			self._processSeparated(separated);
-		},
-		callback
-	);
+			return this._getTargetMigrationNames(separated);
+		});
 };
 
-Command.prototype._execute = function(params, callback) {
-	var self = this;
-	Steppy(
-		function() {
+Command.prototype._execute = function(params) {
+	return Promise.resolve()
+		.then(() => {
 			if (params.names.length) {
 				if (params.command.status) {
 					throw new Error(
@@ -57,64 +49,64 @@ Command.prototype._execute = function(params, callback) {
 					);
 				}
 
-				var names = self._fallbackCommaSeparatedNames(params.names);
-				self._validateMigrationNames({
+				const names = this._fallbackCommaSeparatedNames(params.names);
+
+				return this._validateMigrationNames({
 					names: names,
 					command: params.command
-				}, this.slot());
+				});
 			} else {
-				self._getDefaultMigrationNames(params, this.slot());
+				return this._getDefaultMigrationNames(params);
 			}
-		},
-		function(err, names) {
+		})
+		.then((names) => {
 			if (params.command.tag) {
-				self._filterMigrationNames({
+				return this._filterMigrationNames({
 					by: 'tag',
 					names: names,
 					tag: params.command.tag
-				}, this.slot());
+				});
 			} else {
-				this.pass(names);
+				return names;
 			}
-		},
-		function(err, names) {
+		})
+		.then((names) => {
 			if (params.command.force) {
-				this.pass(names);
+				return names;
 			} else {
-				self._separateMigrationNames({
+				return this._separateMigrationNames({
 					names: names,
 					command: params.command
-				}, this.slot());
+				});
 			}
-		},
-		function(err, names) {
+		})
+		.then((names) => {
 			if (!names || !names.length) {
-				self.logger.info('nothing to ' + self._name);
-				return callback();
+				this.logger.info('nothing to ' + this._name);
+				// TODO: must break flow
+				return;
 			}
 
-			self.logger.log('target migrations' + ':\n\t' + names.join('\n\t'));
+			this.logger.log('target migrations' + ':\n\t' + names.join('\n\t'));
 
-			var funcs = names.map(function(name) {
-				return function() {
-					var stepCallback = this.slot();
-					self.migrator.loadMigration(name, function(err, migration) {
-						if (err) return stepCallback(err);
-						migration.force = params.command.force;
-						self._executeMigration(migration, stepCallback);
-					});
-				};
-			});
-			funcs.push(this.slot());
+			return pMap(names, (name) => {
+				return this.migrator.loadMigration(name);
+			}, {concurrency: 10});
+		})
+		.then((migrations) => {
+			if (migrations) {
+				// TODO: replace on east series
+				return pMap(migrations, (migration) => {
+					migration.force = params.command.force;
 
-			Steppy.apply(null, funcs);
-		},
-		callback
-	);
+					return this._executeMigration(migration);
+				}, {concurrency: 1});
+			}
+		});
 };
 
 Command.prototype._fallbackCommaSeparatedNames = function(names) {
-	var length = names.length;
+	const length = names.length;
 	if (length == 1) {
 		names = names[0].split(',');
 		if (names.length > length) this.logger.info(

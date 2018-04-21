@@ -3,7 +3,6 @@
 'use strict';
 
 var BaseCommand = require('commander').Command,
-	Steppy = require('twostep').Steppy,
 	Command = require('./commands/base').Command,
 	MigrateCommand = require('./commands/migrate').Command,
 	RollbackCommand = require('./commands/rollback').Command,
@@ -45,30 +44,27 @@ program
 
 program.command(new Command('create <basename>'))
 	.description('create new migration based on template')
-	.asyncAction(function(basename, command, callback) {
-		var self = this;
-		Steppy(
-			function() {
+	.asyncAction(function(basename, command) {
+		return Promise.resolve()
+			.then(() => {
 				// TODO: remove after removing of fallbackCommaSeparatedNames
 				if (~basename.indexOf(',')) throw new Error(
 					'Basename should not contain commas'
 				);
-				self.migrator.create(basename, this.slot());
-			},
-			function(err, name) {
-				self.logger.info(
+
+				return this.migrator.create(basename);
+			})
+			.then(() => {
+				this.logger.info(
 					'New migration `' + name + '` created at ' +
-					self.migrator.getMigrationPathByName(name)
+					this.migrator.getMigrationPathByName(name)
 				);
-				this.pass(null);
-			},
-			callback
-		);
+			});
 	});
 
 // async action handler for migrate and rollback commands
-var actionCommandAsyncAction = function(names, command, callback) {
-	this.execute({names: names, command: command}, callback);
+var actionCommandAsyncAction = function(names, command) {
+	return this.execute({names: names, command: command});
 };
 
 program
@@ -115,11 +111,8 @@ program
 // Default command
 program
 	.command(new Command('*'))
-	// all unmatched args goes below, if you type `./bin foo bar` then arguments
-	// will be (foo, bar, command, callback)
 	.asyncAction(function(name) {
-		var callback = arguments[arguments.length - 1];
-		callback(new Error('Unrecognized command `' + name + '`'));
+		throw new Error('Unrecognized command `' + name + '`');
 	});
 
 
