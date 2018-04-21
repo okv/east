@@ -33,6 +33,8 @@ Command.prototype.asyncAction = function(func) {
 	self.action(function() {
 		var args = utils.slice(arguments);
 
+		Command.initialized = true;
+
 		Promise.resolve()
 			.then(() => {
 				var initParams = utils.extend({}, self._initParams);
@@ -85,8 +87,6 @@ Command.prototype.init = function(params) {
 
 	return Promise.resolve()
 		.then(() => {
-			Command.initialized = true;
-
 			this._initLogger(this.parent);
 
 			migrator = new Migrator(params.migratorParams);

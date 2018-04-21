@@ -126,4 +126,4 @@ program
 // let's start the party (program entry point)
 program.parse(process.argv);
 
-// if (!Command.isInitialized()) program.help();
+if (!Command.isInitialized()) program.help();
