@@ -34,19 +34,11 @@ Command.prototype._separateMigrationNames = function(params, callback) {
 	var self = this;
 	Steppy(
 		function(err) {
-			var stepCallback = this.slot();
-			self.migrator.separateNames(
-				params.names,
-				function(err, newNames, executedNames) {
-					stepCallback(err, {
-						newNames: newNames,
-						executedNames: executedNames
-					});
-				}
-			);
+			self.migrator.separateNames(params.names, this.slot());
 		},
 		function(err, separated) {
 			this.pass(self._getTargetMigrationNames(separated));
+
 			self._processSeparated(separated);
 		},
 		callback
