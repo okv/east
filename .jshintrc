@@ -11,6 +11,7 @@
     "strict": true,
     // use es3 to get 'extra comma' at object literal error
     "es3": true,
+    "esnext": true,
     // suppress warnings about switches with just one case
     "onecase": true,
     "nonew": false,
@@ -27,6 +28,7 @@
         "describe": true,
         "it": true,
         "before": true,
-        "after": true
+        "after": true,
+	"Promise": true
     }
 }

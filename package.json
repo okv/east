@@ -29,7 +29,10 @@
   "dependencies": {
     "commander": "2.9.0",
     "expressionify": "0.9.3",
+    "fs-extra": "5.0.0",
     "progress": "1.1.8",
+    "p-map": "1.2.0",
+    "pify": "3.0.0",
     "twostep": "0.4.2"
   },
   "devDependencies": {
