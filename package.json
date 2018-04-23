@@ -27,6 +27,7 @@
     "east": "./bin/east"
   },
   "dependencies": {
+    "callbackify": "1.1.0",
     "commander": "2.9.0",
     "expressionify": "0.9.3",
     "fs-extra": "5.0.0",

@@ -599,7 +599,7 @@ describe('migrator', function() {
 				loadMigration = Migrator.prototype.loadMigration;
 
 				Migrator.prototype.loadMigration = function(name, callback) {
-					callback(null, migrationNamesHash[name]);
+					return Promise.resolve(migrationNamesHash[name]);
 				};
 			});
 
