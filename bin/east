@@ -54,7 +54,7 @@ program.command(new Command('create <basename>'))
 
 				return this.migrator.create(basename);
 			})
-			.then(() => {
+			.then((name) => {
 				this.logger.info(
 					'New migration `' + name + '` created at ' +
 					this.migrator.getMigrationPathByName(name)
