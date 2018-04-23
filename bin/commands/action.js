@@ -22,8 +22,12 @@ Command.prototype._validateMigrationNames = function(params) {
 			return this.migrator.normalizeNames(params.names);
 		})
 		.then((names) => {
-			return this.migrator.checkMigrationsExists(names);
-		});
+			return Promise.all([
+				names,
+				this.migrator.checkMigrationsExists(names)
+			]);
+		})
+		.then((results) => results[0]);
 };
 
 Command.prototype._separateMigrationNames = function(params) {
