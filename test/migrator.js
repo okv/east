@@ -100,7 +100,9 @@ describe('migrator', function() {
 		it('should create migrations sequentially without errors', function() {
 			return Promise.resolve()
 				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => names = migrationNames);
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
 		it('created migrations should have sequential numbers', function() {
@@ -164,7 +166,9 @@ describe('migrator', function() {
 		before(() => {
 			return Promise.resolve()
 				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => names = migrationNames);
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
 		after(() => removeMigrations(names));
@@ -209,7 +213,9 @@ describe('migrator', function() {
 		before(() => {
 			return Promise.resolve()
 				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => names = migrationNames);
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
 		after(() => removeMigrations(names));
@@ -240,7 +246,9 @@ describe('migrator', function() {
 		before(() => {
 			return Promise.resolve()
 				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => names = migrationNames);
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
 		after(() => removeMigrations(names));
@@ -305,7 +313,9 @@ describe('migrator', function() {
 		before(() => {
 			return Promise.resolve()
 				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => names = migrationNames);
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
 		it('expect remove without errors', () => removeMigrations(names));
