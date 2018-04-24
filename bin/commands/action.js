@@ -2,7 +2,8 @@
 
 var BaseCommand = require('./base').Command,
 	inherits = require('util').inherits,
-	pMap = require('p-map');
+	pMap = require('p-map'),
+	pEachSeries = require('p-each-series');
 
 /**
  * Basic action (migrate or rollback) command
@@ -87,8 +88,8 @@ Command.prototype._execute = function(params) {
 		.then((names) => {
 			if (!names || !names.length) {
 				this.logger.info('nothing to ' + this._name);
-				// TODO: must break flow
-				return;
+
+				return null;
 			}
 
 			this.logger.log('target migrations' + ':\n\t' + names.join('\n\t'));
@@ -99,12 +100,11 @@ Command.prototype._execute = function(params) {
 		})
 		.then((migrations) => {
 			if (migrations) {
-				// TODO: replace on east series
-				return pMap(migrations, (migration) => {
+				return pEachSeries(migrations, (migration) => {
 					migration.force = params.command.force;
 
 					return this._executeMigration(migration);
-				}, {concurrency: 1});
+				});
 			}
 		});
 };
