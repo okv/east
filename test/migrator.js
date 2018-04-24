@@ -419,24 +419,26 @@ describe('migrator', function() {
 	migration = makeMigration();
 	['migrate', 'rollback'].forEach(function(action) {
 		describe(action, function() {
-			it('good migration should be ok', function(done) {
-				migrator[action](migration, done);
-			});
+			it('good migration should be ok', () => migrator[action](migration));
 
-			it('migration which produce eror should pass it', function(done) {
-				migration[action] = function(client, done) {
-					done(new Error('Test ' + action + ' error'));
+			it('migration which produce eror should pass it', () => {
+				migration[action] = (client) => {
+					throw new Error('Test ' + action + ' error');
 				};
-				migrator[action](migration, function(err) {
-					expect(err).ok();
-					expect(err).a(Error);
-					expect(err).have.property(
-						'message',
-						'Error during ' + action + ' "' + migration.name +
-						'": Test ' + action + ' error'
-					);
-					done();
-				});
+
+				return Promise.resolve()
+					.then(() => migrator[action](migration))
+					.then((result) => {
+						throw new Error('Error expected, but got result: ' + result);
+					})
+					['catch']((err) => {
+						expect(err).ok();
+						expect(err).an(Error);
+						expect(err.message).equal(
+							'Error during ' + action + ' "' + migration.name +
+							'": Test ' + action + ' error'
+						);
+					});
 			});
 		});
 	});
