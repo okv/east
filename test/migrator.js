@@ -190,7 +190,6 @@ describe('migrator', () => {
 				return Promise.resolve()
 					.then(() => migrator.loadMigration(names[0]))
 					.then((migration) => {
-						// eslint-disable-next-line no-param-reassign
 						migration.force = true;
 
 						return migrator.migrate(migration);

@@ -1,6 +1,6 @@
 'use strict';
 
-var BaseCommand = require('./action').Command,
+let BaseCommand = require('./action').Command,
 	inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
@@ -10,7 +10,7 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._getDefaultMigrationNames = function(params) {
+Command.prototype._getDefaultMigrationNames = function (params) {
 	const status = params.command.status || 'executed';
 
 	return Promise.resolve()
@@ -22,26 +22,26 @@ Command.prototype._getDefaultMigrationNames = function(params) {
 		});
 };
 
-Command.prototype._getTargetMigrationNames = function(separated) {
+Command.prototype._getTargetMigrationNames = function (separated) {
 	return separated.executedNames;
 };
 
-Command.prototype._processSeparated = function(separated) {
+Command.prototype._processSeparated = function (separated) {
 	separated.newNames.forEach((name) => {
-		this.logger.log('skip `' + name + '` because it`s not executed yet');
+		this.logger.log(`skip \`${name}\` because it\`s not executed yet`);
 	});
 };
 
-Command.prototype._executeMigration = function(migration) {
+Command.prototype._executeMigration = function (migration) {
 	return Promise.resolve()
 		.then(() => {
 			if (migration.rollback) {
-				this.logger.log('rollback `' + migration.name + '`');
+				this.logger.log(`rollback \`${migration.name}\``);
 
 				return this.migrator.rollback(migration);
 			} else {
 				this.logger.log(
-					'skip `' + migration.name + '` because rollback function is not set'
+					`skip \`${migration.name}\` because rollback function is not set`
 				);
 			}
 		})

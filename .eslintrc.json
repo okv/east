@@ -27,7 +27,8 @@
 		"strict": ["error", "global"],
 		"no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
 		"no-else-return": ["off"],
-		"no-lonely-if": ["off"]
+		"no-lonely-if": ["off"],
+		"no-param-reassign": ["off"]
 	},
 	"env": {
 		"mocha": true

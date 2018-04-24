@@ -1,6 +1,6 @@
 'use strict';
 
-var BaseCommand = require('./base').Command,
+let BaseCommand = require('./base').Command,
 	inherits = require('util').inherits,
 	pMap = require('p-map'),
 	pEachSeries = require('p-each-series'),
@@ -18,14 +18,14 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._validateMigrationNames = function(params) {
+Command.prototype._validateMigrationNames = function (params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrator.normalizeNames(params.names);
 		})
 		.then((names) => {
 			return pProps({
-				names: names,
+				names,
 				checkMigrationsExistsResult: (
 					this.migrator.checkMigrationsExists(names)
 				)
@@ -34,7 +34,7 @@ Command.prototype._validateMigrationNames = function(params) {
 		.then((result) => result.names);
 };
 
-Command.prototype._separateMigrationNames = function(params) {
+Command.prototype._separateMigrationNames = function (params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrator.separateNames(params.names);
@@ -46,7 +46,7 @@ Command.prototype._separateMigrationNames = function(params) {
 		});
 };
 
-Command.prototype._execute = function(params) {
+Command.prototype._execute = function (params) {
 	return Promise.resolve()
 		.then(() => {
 			if (params.names.length) {
@@ -60,7 +60,7 @@ Command.prototype._execute = function(params) {
 				const names = this._fallbackCommaSeparatedNames(params.names);
 
 				return this._validateMigrationNames({
-					names: names,
+					names,
 					command: params.command
 				});
 			} else {
@@ -71,7 +71,7 @@ Command.prototype._execute = function(params) {
 			if (params.command.tag) {
 				return this._filterMigrationNames({
 					by: 'tag',
-					names: names,
+					names,
 					tag: params.command.tag
 				});
 			} else {
@@ -83,19 +83,19 @@ Command.prototype._execute = function(params) {
 				return names;
 			} else {
 				return this._separateMigrationNames({
-					names: names,
+					names,
 					command: params.command
 				});
 			}
 		})
 		.then((names) => {
 			if (!names || !names.length) {
-				this.logger.info('nothing to ' + this._name);
+				this.logger.info(`nothing to ${this._name}`);
 
 				return null;
 			}
 
-			this.logger.log('target migrations' + ':\n\t' + names.join('\n\t'));
+			this.logger.log(`${'target migrations' + ':\n\t'}${names.join('\n\t')}`);
 
 			return pMap(names, (name) => {
 				return this.migrator.loadMigration(name);
@@ -112,14 +112,16 @@ Command.prototype._execute = function(params) {
 		});
 };
 
-Command.prototype._fallbackCommaSeparatedNames = function(names) {
+Command.prototype._fallbackCommaSeparatedNames = function (names) {
 	const length = names.length;
 	if (length == 1) {
 		names = names[0].split(',');
-		if (names.length > length) this.logger.info(
-			'DEPRECATION WARNING: target migrations separated by comma will ' +
+		if (names.length > length) {
+			this.logger.info(
+				'DEPRECATION WARNING: target migrations separated by comma will ' +
 			'not be supported in future versions (use space instead)'
-		);
+			);
+		}
 	}
 	return names;
 };
