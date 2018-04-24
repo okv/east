@@ -1,6 +1,6 @@
 'use strict';
 
-var expect = require('expect.js'),
+let expect = require('expect.js'),
 	Migrator = require('../lib/migrator'),
 	pathUtils = require('path'),
 	Steppy = require('twostep').Steppy,
@@ -9,16 +9,16 @@ var expect = require('expect.js'),
 	pProps = require('p-props'),
 	utils = require('../lib/utils');
 
-describe('migrator', function() {
-	var migrator = new Migrator();
+describe('migrator', () => {
+	const migrator = new Migrator();
 
-	var createMigrations = (baseNames) => {
+	const createMigrations = (baseNames) => {
 		return pMap(baseNames, (baseName) => {
 			return migrator.create(baseName);
 		}, {concurrency: 1});
 	};
 
-	var removeMigrations = (names) => {
+	const removeMigrations = (names) => {
 		return pMap(names, (name) => migrator.remove(name));
 	};
 
@@ -45,12 +45,12 @@ describe('migrator', function() {
 	});
 
 	// just output currently used adapter
-	it('uses adapter ' + migrator.params.adapter, () => {});
+	it(`uses adapter ${migrator.params.adapter}`, () => {});
 
-	describe('adapter', function() {
-		var tryLoad,
-			mockAdapter = function() {
-				this.getTemplatePath = function() {};
+	describe('adapter', () => {
+		let tryLoad,
+			mockAdapter = function () {
+				this.getTemplatePath = function () {};
 			};
 
 		before(() => {
@@ -58,9 +58,9 @@ describe('migrator', function() {
 		});
 
 		it('expect be loaded migrator-related first and than CWD-related',
-			function() {
-				var paths = [];
-				Migrator.prototype._tryLoadAdapter = function(path) {
+			() => {
+				const paths = [];
+				Migrator.prototype._tryLoadAdapter = function (path) {
 					paths.push(path);
 					return paths.length === 2 ? mockAdapter : new Error('Whatever.');
 				};
@@ -71,33 +71,32 @@ describe('migrator', function() {
 
 				expect(paths[0]).eql('X');
 				expect(paths[1].substr(-2, 2)).eql('/X');
-			}
-		);
+			});
 
-		it('expect to throw when both paths can not be resolved', function() {
-			Migrator.prototype._tryLoadAdapter = function() {
+		it('expect to throw when both paths can not be resolved', () => {
+			Migrator.prototype._tryLoadAdapter = function () {
 				return new Error('Whatever.');
 			};
 
-			expect(function() {
+			expect(() => {
 				new Migrator({
 					adapter: 'X'
 				});
 			}).to.throwError(/Whatever./);
 		});
 
-		after(function() {
+		after(() => {
 			Migrator.prototype._tryLoadAdapter = tryLoad;
 		});
 	});
 
-	describe('create', function() {
-		var baseNames = ['first', 'second', 'third', 'second'],
+	describe('create', () => {
+		let baseNames = ['first', 'second', 'third', 'second'],
 			names = [];
 
 		after(() => removeMigrations(names));
 
-		it('should create migrations sequentially without errors', function() {
+		it('should create migrations sequentially without errors', () => {
 			return Promise.resolve()
 				.then(() => createMigrations(baseNames))
 				.then((migrationNames) => {
@@ -105,40 +104,40 @@ describe('migrator', function() {
 				});
 		});
 
-		it('created migrations should have sequential numbers', function() {
-			var expectedNames = baseNames.map(function(baseName, index) {
-				return String(index + 1) + '_' + baseName;
+		it('created migrations should have sequential numbers', () => {
+			const expectedNames = baseNames.map((baseName, index) => {
+				return `${String(index + 1)}_${baseName}`;
 			});
 
 			expect(names).eql(expectedNames);
 		});
 
-		it('created migrations should exist', function() {
+		it('created migrations should exist', () => {
 			return migrator.checkMigrationsExists(names);
 		});
 
-		it('created migrations should be loadable', function() {
+		it('created migrations should be loadable', () => {
 			return pEachSeries(names, (name) => migrator.loadMigration(name));
 		});
 
-		it('created migrations should be listed as `new`', function() {
+		it('created migrations should be listed as `new`', () => {
 			return Promise.resolve()
 				.then(() => migrator.getNewMigrationNames())
 				.then((newNames) => expect(newNames).eql(names));
 		});
 	});
 
-	describe('getAllMigrationNames', function() {
-		var expectedNames = [];
+	describe('getAllMigrationNames', () => {
+		let expectedNames = [];
 
 		before(() => {
 			return Promise.resolve()
 				.then(() => {
-					var baseNames = [],
+					let baseNames = [],
 						zCharcode = 'z'.charCodeAt(0);
 
-					for (var index = 0; index < 12; index++) {
-						var baseName = String.fromCharCode(zCharcode - index);
+					for (let index = 0; index < 12; index++) {
+						const baseName = String.fromCharCode(zCharcode - index);
 
 						baseNames.push(baseName);
 					}
@@ -152,15 +151,15 @@ describe('migrator', function() {
 
 		after(() => removeMigrations(expectedNames));
 
-		it('should return numeric sorted names', function() {
+		it('should return numeric sorted names', () => {
 			return Promise.resolve()
 				.then(() => migrator.getAllMigrationNames())
 				.then((names) => expect(names).eql(expectedNames));
 		});
 	});
 
-	describe('execute', function() {
-		var baseNames = ['first', 'second', 'third', 'second'],
+	describe('execute', () => {
+		let baseNames = ['first', 'second', 'third', 'second'],
 			names = [];
 
 		before(() => {
@@ -173,13 +172,13 @@ describe('migrator', function() {
 
 		after(() => removeMigrations(names));
 
-		it('execute migration without errors', function() {
+		it('execute migration without errors', () => {
 			return Promise.resolve()
 				.then(() => migrator.loadMigration(names[0]))
 				.then((migration) => migrator.migrate(migration));
 		});
 
-		it('migration should be listed as `executed` after that', function() {
+		it('migration should be listed as `executed` after that', () => {
 			return Promise.resolve()
 				.then(() => migrator.adapter.getExecutedMigrationNames())
 				.then((executedNames) => expect(executedNames).eql([names[0]]));
@@ -199,15 +198,15 @@ describe('migrator', function() {
 			}
 		);
 
-		it('migration should still be listed as `executed`', function() {
+		it('migration should still be listed as `executed`', () => {
 			return Promise.resolve()
 				.then(() => migrator.adapter.getExecutedMigrationNames())
 				.then((executedNames) => expect(executedNames).eql([names[0]]));
 		});
 	});
 
-	describe('rollback', function() {
-		var baseNames = ['first', 'second', 'third', 'second'],
+	describe('rollback', () => {
+		let baseNames = ['first', 'second', 'third', 'second'],
 			names = [];
 
 		before(() => {
@@ -239,8 +238,8 @@ describe('migrator', function() {
 		});
 	});
 
-	describe('names normalization', function() {
-		var baseNames = ['first', 'second', 'third', 'second'],
+	describe('names normalization', () => {
+		let baseNames = ['first', 'second', 'third', 'second'],
 			names = [];
 
 		before(() => {
@@ -253,7 +252,7 @@ describe('migrator', function() {
 
 		after(() => removeMigrations(names));
 
-		var nomrmalizeAndCheckName = (inputName, expectedName) => {
+		const nomrmalizeAndCheckName = (inputName, expectedName) => {
 			return Promise.resolve()
 				.then(() => migrator.normalizeNames([inputName]))
 				.then((normalizedNames) => {
@@ -262,27 +261,27 @@ describe('migrator', function() {
 		};
 
 		it('by path should be ok', () => {
-			var name = names[0],
+			let name = names[0],
 				path = pathUtils.join('migrations', name);
 
 			return nomrmalizeAndCheckName(path, name);
 		});
 
 		it('by full name should be ok', () => {
-			var name = names[0];
+			const name = names[0];
 
 			return nomrmalizeAndCheckName(name, name);
 		});
 
 		it('by number should be ok', () => {
-			var number = '1',
+			let number = '1',
 				name = names[0];
 
 			return nomrmalizeAndCheckName(number, name);
 		});
 
 		it('by basename should be ok', () => {
-			var baseName = baseNames[0],
+			let baseName = baseNames[0],
 				name = names[0];
 
 			return nomrmalizeAndCheckName(baseName, name);
@@ -294,20 +293,20 @@ describe('migrator', function() {
 			return Promise.resolve()
 				.then(() => migrator.normalizeNames([baseName]))
 				.then((result) => {
-					throw new Error('Error expected, but got result: ' + result);
+					throw new Error(`Error expected, but got result: ${result}`);
 				})
-				['catch']((err) => {
+				.catch((err) => {
 					expect(err).ok();
 					expect(err).an(Error);
 					expect(err.message).contain(
-						'Specified migration name `' + baseName + '` is ambiguous'
+						`Specified migration name \`${baseName}\` is ambiguous`
 					);
 				});
 		});
 	});
 
-	describe('remove', function() {
-		var baseNames = ['first', 'second', 'third', 'second'],
+	describe('remove', () => {
+		let baseNames = ['first', 'second', 'third', 'second'],
 			names = [];
 
 		before(() => {
@@ -349,30 +348,29 @@ describe('migrator', function() {
 		return utils.extend(migration, params);
 	};
 
-	var migration;
+	let migration;
 
-	describe('validate', function() {
-
+	describe('validate', () => {
 		it('valid migration should be ok', () => {
 			migration = makeMigration();
 
 			return migrator.validateMigration(migration);
 		});
 
-		var validateAndCheckError = (migration, errorMessage) => {
+		const validateAndCheckError = (migration, errorMessage) => {
 			return Promise.resolve()
 				.then(() => migrator.validateMigration(migration))
 				.then((result) => {
-					throw new Error('Error expected, but got result: ' + result);
+					throw new Error(`Error expected, but got result: ${result}`);
 				})
-				['catch']((err) => {
+				.catch((err) => {
 					expect(err).ok();
 					expect(err).an(Error);
 					expect(err.message).eql(errorMessage);
 				});
 		};
 
-		var errorMessage;
+		let errorMessage;
 		it('non object migration should fail', () => {
 			errorMessage = 'migration is not an object';
 
@@ -427,34 +425,33 @@ describe('migrator', function() {
 	});
 
 	migration = makeMigration();
-	['migrate', 'rollback'].forEach(function(action) {
-		describe(action, function() {
+	['migrate', 'rollback'].forEach((action) => {
+		describe(action, () => {
 			it('good migration should be ok', () => migrator[action](migration));
 
 			it('migration which produce eror should pass it', () => {
 				migration[action] = (client) => {
-					throw new Error('Test ' + action + ' error');
+					throw new Error(`Test ${action} error`);
 				};
 
 				return Promise.resolve()
 					.then(() => migrator[action](migration))
 					.then((result) => {
-						throw new Error('Error expected, but got result: ' + result);
+						throw new Error(`Error expected, but got result: ${result}`);
 					})
-					['catch']((err) => {
+					.catch((err) => {
 						expect(err).ok();
 						expect(err).an(Error);
 						expect(err.message).equal(
-							'Error during ' + action + ' "' + migration.name +
-							'": Test ' + action + ' error'
+							`Error during ${action} "${migration.name
+							}": Test ${action} error`
 						);
 					});
 			});
 		});
 	});
 
-	describe('filter', function() {
-
+	describe('filter', () => {
 		const migrationNamesHash = {
 			one: makeMigration({name: 'one', tags: ['one']}),
 			two: makeMigration({name: 'two', tags: ['one', 'two']}),
@@ -462,7 +459,7 @@ describe('migrator', function() {
 			four: makeMigration()
 		};
 
-		describe('by tag', function() {
+		describe('by tag', () => {
 			let loadMigration;
 			before(() => {
 				loadMigration = Migrator.prototype.loadMigration;
@@ -486,9 +483,9 @@ describe('migrator', function() {
 						});
 					})
 					.then((result) => {
-						throw new Error('Error expected, but got result: ' + result);
+						throw new Error(`Error expected, but got result: ${result}`);
 					})
-					['catch']((err) => {
+					.catch((err) => {
 						expect(err).ok();
 						expect(err.message).contain('unexpected token "*"');
 					});
@@ -578,6 +575,5 @@ describe('migrator', function() {
 					});
 			});
 		});
-
 	});
 });
