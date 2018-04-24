@@ -1,8 +1,7 @@
 'use strict';
 
-var BaseCommand = require('./base').Command,
-	inherits = require('util').inherits,
-	Steppy = require('twostep').Steppy;
+const BaseCommand = require('./base').Command;
+const inherits = require('util').inherits;
 
 function Command(nameAndArgs) {
 	BaseCommand.call(this, nameAndArgs);
@@ -11,7 +10,7 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._execute = function(params) {
+Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrator.getMigrationNames(params.status);
@@ -20,19 +19,18 @@ Command.prototype._execute = function(params) {
 			if (params.command.tag) {
 				return this._filterMigrationNames({
 					by: 'tag',
-					names: names,
+					names,
 					tag: params.command.tag
 				});
 			} else {
 				return names;
 			}
-
 		})
 		.then((names) => {
 			if (names.length) {
-				this.logger.info(params.status + ' migrations:');
+				this.logger.info(`${params.status} migrations:`);
 			} else {
-				this.logger.info('there is no ' + params.status + ' migrations');
+				this.logger.info(`there is no ${params.status} migrations`);
 			}
 
 			names.forEach((name) => {

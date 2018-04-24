@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "test": "cd test && mocha ./ --reporter spec",
-    "lint": "jshint ./"
+    "lint": "eslint ./"
   },
   "bin": {
     "east": "./bin/east"
@@ -36,12 +36,13 @@
     "p-props": "1.2.0",
     "p-timeout": "2.0.1",
     "pify": "3.0.0",
-    "progress": "1.1.8",
-    "twostep": "0.4.2"
+    "progress": "1.1.8"
   },
   "devDependencies": {
     "mocha": "2.3.3",
-    "expect.js": "0.3.1",
-    "jshint": "2.4.4"
+    "eslint": "4.14.0",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-plugin-import": "2.8.0",
+    "expect.js": "0.3.1"
   }
 }
