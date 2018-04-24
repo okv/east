@@ -3,7 +3,8 @@
 var BaseCommand = require('./base').Command,
 	inherits = require('util').inherits,
 	pMap = require('p-map'),
-	pEachSeries = require('p-each-series');
+	pEachSeries = require('p-each-series'),
+	pProps = require('p-props');
 
 /**
  * Basic action (migrate or rollback) command
@@ -23,12 +24,14 @@ Command.prototype._validateMigrationNames = function(params) {
 			return this.migrator.normalizeNames(params.names);
 		})
 		.then((names) => {
-			return Promise.all([
-				names,
-				this.migrator.checkMigrationsExists(names)
-			]);
+			return pProps({
+				names: names,
+				checkMigrationsExistsResult: (
+					this.migrator.checkMigrationsExists(names)
+				)
+			});
 		})
-		.then((results) => results[0]);
+		.then((result) => result.names);
 };
 
 Command.prototype._separateMigrationNames = function(params) {

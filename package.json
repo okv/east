@@ -33,6 +33,7 @@
     "fs-extra": "5.0.0",
     "p-each-series": "1.0.0",
     "p-map": "1.2.0",
+    "p-props": "1.2.0",
     "p-timeout": "2.0.1",
     "pify": "3.0.0",
     "progress": "1.1.8",
