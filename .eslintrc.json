@@ -25,7 +25,9 @@
 		"global-require": ["off"],
 		"prefer-destructuring": ["off"],
 		"strict": ["error", "global"],
-		"no-plusplus": ["error", {"allowForLoopAfterthoughts": true}]
+		"no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+		"no-else-return": ["off"],
+		"no-lonely-if": ["off"]
 	},
 	"env": {
 		"mocha": true
