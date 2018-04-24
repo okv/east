@@ -97,7 +97,7 @@ Command.prototype._execute = function _execute(params) {
 				return null;
 			}
 
-			this.logger.log(`target migrations:\n\t'${names.join('\n\t')}`);
+			this.logger.log(`target migrations:\n\t${names.join('\n\t')}`);
 
 			return pMap(names, (name) => {
 				return this.migrator.loadMigration(name);
