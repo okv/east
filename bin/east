@@ -2,13 +2,13 @@
 
 'use strict';
 
-var BaseCommand = require('commander').Command,
-	Command = require('./commands/base').Command,
-	MigrateCommand = require('./commands/migrate').Command,
-	RollbackCommand = require('./commands/rollback').Command,
-	ListCommand = require('./commands/list').Command;
+const BaseCommand = require('commander').Command;
+const Command = require('./commands/base').Command;
+const MigrateCommand = require('./commands/migrate').Command;
+const RollbackCommand = require('./commands/rollback').Command;
+const ListCommand = require('./commands/list').Command;
 
-var program = new Command();
+const program = new Command();
 
 program
 	.version(require('../package.json').version)

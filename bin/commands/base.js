@@ -1,16 +1,17 @@
 'use strict';
 
-let BaseCommand = require('commander').Command,
-	Migrator = require('../../lib/migrator'),
-	utils = require('../../lib/utils'),
-	inherits = require('util').inherits,
-	Steppy = require('twostep').Steppy;
+const BaseCommand = require('commander').Command;
+const Migrator = require('../../lib/migrator');
+const utils = require('../../lib/utils');
+const inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	params = params || {};
 	nameAndArgs = nameAndArgs || '';
-	let args = nameAndArgs.split(/ +/),
-		name = args.shift();
+
+	const args = nameAndArgs.split(/ +/);
+	const name = args.shift();
+
 	BaseCommand.call(this, name);
 
 	this.parseExpectedArgs(args);
@@ -21,16 +22,19 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype.command = function (command) {
+// eslint-disable-next-line no-shadow
+Command.prototype.command = function command(command) {
 	this.commands.push(command);
+
 	command.parent = this;
+
 	return command;
 };
 
-Command.prototype.asyncAction = function (func) {
+Command.prototype.asyncAction = function asyncAction(func) {
 	const self = this;
 
-	self.action(function () {
+	self.action(function action() {
 		const args = utils.slice(arguments);
 
 		Command.initialized = true;
@@ -70,7 +74,7 @@ Command.prototype.asyncAction = function (func) {
  * `log` could be supressed by --silent
  * `info`, `error` will be shown anyway
  */
-Command.prototype._initLogger = function (params) {
+Command.prototype._initLogger = function _initLogger(params) {
 	const logger = utils.extend({}, console);
 
 	logger.debug = params.trace ? logger.log : utils.noop;
@@ -82,7 +86,7 @@ Command.prototype._initLogger = function (params) {
 	this.logger = logger;
 };
 
-Command.prototype.init = function (params) {
+Command.prototype.init = function init(params) {
 	let migrator;
 
 	return Promise.resolve()
@@ -112,7 +116,7 @@ Command.prototype.init = function (params) {
 		});
 };
 
-Command.prototype.onError = function (err) {
+Command.prototype.onError = function onError(err) {
 	if (this.trace || this.parent.trace) {
 		this.logger.error(err.stack || err);
 	} else {
@@ -120,21 +124,22 @@ Command.prototype.onError = function (err) {
 	}
 };
 
-Command.prototype._filterMigrationNames = function (params) {
-	return Promise.resolve()
-		.then(() => {
-			return this.migrator.filterMigrationNames({
-				by: params.by,
-				names: params.names,
-				tag: params.tag
+Command.prototype._filterMigrationNames =
+	function _filterMigrationNames(params) {
+		return Promise.resolve()
+			.then(() => {
+				return this.migrator.filterMigrationNames({
+					by: params.by,
+					names: params.names,
+					tag: params.tag
+				});
+			})
+			.then((filterResult) => {
+				return filterResult && filterResult.names;
 			});
-		})
-		.then((filterResult) => {
-			return filterResult && filterResult.names;
-		});
-};
+	};
 
-Command.prototype.execute = function (params) {
+Command.prototype.execute = function execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrator.connect();
@@ -147,6 +152,6 @@ Command.prototype.execute = function (params) {
 		});
 };
 
-Command.isInitialized = function () {
+Command.isInitialized = function isInitialized() {
 	return Boolean(Command.initialized);
 };

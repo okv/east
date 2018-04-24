@@ -1,8 +1,7 @@
 'use strict';
 
-let BaseCommand = require('./base').Command,
-	inherits = require('util').inherits,
-	Steppy = require('twostep').Steppy;
+const BaseCommand = require('./base').Command;
+const inherits = require('util').inherits;
 
 function Command(nameAndArgs) {
 	BaseCommand.call(this, nameAndArgs);
@@ -11,7 +10,7 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._execute = function (params) {
+Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrator.getMigrationNames(params.status);
