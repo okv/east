@@ -43,15 +43,9 @@ describe('migrator', () => {
 	});
 
 	describe('adapter', () => {
-		let tryLoad;
-
 		const mockAdapter = function mockAdapter() {
 			this.getTemplatePath = () => {};
 		};
-
-		before(() => {
-			tryLoad = Migrator.prototype._tryLoadAdapter;
-		});
 
 		it('expect be loaded migrator-related first and than CWD-related',
 			() => {
@@ -59,14 +53,15 @@ describe('migrator', () => {
 
 				return Promise.resolve()
 					.then(() => {
-						Migrator.prototype._tryLoadAdapter = (path) => {
+						const migratorMock = new Migrator();
+
+						migratorMock._tryLoadAdapter = (path) => {
 							paths.push(path);
 
 							return paths.length === 2 ? mockAdapter : new Error('Whatever.');
 						};
 
-						const migrator = new Migrator();
-						return migrator.configure({adapter: 'X'});
+						return migratorMock.configure({adapter: 'X'});
 					})
 					.then(() => {
 						expect(paths[0]).eql('X');
@@ -75,15 +70,15 @@ describe('migrator', () => {
 			});
 
 		it('expect to throw when both paths can not be resolved', () => {
-
 			return Promise.resolve()
 				.then(() => {
-					Migrator.prototype._tryLoadAdapter = () => {
+					const migratorMock = new Migrator();
+
+					migratorMock._tryLoadAdapter = () => {
 						throw new Error('Whatever.');
 					};
 
-					const migrator = new Migrator();
-					return migrator.configure({adapter: 'X'});
+					return migratorMock.configure({adapter: 'X'});
 				})
 				.then((result) => {
 					throw new Error(`Error expected, but got result: ${result}`);
@@ -93,10 +88,6 @@ describe('migrator', () => {
 					expect(err).an(Error);
 					expect(err.message).equal('Whatever.');
 				});
-		});
-
-		after(() => {
-			Migrator.prototype._tryLoadAdapter = tryLoad;
 		});
 	});
 
