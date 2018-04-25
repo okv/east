@@ -92,12 +92,12 @@ Command.prototype._execute = function _execute(params) {
 		})
 		.then((names) => {
 			if (!names || !names.length) {
-				this.logger.info(`nothing to ${this._name}`);
+				this.logger.info(`Nothing to ${this._name}`);
 
 				return null;
 			}
 
-			this.logger.log(`target migrations:\n\t${names.join('\n\t')}`);
+			this.logger.log(`Target migrations:\n\t${names.join('\n\t')}`);
 
 			return pMap(names, (name) => {
 				return this.migrator.loadMigration(name);

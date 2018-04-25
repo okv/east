@@ -49,7 +49,7 @@ Command.prototype._executeMigration = function _executeMigration(migration) {
 		})
 		.then(() => {
 			if (migration.rollback) {
-				this.logger.log('migration successfully rolled back');
+				this.logger.log('Migration successfully rolled back');
 			}
 		});
 };
