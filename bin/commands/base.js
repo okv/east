@@ -4,7 +4,6 @@ const _ = require('underscore');
 const BaseCommand = require('commander').Command;
 const inherits = require('util').inherits;
 const Migrator = require('../../lib/migrator');
-const utils = require('../../lib/utils');
 
 function Command(nameAndArgs, params) {
 	params = params || {};
@@ -75,10 +74,10 @@ Command.prototype.asyncAction = function asyncAction(func) {
 Command.prototype._initLogger = function _initLogger(params) {
 	const logger = _({}).extend(console);
 
-	logger.debug = params.trace ? logger.log : utils.noop;
+	logger.debug = params.trace ? logger.log : _.noop;
 
 	if (params.silent) {
-		logger.log = utils.noop;
+		logger.log = _.noop;
 	}
 
 	this.logger = logger;
