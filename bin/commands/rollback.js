@@ -30,7 +30,7 @@ Command.prototype._getTargetMigrationNames =
 
 Command.prototype._processSeparated = function _processSeparated(separated) {
 	separated.newNames.forEach((name) => {
-		this.logger.log(`skip \`${name}\` because it\`s not executed yet`);
+		this.logger.log(`Skip "${name}" because it's not executed yet`);
 	});
 };
 
@@ -38,12 +38,12 @@ Command.prototype._executeMigration = function _executeMigration(migration) {
 	return Promise.resolve()
 		.then(() => {
 			if (migration.rollback) {
-				this.logger.log(`rollback \`${migration.name}\``);
+				this.logger.log(`Rollback "${migration.name}"`);
 
 				return this.migrator.rollback(migration);
 			} else {
 				this.logger.log(
-					`skip \`${migration.name}\` because rollback function is not set`
+					`Skip "${migration.name}" because rollback function is not set`
 				);
 			}
 		})

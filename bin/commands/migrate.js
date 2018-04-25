@@ -24,18 +24,18 @@ Command.prototype._getTargetMigrationNames =
 
 Command.prototype._processSeparated = function _processSeparated(separated) {
 	separated.executedNames.forEach((name) => {
-		this.logger.log(`skip \`${name}\` because it\`s already executed`);
+		this.logger.log(`Skip "${name}" because it's already executed`);
 	});
 };
 
 Command.prototype._executeMigration = function _executeMigration(migration) {
 	return Promise.resolve()
 		.then(() => {
-			this.logger.log(`migrate \`${migration.name}\``);
+			this.logger.log(`Migrate "${migration.name}"`);
 
 			return this.migrator.migrate(migration);
 		})
 		.then(() => {
-			this.logger.log('migration done');
+			this.logger.log('Migration done');
 		});
 };

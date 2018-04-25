@@ -298,7 +298,7 @@ describe('migrator', () => {
 					expect(err).ok();
 					expect(err).an(Error);
 					expect(err.message).contain(
-						`Specified migration name \`${baseName}\` is ambiguous`
+						`Specified migration name "${baseName}" is ambiguous`
 					);
 				});
 		});
@@ -402,7 +402,7 @@ describe('migrator', () => {
 		it('migration with non function rollback should fail', () => {
 			migration = makeMigration();
 			migration.rollback = 1;
-			errorMessage = '`rollback` set but it`s not a function';
+			errorMessage = '`rollback` set but it\'s not a function';
 
 			return validateMigrationAndCheckError(migration, errorMessage);
 		});
@@ -410,7 +410,7 @@ describe('migrator', () => {
 		it('migration with non array tags should fail', () => {
 			migration = makeMigration();
 			migration.tags = 1;
-			errorMessage = '`tags` set but it`s not an array';
+			errorMessage = '`tags` set but it\'s not an array';
 
 			return validateMigrationAndCheckError(migration, errorMessage);
 		});

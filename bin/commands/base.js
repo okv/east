@@ -104,13 +104,13 @@ Command.prototype.init = function init(params) {
 		.then((dirExists) => {
 			if (!dirExists) {
 				throw new Error(
-					`Migrations directory: ${migrator.params.dir} doesn\`t exist. ` +
+					`Migrations directory: ${migrator.params.dir} doesn't exist. ` +
 					'You should run `init` command to initialize migrations or change ' +
 					'`dir` option.'
 				);
 			}
 
-			this.logger.debug('current parameters:', migrator.params);
+			this.logger.debug('Current parameters:', migrator.params);
 
 			this.migrator = migrator;
 		});
