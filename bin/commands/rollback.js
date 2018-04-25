@@ -1,7 +1,7 @@
 'use strict';
 
-var BaseCommand = require('./action').Command,
-	inherits = require('util').inherits;
+const BaseCommand = require('./action').Command;
+const inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	BaseCommand.call(this, nameAndArgs, params);
@@ -10,37 +10,46 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._getDefaultMigrationNames = function(params, callback) {
-	var status = params.command.status || 'executed';
-	this.migrator.getMigrationNames(status, function(err, names) {
-		callback(err, names && names.reverse());
+Command.prototype._getDefaultMigrationNames =
+	function _getDefaultMigrationNames(params) {
+		const status = params.command.status || 'executed';
+
+		return Promise.resolve()
+			.then(() => {
+				return this.migrator.getMigrationNames(status);
+			})
+			.then((names) => {
+				return names && names.reverse();
+			});
+	};
+
+Command.prototype._getTargetMigrationNames =
+	function _getTargetMigrationNames(separated) {
+		return separated.executedNames;
+	};
+
+Command.prototype._processSeparated = function _processSeparated(separated) {
+	separated.newNames.forEach((name) => {
+		this.logger.log(`Skip "${name}" because it's not executed yet`);
 	});
 };
 
-Command.prototype._getTargetMigrationNames = function(separated) {
-	return separated.executedNames;
-};
+Command.prototype._executeMigration = function _executeMigration(migration) {
+	return Promise.resolve()
+		.then(() => {
+			if (migration.rollback) {
+				this.logger.log(`Rollback "${migration.name}"`);
 
-Command.prototype._processSeparated = function(separated) {
-	var self = this;
-	separated.newNames.forEach(function(name) {
-		self.logger.log('skip `' + name + '` because it`s not executed yet');
-	});
-};
-
-Command.prototype._executeMigration = function(migration, callback) {
-	var self = this;
-	if (migration.rollback) {
-		self.logger.log('rollback `' + migration.name + '`');
-		this.migrator.rollback(migration, function(err) {
-			if (err) return callback(err);
-			self.logger.log('migration successfully rolled back');
-			callback();
+				return this.migrator.rollback(migration);
+			} else {
+				this.logger.log(
+					`Skip "${migration.name}" because rollback function is not set`
+				);
+			}
+		})
+		.then(() => {
+			if (migration.rollback) {
+				this.logger.log('Migration successfully rolled back');
+			}
 		});
-	} else {
-		self.logger.log(
-			'skip `' + migration.name + '` because rollback function is not set'
-		);
-		callback();
-	}
 };

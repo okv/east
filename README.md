@@ -15,7 +15,7 @@ database.
 
 ## Node.js compatibility
 
-east itself requires node.js >= 0.10 to work.
+east itself requires node.js >= 4 to work.
 
 Please note that particular adapter may have another requirements (see
 documentation for specific adapter).
