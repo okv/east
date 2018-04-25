@@ -90,8 +90,10 @@ Command.prototype.init = function init(params) {
 		.then(() => {
 			this._initLogger(this.parent);
 
-			migrator = new Migrator(params.migratorParams);
-
+			migrator = new Migrator();
+			return migrator.configure(params.migratorParams);
+		})
+		.then(() => {
 			if (params.skipDirCheck) {
 				return true;
 			} else {

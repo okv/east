@@ -23,9 +23,8 @@ describe('migrator', () => {
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => {
-				return migrator.connect();
-			})
+			.then(() => migrator.configure())
+			.then(() => migrator.connect())
 			.then(() => {
 				return pProps({
 					allNames: migrator.getAllMigrationNames(),
@@ -43,49 +42,52 @@ describe('migrator', () => {
 			});
 	});
 
-	// just output currently used adapter
-	it(`uses adapter ${migrator.params.adapter}`, () => {});
-
 	describe('adapter', () => {
-		let tryLoad;
-
 		const mockAdapter = function mockAdapter() {
 			this.getTemplatePath = () => {};
 		};
 
-		before(() => {
-			tryLoad = Migrator.prototype._tryLoadAdapter;
-		});
-
 		it('expect be loaded migrator-related first and than CWD-related',
 			() => {
 				const paths = [];
-				Migrator.prototype._tryLoadAdapter = (path) => {
-					paths.push(path);
 
-					return paths.length === 2 ? mockAdapter : new Error('Whatever.');
-				};
+				return Promise.resolve()
+					.then(() => {
+						const migratorMock = new Migrator();
 
-				// eslint-disable-next-line no-new
-				new Migrator({adapter: 'X'});
+						migratorMock._tryLoadAdapter = (path) => {
+							paths.push(path);
 
-				expect(paths[0]).eql('X');
-				expect(paths[1].substr(-2, 2)).eql('/X');
+							return paths.length === 2 ? mockAdapter : new Error('Whatever.');
+						};
+
+						return migratorMock.configure({adapter: 'X'});
+					})
+					.then(() => {
+						expect(paths[0]).eql('X');
+						expect(paths[1].substr(-2, 2)).eql('/X');
+					});
 			});
 
 		it('expect to throw when both paths can not be resolved', () => {
-			Migrator.prototype._tryLoadAdapter = () => {
-				throw new Error('Whatever.');
-			};
+			return Promise.resolve()
+				.then(() => {
+					const migratorMock = new Migrator();
 
-			expect(() => {
-				// eslint-disable-next-line no-new
-				new Migrator({adapter: 'X'});
-			}).to.throwError(/Whatever./);
-		});
+					migratorMock._tryLoadAdapter = () => {
+						throw new Error('Whatever.');
+					};
 
-		after(() => {
-			Migrator.prototype._tryLoadAdapter = tryLoad;
+					return migratorMock.configure({adapter: 'X'});
+				})
+				.then((result) => {
+					throw new Error(`Error expected, but got result: ${result}`);
+				})
+				.catch((err) => {
+					expect(err).ok();
+					expect(err).an(Error);
+					expect(err.message).equal('Whatever.');
+				});
 		});
 	});
 
