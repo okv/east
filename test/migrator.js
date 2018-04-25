@@ -7,7 +7,6 @@ const pathUtils = require('path');
 const pEachSeries = require('p-each-series');
 const pMap = require('p-map');
 const pProps = require('p-props');
-const utils = require('../lib/utils');
 
 describe('migrator', () => {
 	const migrator = new Migrator();
