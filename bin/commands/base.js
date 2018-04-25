@@ -1,16 +1,17 @@
 'use strict';
 
-var BaseCommand = require('commander').Command,
-	Migrator = require('../../lib/migrator'),
-	utils = require('../../lib/utils'),
-	inherits = require('util').inherits,
-	Steppy = require('twostep').Steppy;
+const _ = require('underscore');
+const BaseCommand = require('commander').Command;
+const inherits = require('util').inherits;
+const Migrator = require('../../lib/migrator');
 
 function Command(nameAndArgs, params) {
 	params = params || {};
 	nameAndArgs = nameAndArgs || '';
-	var args = nameAndArgs.split(/ +/),
-		name = args.shift();
+
+	const args = nameAndArgs.split(/ +/);
+	const name = args.shift();
+
 	BaseCommand.call(this, name);
 
 	this.parseExpectedArgs(args);
@@ -21,41 +22,46 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype.command = function(command) {
+// eslint-disable-next-line no-shadow
+Command.prototype.command = function command(command) {
 	this.commands.push(command);
+
 	command.parent = this;
+
 	return command;
 };
 
-Command.prototype.asyncAction = function(func) {
-	var self = this;
-	self.action(function() {
-		var args = utils.slice(arguments);
-		Steppy(
-			function() {
-				var initParams = utils.pick(
-					self.parent,
-					[
-						'config', 'dir', 'timeout', 'template', 'adapter',
-						'url', 'trace', 'silent'
-					]
+Command.prototype.asyncAction = function asyncAction(func) {
+	const self = this;
+
+	self.action(function action() {
+		const args = _(arguments).toArray();
+
+		Command.initialized = true;
+
+		Promise.resolve()
+			.then(() => {
+				const initParams = _({}).extend(self._initParams);
+
+				initParams.migratorParams = _(self.parent).pick(
+					'config', 'dir', 'timeout', 'template', 'adapter',
+					'url', 'trace', 'silent'
 				);
 
-				self.init(initParams, self._initParams);
-
-				args.push(this.slot());
-				func.apply(self, args);
-			},
-			function(err) {
-				if (err) {
-					self.onError(err);
-					process.exit(1);
-				} else {
-					if (self.parent.exit) process.exit();
+				return self.init(initParams);
+			})
+			.then(() => {
+				return func.apply(self, args);
+			})
+			.then(() => {
+				if (self.parent.exit) {
+					process.exit();
 				}
-
-			}
-		);
+			})
+			.catch((err) => {
+				self.onError(err);
+				process.exit(1);
+			});
 	});
 };
 
@@ -65,41 +71,51 @@ Command.prototype.asyncAction = function(func) {
  * `log` could be supressed by --silent
  * `info`, `error` will be shown anyway
  */
-Command.prototype._initLogger = function(params) {
-	var logger = utils.extend({}, console);
+Command.prototype._initLogger = function _initLogger(params) {
+	const logger = _({}).extend(console);
 
-	logger.debug = params.trace ? logger.log : utils.noop;
+	logger.debug = params.trace ? logger.log : _.noop;
 
 	if (params.silent) {
-		logger.log = utils.noop;
+		logger.log = _.noop;
 	}
 
 	this.logger = logger;
 };
 
-Command.prototype.init = function(params, opts) {
-	opts = opts || {};
+Command.prototype.init = function init(params) {
+	let migrator;
 
-	Command.initialized = true;
+	return Promise.resolve()
+		.then(() => {
+			this._initLogger(this.parent);
 
-	this._initLogger(params);
+			migrator = new Migrator();
+			return migrator.configure(params.migratorParams);
+		})
+		.then(() => {
+			if (params.skipDirCheck) {
+				return true;
+			} else {
+				return migrator.isDirExists();
+			}
+		})
+		.then((dirExists) => {
+			if (!dirExists) {
+				throw new Error(
+					`Migrations directory: ${migrator.params.dir} doesn't exist. ` +
+					'You should run `init` command to initialize migrations or change ' +
+					'`dir` option.'
+				);
+			}
 
-	var migrator = new Migrator(params);
+			this.logger.debug('Current parameters:', migrator.params);
 
-	if (!opts.skipDirCheck && !migrator.isDirExists()) {
-		throw new Error(
-			'Migrations directory: ' + migrator.params.dir + ' doesn`t exist. ' +
-			'You should run `init` command to initialize migrations or change ' +
-			'`dir` option.'
-		);
-	}
-
-	this.logger.debug('current parameters:', migrator.params);
-
-	this.migrator = migrator;
+			this.migrator = migrator;
+		});
 };
 
-Command.prototype.onError = function(err) {
+Command.prototype.onError = function onError(err) {
 	if (this.trace || this.parent.trace) {
 		this.logger.error(err.stack || err);
 	} else {
@@ -107,33 +123,34 @@ Command.prototype.onError = function(err) {
 	}
 };
 
-Command.prototype._filterMigrationNames = function(params, callback) {
-	this.migrator.filterMigrationNames({
-		by: params.by,
-		names: params.names,
-		tag: params.tag
-	}, function(err, filterResult) {
-		callback(err, filterResult && filterResult.names);
-	});
-};
-
-Command.prototype.execute = function(params, callback) {
-	var self = this;
-	Steppy(
-		function() {
-			self.migrator.connect(this.slot());
-		},
-		function() {
-			self._execute(params, this.slot());
-		},
-		function(err) {
-			self.migrator.disconnect(function(disconnectErr) {
-				callback(err || disconnectErr);
+Command.prototype._filterMigrationNames =
+	function _filterMigrationNames(params) {
+		return Promise.resolve()
+			.then(() => {
+				return this.migrator.filterMigrationNames({
+					by: params.by,
+					names: params.names,
+					tag: params.tag
+				});
+			})
+			.then((filterResult) => {
+				return filterResult && filterResult.names;
 			});
-		}
-	);
+	};
+
+Command.prototype.execute = function execute(params) {
+	return Promise.resolve()
+		.then(() => {
+			return this.migrator.connect();
+		})
+		.then(() => {
+			return this._execute(params);
+		})
+		.then(() => {
+			return this.migrator.disconnect();
+		});
 };
 
-Command.isInitialized = function() {
+Command.isInitialized = function isInitialized() {
 	return Boolean(Command.initialized);
 };

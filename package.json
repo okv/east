@@ -21,20 +21,29 @@
   ],
   "scripts": {
     "test": "cd test && mocha ./ --reporter spec",
-    "lint": "jshint ./"
+    "lint": "eslint ./"
   },
   "bin": {
     "east": "./bin/east"
   },
   "dependencies": {
+    "callbackify": "1.1.0",
     "commander": "2.9.0",
     "expressionify": "0.9.3",
+    "fs-extra": "5.0.0",
+    "p-each-series": "1.0.0",
+    "p-map": "1.2.0",
+    "p-props": "1.2.0",
+    "p-timeout": "2.0.1",
+    "pify": "3.0.0",
     "progress": "1.1.8",
-    "twostep": "0.4.2"
+    "underscore": "1.9.0"
   },
   "devDependencies": {
     "mocha": "2.3.3",
-    "expect.js": "0.3.1",
-    "jshint": "2.4.4"
+    "eslint": "4.14.0",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-plugin-import": "2.8.0",
+    "expect.js": "0.3.1"
   }
 }

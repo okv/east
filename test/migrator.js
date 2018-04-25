@@ -1,578 +1,580 @@
 'use strict';
 
-var expect = require('expect.js'),
-	Migrator = require('../lib/migrator'),
-	Path = require('path'),
-	Steppy = require('twostep').Steppy,
-	utils = require('../lib/utils');
+const _ = require('underscore');
+const expect = require('expect.js');
+const Migrator = require('../lib/migrator');
+const pathUtils = require('path');
+const pEachSeries = require('p-each-series');
+const pMap = require('p-map');
+const pProps = require('p-props');
 
-describe('migrator', function() {
-	var migrator = new Migrator();
+describe('migrator', () => {
+	const migrator = new Migrator();
 
-	before(function(done) {
-		Steppy(
-			function() {
-				migrator.connect(this.slot());
-			},
-			function() {
-				migrator.getAllMigrationNames(this.slot());
+	const createMigrations = (baseNames) => {
+		return pMap(baseNames, (baseName) => {
+			return migrator.create(baseName);
+		}, {concurrency: 1});
+	};
 
-				migrator.adapter.getExecutedMigrationNames(this.slot());
-			},
-			function(err, allNames, executedNames) {
-				// remove all existing migrations
-				allNames.forEach(function(name) {
-					migrator.remove(name);
+	const removeMigrations = (names) => {
+		return pMap(names, (name) => migrator.remove(name));
+	};
+
+	before(() => {
+		return Promise.resolve()
+			.then(() => migrator.configure())
+			.then(() => migrator.connect())
+			.then(() => {
+				return pProps({
+					allNames: migrator.getAllMigrationNames(),
+					executedNames: migrator.adapter.getExecutedMigrationNames()
 				});
-
-				// unmark all executed
-				var unmarkGroup = this.makeGroup();
-				executedNames.forEach(function(name) {
-					migrator.adapter.unmarkExecuted(name, unmarkGroup.slot());
-				});
-			},
-			done
-		);
+			})
+			.then((result) => {
+				// remove all existing migrations and unmark all executed
+				return Promise.all([
+					removeMigrations(result.allNames),
+					pMap(result.executedNames, (name) => {
+						return migrator.adapter.unmarkExecuted(name);
+					})
+				]);
+			});
 	});
 
-	// just output currently used adapter
-	it('uses adapter ' + migrator.params.adapter, function() {});
-
-	describe('adapter', function() {
-		var tryLoad,
-			mockAdapter = function() {
-				this.getTemplatePath = function() {};
-			};
-
-		before(function() {
-			tryLoad = Migrator.prototype._tryLoadAdapter;
-		});
+	describe('adapter', () => {
+		const mockAdapter = function mockAdapter() {
+			this.getTemplatePath = () => {};
+		};
 
 		it('expect be loaded migrator-related first and than CWD-related',
-			function(done) {
-				var paths = [];
-				Migrator.prototype._tryLoadAdapter = function(path) {
-					paths.push(path);
-					return paths.length === 2 ? mockAdapter : new Error('Whatever.');
-				};
+			() => {
+				const paths = [];
 
-				new Migrator({
-					adapter: 'X'
+				return Promise.resolve()
+					.then(() => {
+						const migratorMock = new Migrator();
+
+						migratorMock._tryLoadAdapter = (path) => {
+							paths.push(path);
+
+							return paths.length === 2 ? mockAdapter : new Error('Whatever.');
+						};
+
+						return migratorMock.configure({adapter: 'X'});
+					})
+					.then(() => {
+						expect(paths[0]).eql('X');
+						expect(paths[1].substr(-2, 2)).eql('/X');
+					});
+			});
+
+		it('expect to throw when both paths can not be resolved', () => {
+			return Promise.resolve()
+				.then(() => {
+					const migratorMock = new Migrator();
+
+					migratorMock._tryLoadAdapter = () => {
+						throw new Error('Whatever.');
+					};
+
+					return migratorMock.configure({adapter: 'X'});
+				})
+				.then((result) => {
+					throw new Error(`Error expected, but got result: ${result}`);
+				})
+				.catch((err) => {
+					expect(err).ok();
+					expect(err).an(Error);
+					expect(err.message).equal('Whatever.');
 				});
-
-				expect(paths[0]).eql('X');
-				expect(paths[1].substr(-2, 2)).eql('/X');
-				done();
-			}
-		);
-
-		it('expect to throw when both paths can not be resolved', function(done) {
-			Migrator.prototype._tryLoadAdapter = function() {
-				return new Error('Whatever.');
-			};
-
-			expect(function() {
-				new Migrator({
-					adapter: 'X'
-				});
-			}).to.throwError(/Whatever./);
-			done();
-		});
-
-		after(function() {
-			Migrator.prototype._tryLoadAdapter = tryLoad;
 		});
 	});
 
-	var baseNames = ['first', 'second', 'third', 'second'],
-		names = [];
+	describe('create', () => {
+		const baseNames = ['first', 'second', 'third', 'second'];
+		let names = [];
 
-	describe('create', function() {
-		it('should create migrations sequentially without errors', function(done) {
-			Steppy(
-				function() {
-					var funcs = baseNames.map(function(baseName) {
-						return function() {
-							var stepCallback = this.slot();
-							migrator.create(baseName, function(err, name) {
-								names.push(name);
-								stepCallback(err, name);
-							});
-						};
-					});
-					funcs.push(this.slot());
+		after(() => removeMigrations(names));
 
-					Steppy.apply(null, funcs);
-				},
-				done
-			);
+		it('should create migrations sequentially without errors', () => {
+			return Promise.resolve()
+				.then(() => createMigrations(baseNames))
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
-		it('created migrations should have sequential numbers', function() {
-			var expectedNames = baseNames.map(function(baseName, index) {
-				return String(index + 1) + '_' + baseName;
+		it('created migrations should have sequential numbers', () => {
+			const expectedNames = baseNames.map((baseName, index) => {
+				return `${String(index + 1)}_${baseName}`;
 			});
+
 			expect(names).eql(expectedNames);
 		});
 
-		it('created migrations should exist', function(done) {
-			migrator.checkMigrationsExists(names, done);
+		it('created migrations should exist', () => {
+			return migrator.checkMigrationsExists(names);
 		});
 
-		it('created migrations should be loadable', function(done) {
-			Steppy(
-				function() {
-					var loadGroup = this.makeGroup();
-					names.forEach(function(name) {
-						migrator.loadMigration(name, loadGroup.slot());
-					});
-				},
-				done
-			);
+		it('created migrations should be loadable', () => {
+			return pEachSeries(names, (name) => migrator.loadMigration(name));
 		});
 
-		it('created migrations should be listed as `new`', function(done) {
-			Steppy(
-				function() {
-					migrator.getNewMigrationNames(this.slot());
-				},
-				function(err, newNames) {
-					expect(newNames).eql(names);
-					this.pass(null);
-				},
-				done
-			);
+		it('created migrations should be listed as `new`', () => {
+			return Promise.resolve()
+				.then(() => migrator.getNewMigrationNames())
+				.then((newNames) => expect(newNames).eql(names));
 		});
 	});
 
-	describe('execute', function() {
-		it('execute migration without errors', function(done) {
-			Steppy(
-				function() {
-					migrator.loadMigration(names[0], this.slot());
-				},
-				function(err, migration) {
-					migrator.migrate(migration, this.slot());
-				},
-				done
-			);
+	describe('getAllMigrationNames', () => {
+		let expectedNames = [];
+
+		before(() => {
+			return Promise.resolve()
+				.then(() => {
+					const baseNames = [];
+					const zCharcode = 'z'.charCodeAt(0);
+
+					for (let index = 0; index < 12; index++) {
+						const baseName = String.fromCharCode(zCharcode - index);
+
+						baseNames.push(baseName);
+					}
+
+					return createMigrations(baseNames);
+				})
+				.then((migrationNames) => {
+					expectedNames = migrationNames;
+				});
 		});
 
-		it('migration should be listed as `executed` after that', function(done) {
-			Steppy(
-				function() {
-					migrator.adapter.getExecutedMigrationNames(this.slot());
-				},
-				function(err, executedNames) {
-					expect(executedNames).eql([names[0]]);
-					this.pass(null);
-				},
-				done
-			);
+		after(() => removeMigrations(expectedNames));
+
+		it('should return numeric sorted names', () => {
+			return Promise.resolve()
+				.then(() => migrator.getAllMigrationNames())
+				.then((names) => expect(names).eql(expectedNames));
+		});
+	});
+
+	describe('execute', () => {
+		const baseNames = ['first', 'second', 'third', 'second'];
+		let names = [];
+
+		before(() => {
+			return Promise.resolve()
+				.then(() => createMigrations(baseNames))
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
+		});
+
+		after(() => removeMigrations(names));
+
+		it('execute migration without errors', () => {
+			return Promise.resolve()
+				.then(() => migrator.loadMigration(names[0]))
+				.then((migration) => migrator.migrate(migration));
+		});
+
+		it('migration should be listed as `executed` after that', () => {
+			return Promise.resolve()
+				.then(() => migrator.adapter.getExecutedMigrationNames())
+				.then((executedNames) => expect(executedNames).eql([names[0]]));
 		});
 
 		it(
 			'execution of the same migration with force flag should passes ' +
 			'without errors',
-			function(done) {
-				Steppy(
-					function() {
-						migrator.loadMigration(names[0], this.slot());
-					},
-					function(err, migration) {
+			() => {
+				return Promise.resolve()
+					.then(() => migrator.loadMigration(names[0]))
+					.then((migration) => {
 						migration.force = true;
-						migrator.migrate(migration, this.slot());
-					},
-					done
-				);
+
+						return migrator.migrate(migration);
+					});
 			}
 		);
 
-		it('migration should still be listed as `executed`', function(done) {
-			Steppy(
-				function() {
-					migrator.adapter.getExecutedMigrationNames(this.slot());
-				},
-				function(err, executedNames) {
-					expect(executedNames).eql([names[0]]);
-					this.pass(null);
-				},
-				done
-			);
+		it('migration should still be listed as `executed`', () => {
+			return Promise.resolve()
+				.then(() => migrator.adapter.getExecutedMigrationNames())
+				.then((executedNames) => expect(executedNames).eql([names[0]]));
 		});
 	});
 
-	describe('rollback', function() {
-		it('rollback executed migration without errors', function(done) {
-			Steppy(
-				function() {
-					migrator.loadMigration(names[0], this.slot());
-				},
-				function(err, migration) {
-					migrator.rollback(migration, this.slot());
-				},
-				done
-			);
+	describe('rollback', () => {
+		const baseNames = ['first', 'second', 'third', 'second'];
+		let names = [];
+
+		before(() => {
+			return Promise.resolve()
+				.then(() => createMigrations(baseNames))
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
-		it('expect that no `executed` migration at list', function(done) {
-			Steppy(
-				function() {
-					migrator.adapter.getExecutedMigrationNames(this.slot());
-				},
-				function(err, executedNames) {
-					expect(executedNames).have.length(0);
-					this.pass(null);
-				},
-				done
-			);
+		after(() => removeMigrations(names));
+
+		it('rollback executed migration without errors', () => {
+			return Promise.resolve()
+				.then(() => migrator.loadMigration(names[0]))
+				.then((migration) => migrator.rollback(migration));
 		});
 
-		it('expect that all migrations lists as `new` again', function(done) {
-			Steppy(
-				function() {
-					migrator.getNewMigrationNames(this.slot());
-				},
-				function(err, newNames) {
-					expect(newNames).eql(names);
-					this.pass(null);
-				},
-				done
-			);
+		it('expect that no `executed` migration at list', () => {
+			return Promise.resolve()
+				.then(() => migrator.adapter.getExecutedMigrationNames())
+				.then((executedNames) => expect(executedNames).have.length(0));
+		});
+
+		it('expect that all migrations lists as `new` again', () => {
+			return Promise.resolve()
+				.then(() => migrator.getNewMigrationNames())
+				.then((newNames) => expect(newNames).eql(names));
 		});
 	});
 
-	describe('names normalization', function() {
+	describe('names normalization', () => {
+		const baseNames = ['first', 'second', 'third', 'second'];
+		let names = [];
 
-		var expectNomrmalizedName = function(inputName, expectedName, callback) {
-			Steppy(
-				function() {
-					migrator.normalizeNames([inputName], this.slot());
-				},
-				function(err, normalizedNames) {
+		before(() => {
+			return Promise.resolve()
+				.then(() => createMigrations(baseNames))
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
+		});
+
+		after(() => removeMigrations(names));
+
+		const nomrmalizeAndCheckName = (inputName, expectedName) => {
+			return Promise.resolve()
+				.then(() => migrator.normalizeNames([inputName]))
+				.then((normalizedNames) => {
 					expect(normalizedNames[0]).equal(expectedName);
-					this.pass(null);
-				},
-				callback
-			);
+				});
 		};
 
-		it('by path should be ok', function(done) {
-			var name = names[0],
-				path = Path.join('migrations', name);
-			expectNomrmalizedName(path, name, done);
+		it('by path should be ok', () => {
+			const name = names[0];
+			const path = pathUtils.join('migrations', name);
+
+			return nomrmalizeAndCheckName(path, name);
 		});
 
-		it('by full name should be ok', function(done) {
-			var name = names[0];
-			expectNomrmalizedName(name, name, done);
+		it('by full name should be ok', () => {
+			const name = names[0];
+
+			return nomrmalizeAndCheckName(name, name);
 		});
 
-		it('by number should be ok', function(done) {
-			var number = '1',
-				name = names[0];
-			expectNomrmalizedName(number, name, done);
+		it('by number should be ok', () => {
+			const number = '1';
+			const name = names[0];
+
+			return nomrmalizeAndCheckName(number, name);
 		});
 
-		it('by basename should be ok', function(done) {
-			var baseName = baseNames[0],
-				name = names[0];
-			expectNomrmalizedName(baseName, name, done);
+		it('by basename should be ok', () => {
+			const baseName = baseNames[0];
+			const name = names[0];
+
+			return nomrmalizeAndCheckName(baseName, name);
 		});
 
-		it('by ambiguous basename should return an error', function(done) {
-			var baseName = baseNames[1];
-			Steppy(
-				function() {
-					migrator.normalizeNames([baseName], this.slot());
+		it('by ambiguous basename should return an error', () => {
+			const baseName = baseNames[1];
 
-				},
-				function(err) {
+			return Promise.resolve()
+				.then(() => migrator.normalizeNames([baseName]))
+				.then((result) => {
+					throw new Error(`Error expected, but got result: ${result}`);
+				})
+				.catch((err) => {
 					expect(err).ok();
 					expect(err).an(Error);
 					expect(err.message).contain(
-						'Specified migration name `' + baseName + '` is ambiguous'
+						`Specified migration name "${baseName}" is ambiguous`
 					);
-					done();
-				}
-			);
+				});
 		});
 	});
 
-	describe('remove', function() {
-		it('expect remove without errors', function() {
-			names.forEach(function(name) {
-				return migrator.remove(name);
-			});
+	describe('remove', () => {
+		const baseNames = ['first', 'second', 'third', 'second'];
+		let names = [];
+
+		before(() => {
+			return Promise.resolve()
+				.then(() => createMigrations(baseNames))
+				.then((migrationNames) => {
+					names = migrationNames;
+				});
 		});
 
-		it('removed migrations should not exist', function(done) {
-			Steppy(
-				function() {
-					var existGroup = this.makeGroup();
-					names.forEach(function(name) {
-						migrator.isMigrationExists(name, existGroup.slot());
+		it('expect remove without errors', () => removeMigrations(names));
+
+		it('removed migrations should not exist', () => {
+			return Promise.resolve()
+				.then(() => {
+					return pMap(names, (name) => {
+						return migrator.isMigrationExists(name);
 					});
-				},
-				function(err, existResults) {
-					existResults.forEach(function(existResult) {
+				})
+				.then((existResults) => {
+					existResults.forEach((existResult) => {
 						expect(existResult).equal(false);
 					});
-					this.pass(null);
-				},
-				done
-			);
+				});
 		});
 	});
 
-	var makeMigration = function(params) {
-		var migration = {};
+	const makeMigration = (params) => {
+		const migration = {};
 		migration.name = '9999_test';
-		migration.migrate = function(client, done) {
+
+		migration.migrate = (client, done) => {
 			done();
 		};
-		migration.rollback = function(client, done) {
+		migration.rollback = (client, done) => {
 			done();
 		};
-		return utils.extend(migration, params);
+
+		return _(migration).extend(params);
 	};
 
-	var migration;
+	const validateMigrationAndCheckError = (migration, errorMessage) => {
+		return Promise.resolve()
+			.then(() => migrator.validateMigration(migration))
+			.then((result) => {
+				throw new Error(`Error expected, but got result: ${result}`);
+			})
+			.catch((err) => {
+				expect(err).ok();
+				expect(err).an(Error);
+				expect(err.message).eql(errorMessage);
+			});
+	};
 
-	describe('validate', function() {
+	let migration;
 
-		it('valid migration should be ok', function(done) {
+	describe('validate', () => {
+		it('valid migration should be ok', () => {
 			migration = makeMigration();
-			migrator.validateMigration(migration, done);
+
+			return migrator.validateMigration(migration);
 		});
 
-		var expectValidationError = function(migration, errorMessage, callback) {
-			Steppy(
-				function() {
-					migrator.validateMigration(migration, this.slot());
-				},
-				function(err) {
-					expect(err).ok();
-					expect(err.message).eql(errorMessage);
-					callback();
-				}
-			);
-		};
-
-		var errorMessage;
-		it('non object migration should fail', function(done) {
+		let errorMessage;
+		it('non object migration should fail', () => {
 			errorMessage = 'migration is not an object';
-			expectValidationError(1, errorMessage, done);
+
+			return validateMigrationAndCheckError(1, errorMessage);
 		});
 
-		it('migration without migrate function should fail', function(done) {
+		it('migration without migrate function should fail', () => {
 			migration = makeMigration();
 			delete migration.migrate;
 			errorMessage = '`migrate` function is not set';
-			expectValidationError(migration, errorMessage, done);
+
+			return validateMigrationAndCheckError(migration, errorMessage);
 		});
 
-		it('migration with non function migrate should fail', function(done) {
+		it('migration with non function migrate should fail', () => {
 			migration = makeMigration();
 			migration.migrate = 1;
 			errorMessage = '`migrate` is not a function';
-			expectValidationError(migration, errorMessage, done);
+
+			return validateMigrationAndCheckError(migration, errorMessage);
 		});
 
-		it('migration without rollback should be ok', function(done) {
+		it('migration without rollback should be ok', () => {
 			migration = makeMigration();
 			delete migration.rollback;
-			migrator.validateMigration(migration, done);
+
+			return migrator.validateMigration(migration);
 		});
 
-		it('migration with non function rollback should fail', function(done) {
+		it('migration with non function rollback should fail', () => {
 			migration = makeMigration();
 			migration.rollback = 1;
-			errorMessage = '`rollback` set but it`s not a function';
-			expectValidationError(migration, errorMessage, done);
+			errorMessage = '`rollback` set but it\'s not a function';
+
+			return validateMigrationAndCheckError(migration, errorMessage);
 		});
 
-		it('migration with non array tags should fail', function(done) {
+		it('migration with non array tags should fail', () => {
 			migration = makeMigration();
 			migration.tags = 1;
-			errorMessage = '`tags` set but it`s not an array';
-			expectValidationError(migration, errorMessage, done);
+			errorMessage = '`tags` set but it\'s not an array';
+
+			return validateMigrationAndCheckError(migration, errorMessage);
 		});
 
-		it('migration with tags array should be ok', function(done) {
+		it('migration with tags array should be ok', () => {
 			migration = makeMigration();
 			migration.tags = ['one', 'two'];
-			migrator.validateMigration(migration, done);
+
+			return migrator.validateMigration(migration);
 		});
 	});
 
 	migration = makeMigration();
-	['migrate', 'rollback'].forEach(function(action) {
-		describe(action, function() {
-			it('good migration should be ok', function(done) {
-				migrator[action](migration, done);
-			});
+	['migrate', 'rollback'].forEach((action) => {
+		describe(action, () => {
+			it('good migration should be ok', () => migrator[action](migration));
 
-			it('migration which produce eror should pass it', function(done) {
-				migration[action] = function(client, done) {
-					done(new Error('Test ' + action + ' error'));
+			it('migration which produce eror should pass it', () => {
+				migration[action] = () => {
+					throw new Error(`Test ${action} error`);
 				};
-				migrator[action](migration, function(err) {
-					expect(err).ok();
-					expect(err).a(Error);
-					expect(err).have.property(
-						'message',
-						'Error during ' + action + ' "' + migration.name +
-						'": Test ' + action + ' error'
-					);
-					done();
-				});
+
+				return Promise.resolve()
+					.then(() => migrator[action](migration))
+					.then((result) => {
+						throw new Error(`Error expected, but got result: ${result}`);
+					})
+					.catch((err) => {
+						expect(err).ok();
+						expect(err).an(Error);
+						expect(err.message).equal(
+							`Error during ${action} "${migration.name
+							}": Test ${action} error`
+						);
+					});
 			});
 		});
 	});
 
-	describe('filter', function() {
-
-		var migrationNamesHash = {
+	describe('filter', () => {
+		const migrationNamesHash = {
 			one: makeMigration({name: 'one', tags: ['one']}),
 			two: makeMigration({name: 'two', tags: ['one', 'two']}),
 			three: makeMigration({name: 'three', tags: []}),
 			four: makeMigration()
 		};
 
-		describe('by tag', function() {
-			var loadMigration;
-			before(function() {
+		describe('by tag', () => {
+			let loadMigration;
+			before(() => {
 				loadMigration = Migrator.prototype.loadMigration;
 
-				Migrator.prototype.loadMigration = function(name, callback) {
-					callback(null, migrationNamesHash[name]);
+				Migrator.prototype.loadMigration = (name) => {
+					return Promise.resolve(migrationNamesHash[name]);
 				};
 			});
 
-			it('with wrong tag expression, should fail', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: 'one *'
-						}, this.slot());
-					},
-					function(err) {
-						expect(err).ok();
-						expect(err.message).contain('unexpected token "*"');
-						done();
-					}
-				);
-			});
-
-			it('with tag one, should get proper migrations', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: 'one'
-						}, this.slot());
-					},
-					function(err, filterResult) {
-						expect(filterResult).eql({names: ['one', 'two']});
-						this.pass(null);
-					},
-					done
-				);
-			});
-
-			it('with tag two, should get proper migrations', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: 'two'
-						}, this.slot());
-					},
-					function(err, filterResult) {
-						expect(filterResult).eql({names: ['two']});
-						this.pass(null);
-					},
-					done
-				);
-			});
-
-			it('with tag with no migrations, should get nothing', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: 'three'
-						}, this.slot());
-					},
-					function(err, filterResult) {
-						expect(filterResult).eql({names: []});
-						this.pass(null);
-					},
-					done
-				);
-			});
-
-			it('with tag one or two, should get proper migrations', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: 'one | two'
-						}, this.slot());
-					},
-					function(err, filterResult) {
-						expect(filterResult).eql({names: ['one', 'two']});
-						this.pass(null);
-					},
-					done
-				);
-			});
-
-			it('with tag one and two, should get proper migrations', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: 'one & two'
-						}, this.slot());
-					},
-					function(err, filterResult) {
-						expect(filterResult).eql({names: ['two']});
-						this.pass(null);
-					},
-					done
-				);
-			});
-
-			it('with tag not two, should get proper migrations', function(done) {
-				Steppy(
-					function() {
-						migrator.filterMigrationNames({
-							by: 'tag',
-							names: utils.keys(migrationNamesHash),
-							tag: '!two'
-						}, this.slot());
-					},
-					function(err, filterResult) {
-						expect(filterResult).eql({names: ['one', 'three', '9999_test']});
-						this.pass(null);
-					},
-					done
-				);
-			});
-
-			after(function() {
+			after(() => {
 				Migrator.prototype.loadMigration = loadMigration;
 			});
-		});
 
+			it('with wrong tag expression, should fail', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: 'one *'
+						});
+					})
+					.then((result) => {
+						throw new Error(`Error expected, but got result: ${result}`);
+					})
+					.catch((err) => {
+						expect(err).ok();
+						expect(err.message).contain('unexpected token "*"');
+					});
+			});
+
+			it('with tag one, should get proper migrations', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: 'one'
+						});
+					})
+					.then((result) => {
+						expect(result).eql({names: ['one', 'two']});
+					});
+			});
+
+			it('with tag two, should get proper migrations', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: 'two'
+						});
+					})
+					.then((result) => {
+						expect(result).eql({names: ['two']});
+					});
+			});
+
+			it('with tag with no migrations, should get nothing', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: 'three'
+						});
+					})
+					.then((result) => {
+						expect(result).eql({names: []});
+					});
+			});
+
+			it('with tag one or two, should get proper migrations', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: 'one | two'
+						});
+					})
+					.then((result) => {
+						expect(result).eql({names: ['one', 'two']});
+					});
+			});
+
+			it('with tag one and two, should get proper migrations', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: 'one & two'
+						});
+					})
+					.then((result) => {
+						expect(result).eql({names: ['two']});
+					});
+			});
+
+			it('with tag not two, should get proper migrations', () => {
+				return Promise.resolve()
+					.then(() => {
+						return migrator.filterMigrationNames({
+							by: 'tag',
+							names: _(migrationNamesHash).keys(),
+							tag: '!two'
+						});
+					})
+					.then((result) => {
+						expect(result).eql({names: ['one', 'three', '9999_test']});
+					});
+			});
+		});
 	});
 });
