@@ -1,9 +1,10 @@
 'use strict';
 
+const _ = require('underscore');
 const BaseCommand = require('commander').Command;
+const inherits = require('util').inherits;
 const Migrator = require('../../lib/migrator');
 const utils = require('../../lib/utils');
-const inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	params = params || {};
@@ -41,14 +42,11 @@ Command.prototype.asyncAction = function asyncAction(func) {
 
 		Promise.resolve()
 			.then(() => {
-				const initParams = utils.extend({}, self._initParams);
+				const initParams = _({}).extend(self._initParams);
 
-				initParams.migratorParams = utils.pick(
-					self.parent,
-					[
-						'config', 'dir', 'timeout', 'template', 'adapter',
-						'url', 'trace', 'silent'
-					]
+				initParams.migratorParams = _(self.parent).pick(
+					'config', 'dir', 'timeout', 'template', 'adapter',
+					'url', 'trace', 'silent'
 				);
 
 				return self.init(initParams);
@@ -75,7 +73,7 @@ Command.prototype.asyncAction = function asyncAction(func) {
  * `info`, `error` will be shown anyway
  */
 Command.prototype._initLogger = function _initLogger(params) {
-	const logger = utils.extend({}, console);
+	const logger = _({}).extend(console);
 
 	logger.debug = params.trace ? logger.log : utils.noop;
 
