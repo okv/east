@@ -48,9 +48,9 @@ program.command(new Command('create <basename>'))
 		return Promise.resolve()
 			.then(() => {
 				// TODO: remove after removing of fallbackCommaSeparatedNames
-				if (~basename.indexOf(',')) throw new Error(
-					'Basename should not contain commas'
-				);
+				if (basename.indexOf(',') !== -1) {
+					throw new Error('Basename should not contain commas');
+				}
 
 				return this.migrator.create(basename);
 			})
