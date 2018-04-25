@@ -36,7 +36,7 @@ Command.prototype.asyncAction = function asyncAction(func) {
 	const self = this;
 
 	self.action(function action() {
-		const args = utils.slice(arguments);
+		const args = _(arguments).toArray();
 
 		Command.initialized = true;
 
