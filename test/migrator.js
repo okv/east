@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('underscore');
 const expect = require('expect.js');
 const Migrator = require('../lib/migrator');
 const pathUtils = require('path');
@@ -344,7 +345,7 @@ describe('migrator', () => {
 			done();
 		};
 
-		return utils.extend(migration, params);
+		return _(migration).extend(params);
 	};
 
 	const validateMigrationAndCheckError = (migration, errorMessage) => {
@@ -477,7 +478,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: 'one *'
 						});
 					})
@@ -495,7 +496,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: 'one'
 						});
 					})
@@ -509,7 +510,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: 'two'
 						});
 					})
@@ -523,7 +524,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: 'three'
 						});
 					})
@@ -537,7 +538,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: 'one | two'
 						});
 					})
@@ -551,7 +552,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: 'one & two'
 						});
 					})
@@ -565,7 +566,7 @@ describe('migrator', () => {
 					.then(() => {
 						return migrator.filterMigrationNames({
 							by: 'tag',
-							names: utils.keys(migrationNamesHash),
+							names: _(migrationNamesHash).keys(),
 							tag: '!two'
 						});
 					})
