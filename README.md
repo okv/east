@@ -148,6 +148,29 @@ exports.rollback = function(client, done) {
 
 or you can use special adapter for database (see [adapters](#adapters) section)
 
+#### Migration file number format
+
+The default format for migration file names is to prepend a number to the filename which is incremented with every
+new file. This creates migration files such as `migrations/1_doSomething.js`, `migrations/2_doSomethingElse.js`.
+
+If you prefer your files to be created with a timestap instead of sequential numbers, you can set the
+`migrationNumberFormat` configuration parameter in your `.eastrc` to `dateTime`:
+
+```json
+{
+    "migrationNumberFormat": "dateTime"
+}
+```
+
+This will create migration files such as `migrations/20190720172730_doSomething.js`.
+
+For the default behaviour, you can omit the `migrationNumberFormat` configuration option or set it to:
+```json
+{
+    "migrationNumberFormat": "sequentialNumber"
+}
+```
+
 ### migrate
 
 let's create one more migration
