@@ -118,13 +118,14 @@ exports.rollback = function(client, done) {
 };
 ```
 
-`client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)
-`done` is function which should be called at the end of migration (if any
+* `client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)
+* `done` is function which should be called at the end of migration (if any
 error occured you can pass it as first argument)
-migration also can be synchronous - declare only `client` at `migrate` or `rollback`
-`rollback` function is optional and may be omitted
+* instead of using `done` argument promise can be returned or async function can be used
+* migration also can be synchronous - declare only `client` at `migrate` or `rollback`
+* `rollback` function is optional and may be omitted
 
-Migration file is normal node.js module and you can migrate any database e.g.
+Migration file is regular node.js module and allows migrate any database e.g.
 
 ```js
 // include your database wrapper which you already use in app
