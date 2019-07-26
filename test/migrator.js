@@ -92,39 +92,69 @@ describe('migrator', () => {
 	});
 
 	describe('create', () => {
-		const baseNames = ['first', 'second', 'third', 'second'];
-		let names = [];
+		describe('when the migration number format is sequentialNumber', () => {
+			const baseNames = ['first', 'second', 'third', 'second'];
+			let names = [];
 
-		after(() => removeMigrations(names));
+			after(() => removeMigrations(names));
 
-		it('should create migrations sequentially without errors', () => {
-			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => {
-					names = migrationNames;
-				});
-		});
-
-		it('created migrations should have sequential numbers', () => {
-			const expectedNames = baseNames.map((baseName, index) => {
-				return `${String(index + 1)}_${baseName}`;
+			it('should create migrations sequentially without errors', () => {
+				return Promise.resolve()
+					.then(() => createMigrations(baseNames))
+					.then((migrationNames) => {
+						names = migrationNames;
+					});
 			});
 
-			expect(names).eql(expectedNames);
+			it('created migrations should have sequential numbers', () => {
+				const expectedNames = baseNames.map((baseName, index) => {
+					return `${String(index + 1)}_${baseName}`;
+				});
+
+				expect(names).eql(expectedNames);
+			});
+
+			it('created migrations should exist', () => {
+				return migrator.checkMigrationsExists(names);
+			});
+
+			it('created migrations should be loadable', () => {
+				return pEachSeries(names, (name) => migrator.loadMigration(name));
+			});
+
+			it('created migrations should be listed as `new`', () => {
+				return Promise.resolve()
+					.then(() => migrator.getNewMigrationNames())
+					.then((newNames) => expect(newNames).eql(names));
+			});
 		});
 
-		it('created migrations should exist', () => {
-			return migrator.checkMigrationsExists(names);
-		});
+		describe('when the migration number format is a dateTime', () => {
+			const baseNames = ['first', 'second', 'third'];
+			let names = [];
 
-		it('created migrations should be loadable', () => {
-			return pEachSeries(names, (name) => migrator.loadMigration(name));
-		});
+			before(() => {
+				migrator.params.migrationNumberFormat = 'dateTime';
+			});
 
-		it('created migrations should be listed as `new`', () => {
-			return Promise.resolve()
-				.then(() => migrator.getNewMigrationNames())
-				.then((newNames) => expect(newNames).eql(names));
+			after(() => {
+				removeMigrations(names);
+				migrator.params.migrationNumberFormat = 'sequentialNumber';
+			});
+
+			it('should create new files with a dateTime prefix', () => {
+				return Promise.resolve()
+					.then(() => createMigrations(baseNames))
+					.then((migrationNames) => {
+						names = migrationNames;
+					});
+			});
+
+			it('created migrations should have a dateTime prefix', () => {
+				names.forEach((name, index) => {
+					expect(name).to.match(new RegExp(`^[0-9]{14}_${baseNames[index]}$`));
+				});
+			});
 		});
 	});
 
