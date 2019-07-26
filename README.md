@@ -155,7 +155,7 @@ The default format for migration file names is to prepend a number to the
 filename which is incremented with every new file. This creates migration files
 such as `migrations/1_doSomething.js`, `migrations/2_doSomethingElse.js`.
 
-If you prefer your files to be created with a timestap instead of sequential
+If you prefer your files to be created with a date time instead of sequential
 numbers, you can set the `migrationNumberFormat` configuration parameter in
 your `.eastrc` to `dateTime`:
 
