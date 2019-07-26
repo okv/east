@@ -163,7 +163,8 @@ If you prefer your files to be created with a timestap instead of sequential num
 }
 ```
 
-This will create migration files such as `migrations/20190720172730_doSomething.js`.
+This will create migration files with date time prefix in `YYYYMMDDhhmmss`
+format (e.g. `migrations/20190720172730_doSomething.js`).
 
 For the default behaviour, you can omit the `migrationNumberFormat` configuration option or set it to:
 ```json
