@@ -92,39 +92,113 @@ describe('migrator', () => {
 	});
 
 	describe('create', () => {
-		const baseNames = ['first', 'second', 'third', 'second'];
-		let names = [];
+		describe('when the migration number format is sequentialNumber', () => {
+			const baseNames = ['first', 'second', 'third', 'second'];
+			let names = [];
 
-		after(() => removeMigrations(names));
+			after(() => removeMigrations(names));
 
-		it('should create migrations sequentially without errors', () => {
-			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
-				.then((migrationNames) => {
-					names = migrationNames;
-				});
-		});
-
-		it('created migrations should have sequential numbers', () => {
-			const expectedNames = baseNames.map((baseName, index) => {
-				return `${String(index + 1)}_${baseName}`;
+			it('should create migrations sequentially without errors', () => {
+				return Promise.resolve()
+					.then(() => createMigrations(baseNames))
+					.then((migrationNames) => {
+						names = migrationNames;
+					});
 			});
 
-			expect(names).eql(expectedNames);
+			it('created migrations should have sequential numbers', () => {
+				const expectedNames = baseNames.map((baseName, index) => {
+					return `${String(index + 1)}_${baseName}`;
+				});
+
+				expect(names).eql(expectedNames);
+			});
+
+			it('created migrations should exist', () => {
+				return migrator.checkMigrationsExists(names);
+			});
+
+			it('created migrations should be loadable', () => {
+				return pEachSeries(names, (name) => migrator.loadMigration(name));
+			});
+
+			it('created migrations should be listed as `new`', () => {
+				return Promise.resolve()
+					.then(() => migrator.getNewMigrationNames())
+					.then((newNames) => expect(newNames).eql(names));
+			});
 		});
 
-		it('created migrations should exist', () => {
-			return migrator.checkMigrationsExists(names);
+		describe('when the migration number format is a dateTime', () => {
+			const baseNames = ['first', 'second', 'third'];
+			let names = [];
+
+			before(() => {
+				migrator.params.migrationNumberFormat = 'dateTime';
+			});
+
+			after(() => {
+				removeMigrations(names);
+				migrator.params.migrationNumberFormat = 'sequentialNumber';
+			});
+
+			it('should create new files with a dateTime prefix', () => {
+				return Promise.resolve()
+					.then(() => createMigrations(baseNames))
+					.then((migrationNames) => {
+						names = migrationNames;
+					});
+			});
+
+			it('created migrations should have a dateTime prefix', () => {
+				names.forEach((name, index) => {
+					expect(name).to.match(new RegExp(`^[0-9]{14}_${baseNames[index]}$`));
+				});
+			});
 		});
 
-		it('created migrations should be loadable', () => {
-			return pEachSeries(names, (name) => migrator.loadMigration(name));
-		});
+		describe('when the migration number format is unknown', () => {
+			const baseNames = ['first', 'second', 'third'];
+			let allNamesBefore;
 
-		it('created migrations should be listed as `new`', () => {
-			return Promise.resolve()
-				.then(() => migrator.getNewMigrationNames())
-				.then((newNames) => expect(newNames).eql(names));
+			before(() => {
+				migrator.params.migrationNumberFormat = 'unknown';
+
+				return Promise.resolve()
+					.then(() => migrator.getAllMigrationNames())
+					.then((names) => {
+						allNamesBefore = names;
+					});
+			});
+
+			after(() => {
+				migrator.params.migrationNumberFormat = 'sequentialNumber';
+			});
+
+			it('should return an error', () => {
+				return Promise.resolve()
+					.then(() => createMigrations(baseNames))
+					.then((result) => {
+						throw new Error(`Error expected, but got result: ${result}`);
+					})
+					.catch((err) => {
+						expect(err).ok();
+						expect(err).an(Error);
+						expect(err.message).eql(
+							'Unrecognised number format: ' +
+							`"${migrator.params.migrationNumberFormat}". ` +
+							'Supported values are "dateTime" and "sequentialNumber".'
+						);
+					});
+			});
+
+			it('should not create any migrations', () => {
+				return Promise.resolve()
+					.then(() => migrator.getAllMigrationNames())
+					.then((names) => {
+						expect(names).eql(allNamesBefore);
+					});
+			});
 		});
 	});
 

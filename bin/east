@@ -37,7 +37,7 @@ program
 			.then(() => {
 				this.logger.info(
 					'initialization successfully done, migration files will be ' +
-					'stored at: `' + self.migrator.params.dir + '`'
+					'stored at: `' + this.migrator.params.dir + '`'
 				);
 			});
 	});
