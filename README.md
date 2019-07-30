@@ -118,13 +118,14 @@ exports.rollback = function(client, done) {
 };
 ```
 
-`client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)
-`done` is function which should be called at the end of migration (if any
+* `client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)
+* `done` is function which should be called at the end of migration (if any
 error occured you can pass it as first argument)
-migration also can be synchronous - declare only `client` at `migrate` or `rollback`
-`rollback` function is optional and may be omitted
+* instead of using `done` argument promise can be returned or async function can be used
+* migration also can be synchronous - declare only `client` at `migrate` or `rollback`
+* `rollback` function is optional and may be omitted
 
-Migration file is normal node.js module and you can migrate any database e.g.
+Migration file is regular node.js module and allows migrate any database e.g.
 
 ```js
 // include your database wrapper which you already use in app
@@ -147,6 +148,34 @@ exports.rollback = function(client, done) {
 ```
 
 or you can use special adapter for database (see [adapters](#adapters) section)
+
+#### Migration file number format
+
+The default format for migration file names is to prepend a number to the
+filename which is incremented with every new file. This creates migration files
+such as `migrations/1_doSomething.js`, `migrations/2_doSomethingElse.js`.
+
+If you prefer your files to be created with a date time instead of sequential
+numbers, you can set the `migrationNumberFormat` configuration parameter in
+your `.eastrc` to `dateTime`:
+
+```json
+{
+    "migrationNumberFormat": "dateTime"
+}
+```
+
+This will create migration files with date time prefix in `YYYYMMDDhhmmss`
+format (e.g. `migrations/20190720172730_doSomething.js`).
+
+For the default behaviour, you can omit the `migrationNumberFormat`
+configuration option or set it to:
+
+```json
+{
+    "migrationNumberFormat": "sequentialNumber"
+}
+```
 
 ### migrate
 
