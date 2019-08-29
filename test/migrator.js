@@ -1,12 +1,15 @@
 'use strict';
 
 const _ = require('underscore');
+const tap = require('tap');
 const expect = require('expect.js');
 const Migrator = require('../lib/migrator');
 const pathUtils = require('path');
 const pEachSeries = require('p-each-series');
 const pMap = require('p-map');
 const pProps = require('p-props');
+
+tap.mochaGlobals();
 
 describe('migrator', () => {
 	const migrator = new Migrator();
