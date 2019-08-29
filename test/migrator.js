@@ -141,9 +141,10 @@ describe('migrator', () => {
 			});
 
 			after(() => {
-				removeMigrations(names);
 				migrator.params.migrationNumberFormat = 'sequentialNumber';
 			});
+
+			after(() => removeMigrations(names));
 
 			it('should create new files with a dateTime prefix', () => {
 				return Promise.resolve()
