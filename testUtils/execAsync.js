@@ -1,6 +1,14 @@
 'use strict';
 
-const util = require('util');
-const {exec} = require('child_process');
+const exec = require('child_process').exec;
+const pify = require('pify');
 
-module.exports = util.promisify(exec);
+const execAsync = pify(exec, {multiArgs: true});
+
+module.exports = (cmd) => {
+	return Promise.resolve()
+		.then(() => execAsync(cmd))
+		.then((results) => {
+			return {stdout: results[0], stderr: results[1]};
+		});
+};
