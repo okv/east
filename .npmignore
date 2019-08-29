@@ -4,3 +4,6 @@ migrations
 .jshintignore
 .jshintrc
 .travis.yml
+.nyc_output
+coverage
+
