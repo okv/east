@@ -12,6 +12,7 @@ application) and doesn't provide universal api for working with any kind of
 database.
 
 [![Build Status](https://travis-ci.org/okv/east.svg?branch=master)](https://travis-ci.org/okv/east)
+[![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
 
 ## Node.js compatibility
 
