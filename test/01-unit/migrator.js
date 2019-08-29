@@ -3,11 +3,12 @@
 const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
-const Migrator = require('../../lib/migrator');
 const pathUtils = require('path');
 const pEachSeries = require('p-each-series');
 const pMap = require('p-map');
 const pProps = require('p-props');
+const testUtils = require('../../testUtils');
+const Migrator = require('../../lib/migrator');
 
 tap.mochaGlobals();
 
@@ -27,6 +28,8 @@ describe('migrator', () => {
 	before(() => {
 		return Promise.resolve()
 			.then(() => migrator.configure())
+			.then(() => testUtils.removeMigratorDir(migrator))
+			.then(() => migrator.init())
 			.then(() => migrator.connect())
 			.then(() => {
 				return pProps({
@@ -44,6 +47,8 @@ describe('migrator', () => {
 				]);
 			});
 	});
+
+	after(() => testUtils.removeMigratorDir(migrator));
 
 	describe('adapter', () => {
 		const mockAdapter = function mockAdapter() {
