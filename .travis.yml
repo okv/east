@@ -9,4 +9,14 @@ node_js:
 
 script:
     - npm run lint
+
     - npm test
+
+    - >
+      npmVersionMajor=`npm --version | grep -Eo '^[0-9]+'`;
+
+      if [ $npmVersionMajor -ge 6 ]; then
+        npm audit;
+      else
+        echo "Do not run `npm audit` for npm < 6 ($npmVersionMajor)";
+      fi;
