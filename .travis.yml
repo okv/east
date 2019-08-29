@@ -29,5 +29,5 @@ script:
         npm run makeCodeCoverageDetailReport;
         coveralls < coverage/lcov.info;
       else
-        echo "*** Do make coverage reports for non node.js 12 builds ($nodeVersionMajor)";
+        echo "*** Do not make coverage reports for non node.js 12 builds ($nodeVersionMajor)";
       fi;
