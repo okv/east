@@ -9,12 +9,12 @@ node_js:
 
 script:
     - >
-      npmVersionMajor=`npm --version | grep -Eo '^[0-9]+'`;
+      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
 
-      if [ $npmVersionMajor -ge 6 ]; then
+      if [ $nodeVersionMajor -eq 10 ]; then
         npm audit;
       else
-        echo "Do not run \`npm audit\` for npm < 6 ($npmVersionMajor)";
+        echo "*** Do not run \`npm audit\` for non node.js 10 builds ($nodeVersionMajor)";
       fi;
 
     - npm run lint
