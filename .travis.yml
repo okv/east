@@ -18,5 +18,5 @@ script:
       if [ $npmVersionMajor -ge 6 ]; then
         npm audit;
       else
-        echo "Do not run `npm audit` for npm < 6 ($npmVersionMajor)";
+        echo "Do not run \`npm audit\` for npm < 6 ($npmVersionMajor)";
       fi;
