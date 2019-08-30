@@ -2,7 +2,6 @@
 
 const tap = require('tap');
 const testUtils = require('../../../../../../testUtils');
-const Migrator = require('../../../../../../lib/migrator');
 
 tap.mochaGlobals();
 
@@ -11,19 +10,18 @@ const describeTitle = 'bin/east init command with suitable params';
 
 describe(describeTitle, () => {
 	let commandResult;
-
-	const migrator = new Migrator();
+	let migrator;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => migrator.configure())
-			.then(() => {
-				return testUtils.removeMigratorDir(migrator);
+			.then(() => testUtils.createMigrator())
+			.then((createdMigrator) => {
+				migrator = createdMigrator;
 			});
 	});
 
 	after(() => {
-		return testUtils.removeMigratorDir(migrator);
+		return testUtils.destroyMigrator({migrator});
 	});
 
 	it('should be done without error', () => {

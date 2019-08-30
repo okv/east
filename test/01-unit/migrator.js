@@ -13,7 +13,7 @@ const Migrator = require('../../lib/migrator');
 tap.mochaGlobals();
 
 describe('migrator', () => {
-	const migrator = new Migrator();
+	let migrator;
 
 	const createMigrations = (baseNames) => {
 		return pMap(baseNames, (baseName) => {
@@ -27,10 +27,10 @@ describe('migrator', () => {
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => migrator.configure())
-			.then(() => testUtils.removeMigratorDir(migrator))
-			.then(() => migrator.init())
-			.then(() => migrator.connect())
+			.then(() => testUtils.createMigrator({init: true, connect: true}))
+			.then((createdMigrator) => {
+				migrator = createdMigrator;
+			})
 			.then(() => {
 				return pProps({
 					allNames: migrator.getAllMigrationNames(),
@@ -48,7 +48,7 @@ describe('migrator', () => {
 			});
 	});
 
-	after(() => testUtils.removeMigratorDir(migrator));
+	after(() => testUtils.destroyMigrator({migrator}));
 
 	describe('adapter', () => {
 		const mockAdapter = function mockAdapter() {
