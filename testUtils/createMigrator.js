@@ -1,16 +1,32 @@
 'use strict';
 
+const pathUtils = require('path');
 const _ = require('underscore');
 const Migrator = require('../lib/migrator');
 const removeMigratorDir = require('./removeMigratorDir');
 
+// allow to enable config loading by env var, useful for integration
+// testing with different adapters
+const loadConfig = Boolean(Number(process.env.NODE_EAST_TEST_LOAD_CONFIG));
+
+const migrationsDirPath = pathUtils.resolve(
+	__dirname,
+	'../test/migrations'
+);
+
 module.exports = (params) => {
-	params = _(params).defaults({
+	params = _({
 		configureParams: {},
 		removeDirBefore: true,
 		init: false,
 		connect: false
+	}).extend(params);
+
+	_(params.configureParams).defaults({
+		dir: migrationsDirPath,
+		loadConfig
 	});
+
 	const migrator = new Migrator();
 
 	return Promise.resolve()

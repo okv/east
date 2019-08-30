@@ -3,6 +3,7 @@
 exports.execAsync = require('./execAsync');
 exports.cleanSnapshotData = require('./cleanSnapshotData');
 exports.getBinPath = require('./getBinPath');
+exports.getTestDirPath = require('./getTestDirPath');
 exports.removeMigratorDir = require('./removeMigratorDir');
 exports.createMigrator = require('./createMigrator');
 exports.destroyMigrator = require('./destroyMigrator');

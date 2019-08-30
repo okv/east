@@ -7,4 +7,4 @@ migrations
 .travis.yml
 .nyc_output
 coverage
-
+tap-snapshots

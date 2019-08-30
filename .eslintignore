@@ -1,4 +1,4 @@
 node_modules
 lib/migrationTemplate.js
 migrations/
-test/tap-snapshots
+tap-snapshots

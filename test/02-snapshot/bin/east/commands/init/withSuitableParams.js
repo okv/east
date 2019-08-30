@@ -28,7 +28,8 @@ describe(describeTitle, () => {
 		return Promise.resolve()
 			.then(() => {
 				return testUtils.execAsync(
-					`"${binPath}" init`
+					`"${binPath}" init`,
+					{cwd: testUtils.getTestDirPath()}
 				);
 			})
 			.then((result) => {

@@ -20,11 +20,11 @@
     "couchbase"
   ],
   "scripts": {
-    "_test": "cd test && tap --reporter spec --no-coverage --color --timeout 10 --bail",
-    "test": "npm run _test ./",
-    "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run _test ./",
-    "makeCodeCoverageDetailReport": "npm run _test ./ -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
-    "makeCodeCoverageSummaryReport": "npm run _test ./ -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
+    "_test": "tap --reporter spec --no-coverage --color --timeout 10 --bail",
+    "test": "npm run _test test",
+    "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run _test test",
+    "makeCodeCoverageDetailReport": "npm run _test test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
+    "makeCodeCoverageSummaryReport": "npm run _test test -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
     "lint": "eslint ./"
   },
   "bin": {

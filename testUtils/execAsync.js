@@ -5,9 +5,9 @@ const pify = require('pify');
 
 const execAsync = pify(exec, {multiArgs: true});
 
-module.exports = (cmd) => {
+module.exports = (cmd, options) => {
 	return Promise.resolve()
-		.then(() => execAsync(cmd))
+		.then(() => execAsync(cmd, options))
 		.then((results) => {
 			return {stdout: results[0], stderr: results[1]};
 		});
