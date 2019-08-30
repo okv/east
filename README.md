@@ -317,7 +317,7 @@ your adapter e.g.
 }
 ```
 
-* Run `NODE_EAST_TEST_LOAD_CONFIG=1 npm run testSpecified test/01-unit/` at
+* Run `NODE_EAST_TEST_LOAD_CONFIG=1 npm run testSpecified test/01-migrator` at
 root of the cloned repository.
 
 
