@@ -2,28 +2,43 @@
 
 const pathUtils = require('path');
 const fse = require('fs-extra');
+const removeMigrations = require('./removeMigrations');
 
 module.exports = (migrator) => {
 	const migrationsFilePath = pathUtils.join(
 		migrator.params.dir,
 		'.migrations'
 	);
+	let dirExists;
 
 	return Promise.resolve()
 		.then(() => {
-			return fse.pathExists(migrationsFilePath);
+			return fse.pathExists(migrator.params.dir);
 		})
-		.then((fileExists) => {
-			if (fileExists) {
-				return fse.unlink(
-					pathUtils.join(migrator.params.dir, '.migrations')
-				);
+		.then((exists) => {
+			dirExists = exists;
+		})
+		.then(() => {
+			if (dirExists) {
+				return migrator.getAllMigrationNames();
+			}
+		})
+		.then((names) => {
+			if (dirExists) {
+				return removeMigrations({migrator, names});
 			}
 		})
 		.then(() => {
-			return fse.pathExists(migrator.params.dir);
+			if (dirExists) {
+				return fse.pathExists(migrationsFilePath);
+			}
 		})
-		.then((dirExists) => {
+		.then((fileExists) => {
+			if (fileExists) {
+				return fse.unlink(migrationsFilePath);
+			}
+		})
+		.then(() => {
 			if (dirExists) {
 				return fse.rmdir(migrator.params.dir);
 			}

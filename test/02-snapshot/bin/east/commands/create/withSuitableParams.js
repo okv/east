@@ -6,7 +6,7 @@ const testUtils = require('../../../../../../testUtils');
 tap.mochaGlobals();
 
 const binPath = testUtils.getBinPath('east');
-const describeTitle = 'bin/east init command with suitable params';
+const describeTitle = 'bin/east create command with suitable params';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -14,7 +14,7 @@ describe(describeTitle, () => {
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator())
+			.then(() => testUtils.createMigrator({init: true}))
 			.then((createdMigrator) => {
 				migrator = createdMigrator;
 			});
@@ -28,7 +28,7 @@ describe(describeTitle, () => {
 		return Promise.resolve()
 			.then(() => {
 				return testUtils.execAsync(
-					`"${binPath}" init`,
+					`"${binPath}" create someMigrationName`,
 					{cwd}
 				);
 			})
