@@ -55,6 +55,10 @@ describe('migrator', () => {
 			this.getTemplatePath = () => {};
 		};
 
+		// just log used adapter name, useful for integration testing with
+		// different adapters
+		it(`should have a name "${migrator.params.adapter}"`, _.noop);
+
 		it('expect be loaded migrator-related first and than CWD-related',
 			() => {
 				const paths = [];
