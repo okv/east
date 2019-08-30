@@ -8,3 +8,4 @@ exports.removeMigratorDir = require('./removeMigratorDir');
 exports.createMigrator = require('./createMigrator');
 exports.destroyMigrator = require('./destroyMigrator');
 exports.createMigrations = require('./createMigrations');
+exports.removeMigrations = require('./removeMigrations');

@@ -15,10 +15,6 @@ tap.mochaGlobals();
 describe('migrator', () => {
 	let migrator;
 
-	const removeMigrations = (names) => {
-		return pMap(names, (name) => migrator.remove(name));
-	};
-
 	before(() => {
 		return Promise.resolve()
 			.then(() => testUtils.createMigrator({init: true, connect: true}))
@@ -34,7 +30,7 @@ describe('migrator', () => {
 			.then((result) => {
 				// remove all existing migrations and unmark all executed
 				return Promise.all([
-					removeMigrations(result.allNames),
+					testUtils.removeMigrations({migrator, names: result.allNames}),
 					pMap(result.executedNames, (name) => {
 						return migrator.adapter.unmarkExecuted(name);
 					})
@@ -102,7 +98,7 @@ describe('migrator', () => {
 			const baseNames = ['first', 'second', 'third', 'second'];
 			let names = [];
 
-			after(() => removeMigrations(names));
+			after(() => testUtils.removeMigrations({migrator, names}));
 
 			it('should create migrations sequentially without errors', () => {
 				return Promise.resolve()
@@ -147,7 +143,7 @@ describe('migrator', () => {
 				migrator.params.migrationNumberFormat = 'sequentialNumber';
 			});
 
-			after(() => removeMigrations(names));
+			after(() => testUtils.removeMigrations({migrator, names}));
 
 			it('should create new files with a dateTime prefix', () => {
 				return Promise.resolve()
@@ -231,7 +227,7 @@ describe('migrator', () => {
 				});
 		});
 
-		after(() => removeMigrations(expectedNames));
+		after(() => testUtils.removeMigrations({migrator, names: expectedNames}));
 
 		it('should return numeric sorted names', () => {
 			return Promise.resolve()
@@ -252,7 +248,7 @@ describe('migrator', () => {
 				});
 		});
 
-		after(() => removeMigrations(names));
+		after(() => testUtils.removeMigrations({migrator, names}));
 
 		it('execute migration without errors', () => {
 			return Promise.resolve()
@@ -299,7 +295,7 @@ describe('migrator', () => {
 				});
 		});
 
-		after(() => removeMigrations(names));
+		after(() => testUtils.removeMigrations({migrator, names}));
 
 		it('rollback executed migration without errors', () => {
 			return Promise.resolve()
@@ -332,7 +328,7 @@ describe('migrator', () => {
 				});
 		});
 
-		after(() => removeMigrations(names));
+		after(() => testUtils.removeMigrations({migrator, names}));
 
 		const nomrmalizeAndCheckName = (inputName, expectedName) => {
 			return Promise.resolve()
@@ -399,7 +395,9 @@ describe('migrator', () => {
 				});
 		});
 
-		it('expect remove without errors', () => removeMigrations(names));
+		it('expect remove without errors', () => {
+			return testUtils.removeMigrations({migrator, names});
+		});
 
 		it('removed migrations should not exist', () => {
 			return Promise.resolve()
