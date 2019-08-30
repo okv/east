@@ -9,3 +9,5 @@ exports.createMigrator = require('./createMigrator');
 exports.destroyMigrator = require('./destroyMigrator');
 exports.createMigrations = require('./createMigrations');
 exports.removeMigrations = require('./removeMigrations');
+exports.markMigrationsExecuted = require('./markMigrationsExecuted');
+exports.unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');

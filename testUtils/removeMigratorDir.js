@@ -3,6 +3,7 @@
 const pathUtils = require('path');
 const fse = require('fs-extra');
 const removeMigrations = require('./removeMigrations');
+const unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
 
 module.exports = (migrator) => {
 	const migrationsFilePath = pathUtils.join(
@@ -24,8 +25,11 @@ module.exports = (migrator) => {
 			}
 		})
 		.then((names) => {
-			if (dirExists) {
-				return removeMigrations({migrator, names});
+			if (names && names.length) {
+				return Promise.all([
+					removeMigrations({migrator, names}),
+					unmarkMigrationsExecuted({migrator, names})
+				]);
 			}
 		})
 		.then(() => {
