@@ -15,12 +15,6 @@ tap.mochaGlobals();
 describe('migrator', () => {
 	let migrator;
 
-	const createMigrations = (baseNames) => {
-		return pMap(baseNames, (baseName) => {
-			return migrator.create(baseName);
-		}, {concurrency: 1});
-	};
-
 	const removeMigrations = (names) => {
 		return pMap(names, (name) => migrator.remove(name));
 	};
@@ -112,7 +106,7 @@ describe('migrator', () => {
 
 			it('should create migrations sequentially without errors', () => {
 				return Promise.resolve()
-					.then(() => createMigrations(baseNames))
+					.then(() => testUtils.createMigrations({migrator, baseNames}))
 					.then((migrationNames) => {
 						names = migrationNames;
 					});
@@ -157,7 +151,7 @@ describe('migrator', () => {
 
 			it('should create new files with a dateTime prefix', () => {
 				return Promise.resolve()
-					.then(() => createMigrations(baseNames))
+					.then(() => testUtils.createMigrations({migrator, baseNames}))
 					.then((migrationNames) => {
 						names = migrationNames;
 					});
@@ -190,7 +184,7 @@ describe('migrator', () => {
 
 			it('should return an error', () => {
 				return Promise.resolve()
-					.then(() => createMigrations(baseNames))
+					.then(() => testUtils.createMigrations({migrator, baseNames}))
 					.then((result) => {
 						throw new Error(`Error expected, but got result: ${result}`);
 					})
@@ -230,7 +224,7 @@ describe('migrator', () => {
 						baseNames.push(baseName);
 					}
 
-					return createMigrations(baseNames);
+					return testUtils.createMigrations({migrator, baseNames});
 				})
 				.then((migrationNames) => {
 					expectedNames = migrationNames;
@@ -252,7 +246,7 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
@@ -299,7 +293,7 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
@@ -332,7 +326,7 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
@@ -399,7 +393,7 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
