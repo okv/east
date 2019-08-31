@@ -11,3 +11,4 @@ exports.createMigrations = require('./createMigrations');
 exports.removeMigrations = require('./removeMigrations');
 exports.markMigrationsExecuted = require('./markMigrationsExecuted');
 exports.unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
+exports.setMigrationTags = require('./setMigrationTags');
