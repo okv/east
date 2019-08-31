@@ -1,7 +1,7 @@
 'use strict';
 
 const migrationsDirRegExp = new RegExp(
-	'`/.+/migrations`'
+	'/.+/migrations'
 );
 const migrationFileRegExp = new RegExp(
 	'/.+/migrations/.+',

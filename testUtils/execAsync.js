@@ -10,5 +10,15 @@ module.exports = (cmd, options) => {
 		.then(() => execAsync(cmd, options))
 		.then((results) => {
 			return {stdout: results[0], stderr: results[1]};
+		})
+		.catch((results) => {
+			const err = results[0];
+			const stdout = results[1];
+			const stderr = results[2];
+
+			err.stdout = stdout;
+			err.stderr = stderr;
+
+			throw err;
 		});
 };

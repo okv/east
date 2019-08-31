@@ -6,6 +6,6 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/init/withSuitableParams.js TAP > output 1`] = `
-initialization successfully done, migration files will be stored at: [Migrations dir]
+initialization successfully done, migration files will be stored at: \`[Migrations dir]\`
 
 `
