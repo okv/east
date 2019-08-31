@@ -6,7 +6,7 @@ const testUtils = require('../../../../../../testUtils');
 tap.mochaGlobals();
 
 const binPath = testUtils.getBinPath('east');
-const describeTitle = 'bin/east migrate without params';
+const describeTitle = 'bin/east migrate with name';
 
 describe(describeTitle, () => {
 	let commandResult;
