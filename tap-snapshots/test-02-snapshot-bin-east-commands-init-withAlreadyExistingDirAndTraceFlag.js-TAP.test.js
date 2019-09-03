@@ -14,7 +14,7 @@ Current parameters: {
     "migrationNumberFormat": "sequentialNumber",
     "trace": true,
     "loadConfig": true,
-[East source stack trace]
+    "template": "/home/oleg/work/repository/git-hub/east/lib/migrationTemplate.js"
 }
 
 Error: Migration directory "[Migrations dir]" already exists
