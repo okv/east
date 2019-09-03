@@ -9,7 +9,7 @@ const migrationTemplateRegExp = new RegExp(
 	'g'
 );
 const eastStackTraceRegExp = new RegExp(
-	'^.*at.*\\(.*/east/.*(([\\r\\n])+ {4}at <anonymous>)?',
+	'^.*at \\(?.*/east/.*(([\\r\\n])+ {4}at <anonymous>)?',
 	'gm'
 );
 
