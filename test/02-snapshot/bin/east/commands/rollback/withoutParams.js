@@ -1,6 +1,7 @@
 'use strict';
 
 const tap = require('tap');
+const expect = require('expect.js');
 const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
@@ -39,6 +40,8 @@ describe(describeTitle, () => {
 				);
 			})
 			.then((result) => {
+				expect(result.stderr).not.ok();
+
 				commandResult = result;
 			});
 	});
