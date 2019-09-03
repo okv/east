@@ -6,15 +6,16 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDirAndTraceFlag.js TAP > output 1`] = `
-Current parameters: { dir: '[Migrations dir]',
-  timeout: 604800000,
-  adapter: './adapter',
-  url: null,
-  migrationNumberFormat: 'sequentialNumber',
-  trace: true,
-  loadConfig: true,
-  template:
+Current parameters: {
+    "dir": "[Migrations dir]",
+    "timeout": 604800000,
+    "adapter": "./adapter",
+    "url": null,
+    "migrationNumberFormat": "sequentialNumber",
+    "trace": true,
+    "loadConfig": true,
 [East source stack trace]
+}
 
 Error: Migration directory "[Migrations dir]" already exists
 [East source stack trace]

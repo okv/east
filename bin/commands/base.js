@@ -109,7 +109,10 @@ Command.prototype.init = function init(params) {
 				);
 			}
 
-			this.logger.debug('Current parameters:', migrator.params);
+			this.logger.debug(
+				'Current parameters: %s',
+				JSON.stringify(migrator.params, null, 4)
+			);
 
 			this.migrator = migrator;
 		});
