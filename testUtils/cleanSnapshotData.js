@@ -5,7 +5,7 @@ const migrationsDirRegExp = new RegExp(
 	'g'
 );
 const eastStackTraceRegExp = new RegExp(
-	'^.*/.+/east/.+.js.*',
+	'^.*at.*/east/.*(([\\r\\n])+ {4}at <anonymous>)?',
 	'gm'
 );
 
