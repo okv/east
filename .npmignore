@@ -1,9 +1,10 @@
 .npmignore
 test
+testUtils
 migrations
 .jshintignore
 .jshintrc
 .travis.yml
 .nyc_output
 coverage
-
+tap-snapshots

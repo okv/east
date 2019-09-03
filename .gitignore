@@ -1,5 +1,5 @@
 node_modules/
 .eastrc*
-test/.eastrc*
 .nyc_output
 coverage
+migrations/

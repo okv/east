@@ -3,31 +3,24 @@
 const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
-const Migrator = require('../lib/migrator');
 const pathUtils = require('path');
 const pEachSeries = require('p-each-series');
 const pMap = require('p-map');
 const pProps = require('p-props');
+const testUtils = require('../../testUtils');
+const Migrator = require('../../lib/migrator');
 
 tap.mochaGlobals();
 
 describe('migrator', () => {
-	const migrator = new Migrator();
-
-	const createMigrations = (baseNames) => {
-		return pMap(baseNames, (baseName) => {
-			return migrator.create(baseName);
-		}, {concurrency: 1});
-	};
-
-	const removeMigrations = (names) => {
-		return pMap(names, (name) => migrator.remove(name));
-	};
+	let migrator;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => migrator.configure())
-			.then(() => migrator.connect())
+			.then(() => testUtils.createMigrator({init: true, connect: true}))
+			.then((createdMigrator) => {
+				migrator = createdMigrator;
+			})
 			.then(() => {
 				return pProps({
 					allNames: migrator.getAllMigrationNames(),
@@ -37,7 +30,7 @@ describe('migrator', () => {
 			.then((result) => {
 				// remove all existing migrations and unmark all executed
 				return Promise.all([
-					removeMigrations(result.allNames),
+					testUtils.removeMigrations({migrator, names: result.allNames}),
 					pMap(result.executedNames, (name) => {
 						return migrator.adapter.unmarkExecuted(name);
 					})
@@ -45,10 +38,16 @@ describe('migrator', () => {
 			});
 	});
 
+	after(() => testUtils.destroyMigrator({migrator}));
+
 	describe('adapter', () => {
 		const mockAdapter = function mockAdapter() {
 			this.getTemplatePath = () => {};
 		};
+
+		// just log used adapter name, useful for integration testing with
+		// different adapters
+		it(`should have a name "${migrator.params.adapter}"`, _.noop);
 
 		it('expect be loaded migrator-related first and than CWD-related',
 			() => {
@@ -99,11 +98,11 @@ describe('migrator', () => {
 			const baseNames = ['first', 'second', 'third', 'second'];
 			let names = [];
 
-			after(() => removeMigrations(names));
+			after(() => testUtils.removeMigrations({migrator, names}));
 
 			it('should create migrations sequentially without errors', () => {
 				return Promise.resolve()
-					.then(() => createMigrations(baseNames))
+					.then(() => testUtils.createMigrations({migrator, baseNames}))
 					.then((migrationNames) => {
 						names = migrationNames;
 					});
@@ -144,11 +143,11 @@ describe('migrator', () => {
 				migrator.params.migrationNumberFormat = 'sequentialNumber';
 			});
 
-			after(() => removeMigrations(names));
+			after(() => testUtils.removeMigrations({migrator, names}));
 
 			it('should create new files with a dateTime prefix', () => {
 				return Promise.resolve()
-					.then(() => createMigrations(baseNames))
+					.then(() => testUtils.createMigrations({migrator, baseNames}))
 					.then((migrationNames) => {
 						names = migrationNames;
 					});
@@ -181,7 +180,7 @@ describe('migrator', () => {
 
 			it('should return an error', () => {
 				return Promise.resolve()
-					.then(() => createMigrations(baseNames))
+					.then(() => testUtils.createMigrations({migrator, baseNames}))
 					.then((result) => {
 						throw new Error(`Error expected, but got result: ${result}`);
 					})
@@ -221,14 +220,14 @@ describe('migrator', () => {
 						baseNames.push(baseName);
 					}
 
-					return createMigrations(baseNames);
+					return testUtils.createMigrations({migrator, baseNames});
 				})
 				.then((migrationNames) => {
 					expectedNames = migrationNames;
 				});
 		});
 
-		after(() => removeMigrations(expectedNames));
+		after(() => testUtils.removeMigrations({migrator, names: expectedNames}));
 
 		it('should return numeric sorted names', () => {
 			return Promise.resolve()
@@ -243,13 +242,13 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
 		});
 
-		after(() => removeMigrations(names));
+		after(() => testUtils.removeMigrations({migrator, names}));
 
 		it('execute migration without errors', () => {
 			return Promise.resolve()
@@ -290,13 +289,13 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
 		});
 
-		after(() => removeMigrations(names));
+		after(() => testUtils.removeMigrations({migrator, names}));
 
 		it('rollback executed migration without errors', () => {
 			return Promise.resolve()
@@ -323,13 +322,13 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
 		});
 
-		after(() => removeMigrations(names));
+		after(() => testUtils.removeMigrations({migrator, names}));
 
 		const nomrmalizeAndCheckName = (inputName, expectedName) => {
 			return Promise.resolve()
@@ -390,13 +389,15 @@ describe('migrator', () => {
 
 		before(() => {
 			return Promise.resolve()
-				.then(() => createMigrations(baseNames))
+				.then(() => testUtils.createMigrations({migrator, baseNames}))
 				.then((migrationNames) => {
 					names = migrationNames;
 				});
 		});
 
-		it('expect remove without errors', () => removeMigrations(names));
+		it('expect remove without errors', () => {
+			return testUtils.removeMigrations({migrator, names});
+		});
 
 		it('removed migrations should not exist', () => {
 			return Promise.resolve()
