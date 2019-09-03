@@ -7,7 +7,9 @@ const testUtils = require('../../../../../../testUtils');
 tap.mochaGlobals();
 
 const binPath = testUtils.getBinPath('east');
-const describeTitle = 'bin/east init command with already existing dir';
+const describeTitle = (
+	'bin/east init command with already existing dir and trace flag'
+);
 
 describe(describeTitle, () => {
 	let commandErr;

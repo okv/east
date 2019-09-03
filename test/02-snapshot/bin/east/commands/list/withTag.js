@@ -7,7 +7,7 @@ const testUtils = require('../../../../../../testUtils');
 tap.mochaGlobals();
 
 const binPath = testUtils.getBinPath('east');
-const describeTitle = 'bin/east list with status new';
+const describeTitle = 'bin/east list with tag';
 
 describe(describeTitle, () => {
 	let commandResult;
