@@ -12,6 +12,7 @@ application) and doesn't provide universal api for working with any kind of
 database.
 
 [![Build Status](https://travis-ci.org/okv/east.svg?branch=master)](https://travis-ci.org/okv/east)
+[![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
 
 ## Node.js compatibility
 
@@ -299,10 +300,10 @@ npm test
 ## Creating and testing own adapter
 
 For writing your own adapter you should implement methods for connection,
-mark transaction as executed, etc see details inside [built-in adapter](lib/adapter.js)
-and [other adapters](#adapters).
+mark transaction as executed, etc see details inside
+[built-in adapter](lib/adapter.js) and [other adapters](#adapters).
 
-You also can run tests from current repository against your adapter:
+You also can run migrator tests from current repository against your adapter:
 
 * Clone current repository
 * Create file `.eastrc` inside `test` directory with path and parameters for
@@ -316,7 +317,8 @@ your adapter e.g.
 }
 ```
 
-* Run `npm test` at root of the cloned repository.
+* Run `NODE_EAST_TEST_LOAD_CONFIG=1 npm run testSpecified test/01-migrator` at
+root of the cloned repository.
 
 
 ## License
