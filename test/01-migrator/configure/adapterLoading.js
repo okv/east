@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
 const Migrator = require('../../../lib/migrator');
@@ -7,9 +8,15 @@ const Migrator = require('../../../lib/migrator');
 tap.mochaGlobals();
 
 describe('migrator configure adapter loading', () => {
-	const mockAdapter = function mockAdapter() {
+	const MockAdapter = function MockAdapter() {
 		this.getTemplatePath = () => {};
 	};
+
+	MockAdapter.prototype.connect = (callback) => callback;
+	MockAdapter.prototype.disconnect = (callback) => callback;
+	MockAdapter.prototype.getExecutedMigrationNames = (callback) => callback;
+	MockAdapter.prototype.markExecuted = (name, callback) => callback;
+	MockAdapter.prototype.unmarkExecuted = (name, callback) => callback;
 
 	it('should try migrator-related path first then CWD-related', () => {
 		const paths = [];
@@ -21,7 +28,7 @@ describe('migrator configure adapter loading', () => {
 				migratorMock._tryLoadAdapter = (path) => {
 					paths.push(path);
 
-					return paths.length === 2 ? mockAdapter : new Error('Whatever.');
+					return paths.length === 2 ? MockAdapter : new Error('Whatever.');
 				};
 
 				return migratorMock.configure({adapter: 'X'});
@@ -50,6 +57,29 @@ describe('migrator configure adapter loading', () => {
 				expect(err).ok();
 				expect(err).an(Error);
 				expect(err.message).equal('Whatever.');
+			});
+	});
+
+	it('should promisify adapter methods', () => {
+		const migratorMock = new Migrator();
+		migratorMock._tryLoadAdapter = () => MockAdapter;
+		const adapterMethodNames = [
+			'connect',
+			'disconnect',
+			'getExecutedMigrationNames',
+			'markExecuted',
+			'unmarkExecuted'
+		];
+
+
+		return Promise.resolve()
+			.then(() => migratorMock.configure())
+			.then(() => {
+				_(adapterMethodNames).each((adapterMethodName) => {
+					const result = migratorMock.adapter[adapterMethodName]();
+
+					expect(result).a(Promise);
+				});
 			});
 	});
 });
