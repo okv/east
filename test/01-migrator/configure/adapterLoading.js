@@ -11,28 +11,26 @@ describe('migrator configure adapter loading', () => {
 		this.getTemplatePath = () => {};
 	};
 
+	it('should try migrator-related path first then CWD-related', () => {
+		const paths = [];
 
-	it('should try migrator-related path first then CWD-related',
-		() => {
-			const paths = [];
+		return Promise.resolve()
+			.then(() => {
+				const migratorMock = new Migrator();
 
-			return Promise.resolve()
-				.then(() => {
-					const migratorMock = new Migrator();
+				migratorMock._tryLoadAdapter = (path) => {
+					paths.push(path);
 
-					migratorMock._tryLoadAdapter = (path) => {
-						paths.push(path);
+					return paths.length === 2 ? mockAdapter : new Error('Whatever.');
+				};
 
-						return paths.length === 2 ? mockAdapter : new Error('Whatever.');
-					};
-
-					return migratorMock.configure({adapter: 'X'});
-				})
-				.then(() => {
-					expect(paths[0]).eql('X');
-					expect(paths[1].substr(-2, 2)).eql('/X');
-				});
-		});
+				return migratorMock.configure({adapter: 'X'});
+			})
+			.then(() => {
+				expect(paths[0]).eql('X');
+				expect(paths[1].substr(-2, 2)).eql('/X');
+			});
+	});
 
 	it('should throw an error when both paths can not be resolved', () => {
 		return Promise.resolve()
