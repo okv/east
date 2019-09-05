@@ -6,7 +6,7 @@ const Migrator = require('../../../lib/migrator');
 
 tap.mochaGlobals();
 
-describe('migrator adapter loading', () => {
+describe('migrator configure adapter loading', () => {
 	const mockAdapter = function mockAdapter() {
 		this.getTemplatePath = () => {};
 	};
