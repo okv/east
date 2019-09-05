@@ -7,7 +7,7 @@ const testUtils = require('../../../testUtils');
 
 tap.mochaGlobals();
 
-describe('migrator normalizeNames with suitable params', () => {
+describe('migrator remove with suitable params', () => {
 	let migrator;
 
 	before(() => {
