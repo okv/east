@@ -41,56 +41,9 @@ describe('migrator', () => {
 	after(() => testUtils.destroyMigrator({migrator}));
 
 	describe('adapter', () => {
-		const mockAdapter = function mockAdapter() {
-			this.getTemplatePath = () => {};
-		};
-
 		// just log used adapter name, useful for integration testing with
 		// different adapters
 		it(`should have a name "${migrator.params.adapter}"`, _.noop);
-
-		it('expect be loaded migrator-related first and than CWD-related',
-			() => {
-				const paths = [];
-
-				return Promise.resolve()
-					.then(() => {
-						const migratorMock = new Migrator();
-
-						migratorMock._tryLoadAdapter = (path) => {
-							paths.push(path);
-
-							return paths.length === 2 ? mockAdapter : new Error('Whatever.');
-						};
-
-						return migratorMock.configure({adapter: 'X'});
-					})
-					.then(() => {
-						expect(paths[0]).eql('X');
-						expect(paths[1].substr(-2, 2)).eql('/X');
-					});
-			});
-
-		it('expect to throw when both paths can not be resolved', () => {
-			return Promise.resolve()
-				.then(() => {
-					const migratorMock = new Migrator();
-
-					migratorMock._tryLoadAdapter = () => {
-						throw new Error('Whatever.');
-					};
-
-					return migratorMock.configure({adapter: 'X'});
-				})
-				.then((result) => {
-					throw new Error(`Error expected, but got result: ${result}`);
-				})
-				.catch((err) => {
-					expect(err).ok();
-					expect(err).an(Error);
-					expect(err.message).equal('Whatever.');
-				});
-		});
 	});
 
 	describe('create', () => {
