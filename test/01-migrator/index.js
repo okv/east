@@ -4,9 +4,7 @@ const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
 const pathUtils = require('path');
-const pEachSeries = require('p-each-series');
 const pMap = require('p-map');
-const pProps = require('p-props');
 const testUtils = require('../../testUtils');
 const Migrator = require('../../lib/migrator');
 
@@ -20,21 +18,6 @@ describe('migrator', () => {
 			.then(() => testUtils.createMigrator({init: true, connect: true}))
 			.then((createdMigrator) => {
 				migrator = createdMigrator;
-			})
-			.then(() => {
-				return pProps({
-					allNames: migrator.getAllMigrationNames(),
-					executedNames: migrator.adapter.getExecutedMigrationNames()
-				});
-			})
-			.then((result) => {
-				// remove all existing migrations and unmark all executed
-				return Promise.all([
-					testUtils.removeMigrations({migrator, names: result.allNames}),
-					pMap(result.executedNames, (name) => {
-						return migrator.adapter.unmarkExecuted(name);
-					})
-				]);
 			});
 	});
 
@@ -44,118 +27,6 @@ describe('migrator', () => {
 		// just log used adapter name, useful for integration testing with
 		// different adapters
 		it(`should have a name "${migrator.params.adapter}"`, _.noop);
-	});
-
-	describe('create', () => {
-		describe('when the migration number format is sequentialNumber', () => {
-			const baseNames = ['first', 'second', 'third', 'second'];
-			let names = [];
-
-			after(() => testUtils.removeMigrations({migrator, names}));
-
-			it('should create migrations sequentially without errors', () => {
-				return Promise.resolve()
-					.then(() => testUtils.createMigrations({migrator, baseNames}))
-					.then((migrationNames) => {
-						names = migrationNames;
-					});
-			});
-
-			it('created migrations should have sequential numbers', () => {
-				const expectedNames = baseNames.map((baseName, index) => {
-					return `${String(index + 1)}_${baseName}`;
-				});
-
-				expect(names).eql(expectedNames);
-			});
-
-			it('created migrations should exist', () => {
-				return migrator.checkMigrationsExists(names);
-			});
-
-			it('created migrations should be loadable', () => {
-				return pEachSeries(names, (name) => migrator.loadMigration(name));
-			});
-
-			it('created migrations should be listed as `new`', () => {
-				return Promise.resolve()
-					.then(() => migrator.getNewMigrationNames())
-					.then((newNames) => expect(newNames).eql(names));
-			});
-		});
-
-		describe('when the migration number format is a dateTime', () => {
-			const baseNames = ['first', 'second', 'third'];
-			let names = [];
-
-			before(() => {
-				migrator.params.migrationNumberFormat = 'dateTime';
-			});
-
-			after(() => {
-				migrator.params.migrationNumberFormat = 'sequentialNumber';
-			});
-
-			after(() => testUtils.removeMigrations({migrator, names}));
-
-			it('should create new files with a dateTime prefix', () => {
-				return Promise.resolve()
-					.then(() => testUtils.createMigrations({migrator, baseNames}))
-					.then((migrationNames) => {
-						names = migrationNames;
-					});
-			});
-
-			it('created migrations should have a dateTime prefix', () => {
-				names.forEach((name, index) => {
-					expect(name).to.match(new RegExp(`^[0-9]{14}_${baseNames[index]}$`));
-				});
-			});
-		});
-
-		describe('when the migration number format is unknown', () => {
-			const baseNames = ['first', 'second', 'third'];
-			let allNamesBefore;
-
-			before(() => {
-				migrator.params.migrationNumberFormat = 'unknown';
-
-				return Promise.resolve()
-					.then(() => migrator.getAllMigrationNames())
-					.then((names) => {
-						allNamesBefore = names;
-					});
-			});
-
-			after(() => {
-				migrator.params.migrationNumberFormat = 'sequentialNumber';
-			});
-
-			it('should return an error', () => {
-				return Promise.resolve()
-					.then(() => testUtils.createMigrations({migrator, baseNames}))
-					.then((result) => {
-						throw new Error(`Error expected, but got result: ${result}`);
-					})
-					.catch((err) => {
-						expect(err).ok();
-						expect(err).an(Error);
-						expect(err.message).eql(
-							'Unrecognised number format: ' +
-							`"${migrator.params.migrationNumberFormat}". ` +
-							'Supported values are "dateTime" and "sequentialNumber".'
-						);
-					});
-			});
-
-			it('should not create any migrations', () => {
-				return Promise.resolve()
-					.then(() => migrator.getAllMigrationNames())
-					.then((names) => {
-						expect(names).eql(allNamesBefore);
-					});
-			});
-		});
 	});
 
 	describe('getAllMigrationNames', () => {
