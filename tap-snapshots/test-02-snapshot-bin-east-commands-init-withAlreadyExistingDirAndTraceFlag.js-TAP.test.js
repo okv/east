@@ -9,7 +9,7 @@ exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDirAndTraceF
 Current parameters: {
     "dir": "[Migrations dir]",
     "timeout": 604800000,
-    "adapter": "./adapter",
+    "adapter": "../../adapter",
     "url": null,
     "migrationNumberFormat": "sequentialNumber",
     "trace": true,
