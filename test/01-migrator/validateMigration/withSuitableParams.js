@@ -8,14 +8,18 @@ tap.mochaGlobals();
 
 describe('migrator validateMigration with suitable params', () => {
 	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator())
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
+			.then(() => testUtils.createEnv())
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
+				migrator = testEnv.migrator;
 			});
 	});
+
+	after(() => testUtils.destroyEnv(testEnv));
 
 	const validateMigrationAndCheckError = (migration, errorMessage) => {
 		return Promise.resolve()

@@ -9,12 +9,18 @@ tap.mochaGlobals();
 
 describe('migrator create with sequential migration number format', () => {
 	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator({init: true, connect: true}))
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
+			.then(() => {
+				return testUtils.createEnv({
+					migratorParams: {init: true, connect: true}
+				});
+			})
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
+				migrator = testEnv.migrator;
 			});
 	});
 
@@ -23,7 +29,7 @@ describe('migrator create with sequential migration number format', () => {
 
 	after(() => testUtils.removeMigrations({migrator, names}));
 
-	after(() => testUtils.destroyMigrator({migrator}));
+	after(() => testUtils.destroyEnv(testEnv));
 
 	it('should create migrations sequentially without errors', () => {
 		return Promise.resolve()

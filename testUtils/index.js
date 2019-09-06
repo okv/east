@@ -13,3 +13,6 @@ exports.markMigrationsExecuted = require('./markMigrationsExecuted');
 exports.unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
 exports.setMigrationTags = require('./setMigrationTags');
 exports.makeMigration = require('./makeMigration');
+exports.createEastrc = require('./createEastrc');
+exports.createEnv = require('./createEnv');
+exports.destroyEnv = require('./destroyEnv');

@@ -9,12 +9,18 @@ tap.mochaGlobals();
 
 describe('migrator normalizeNames with suitable params', () => {
 	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator({init: true, connect: true}))
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
+			.then(() => {
+				return testUtils.createEnv({
+					migratorParams: {init: true, connect: true}
+				});
+			})
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
+				migrator = testEnv.migrator;
 			});
 	});
 
@@ -31,7 +37,7 @@ describe('migrator normalizeNames with suitable params', () => {
 
 	after(() => testUtils.removeMigrations({migrator, names}));
 
-	after(() => testUtils.destroyMigrator({migrator}));
+	after(() => testUtils.destroyEnv(testEnv));
 
 	const nomrmalizeAndCheckName = (inputName, expectedName) => {
 		return Promise.resolve()

@@ -6,31 +6,30 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const binPath = testUtils.getBinPath('east');
 const describeTitle = 'bin/east rollback without migrations';
 
 describe(describeTitle, () => {
 	let commandResult;
-	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator({init: true}))
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
+			.then(() => testUtils.createEnv({migratorParams: {init: true}}))
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
 			});
 	});
 
-	after(() => testUtils.destroyMigrator({migrator}));
+	after(() => testUtils.destroyEnv(testEnv));
 
 	it('should be done without error', () => {
-		const cwd = testUtils.getTestDirPath();
-
 		return Promise.resolve()
 			.then(() => {
+				const binPath = testUtils.getBinPath('east');
+
 				return testUtils.execAsync(
 					`"${binPath}" rollback`,
-					{cwd}
+					{cwd: testEnv.dir}
 				);
 			})
 			.then((result) => {

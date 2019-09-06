@@ -8,16 +8,23 @@ tap.mochaGlobals();
 
 describe('migrator migrate or rollback action with suitable params', () => {
 	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator({init: true}))
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
+			.then(() => {
+				return testUtils.createEnv({
+					migratorParams: {init: true, connect: true}
+				});
+			})
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
+				migrator = testEnv.migrator;
 			});
 	});
 
-	after(() => testUtils.destroyMigrator({migrator}));
+
+	after(() => testUtils.destroyEnv(testEnv));
 
 	const migration = testUtils.makeMigration();
 
