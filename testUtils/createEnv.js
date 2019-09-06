@@ -2,6 +2,7 @@
 
 const pathUtils = require('path');
 const fse = require('fs-extra');
+const _ = require('underscore');
 const getTestDirPath = require('./getTestDirPath');
 const createMigrator = require('./createMigrator');
 const createEastrc = require('./createEastrc');
@@ -10,8 +11,8 @@ module.exports = (params) => {
 	params = params || {};
 
 	let dir;
-	let migratorParams;
 	let migrator;
+	let configPath;
 
 	return Promise.resolve()
 		.then(() => {
@@ -21,18 +22,26 @@ module.exports = (params) => {
 			return fse.pathExists(dir);
 		})
 		.then((dirExists) => {
-			migratorParams = params.migratorParams || {};
-			migratorParams.configureParams = migratorParams.configureParams || {};
-			migratorParams.configureParams.dir = pathUtils.join(dir, 'migrations');
-
 			if (!dirExists) {
 				return fse.mkdir(dir);
 			}
 		})
-		.then(() => createMigrator(migratorParams))
+		.then(() => {
+			const migrationsDir = pathUtils.join(dir, 'migrations');
+
+			return createEastrc({dir, configParams: {dir: migrationsDir}});
+		})
+		.then((createdConfigPath) => {
+			configPath = createdConfigPath;
+
+			const migratorParams = _(params.migratorParams).clone() || {};
+			migratorParams.configureParams = migratorParams.configureParams || {};
+			migratorParams.configureParams.config = configPath;
+
+			return createMigrator(migratorParams);
+		})
 		.then((createdMigrator) => {
 			migrator = createdMigrator;
 		})
-		.then(() => createEastrc({dir, migrator}))
-		.then((configPath) => ({dir, migrator, configPath}));
+		.then(() => ({dir, migrator, configPath}));
 };
