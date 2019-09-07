@@ -54,6 +54,8 @@ describe(describeTitle, () => {
 		expect(calledPluginMethods[0].name).equal('register');
 		expect(calledPluginMethods[0].args).length(1);
 		expect(calledPluginMethods[0].args[0]).an('object');
-		expect(calledPluginMethods[0].args[0]).have.keys('config', 'migrator');
+		expect(calledPluginMethods[0].args[0]).have.keys(
+			'migratorParams', 'migratorHooks'
+		);
 	});
 });

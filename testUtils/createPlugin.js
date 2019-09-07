@@ -15,7 +15,7 @@ module.exports = (params) => {
 		plugin.register = register;
 	} else {
 		plugin.register = (registerParams) => {
-			const migratorHooks = registerParams.migrator.hooks;
+			const migratorHooks = registerParams.migratorHooks;
 
 			if (beforeMigrate) migratorHooks.on('beforeMigrate', beforeMigrate);
 			if (afterMigrate) migratorHooks.on('afterMigrate', afterMigrate);
