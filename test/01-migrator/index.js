@@ -57,7 +57,7 @@ describe('migrator', () => {
 					.then(() => {
 						const migratorMock = new Migrator();
 
-						migratorMock._tryLoadAdapter = (path) => {
+						migratorMock._tryLoadModule = (path) => {
 							paths.push(path);
 
 							return paths.length === 2 ? mockAdapter : new Error('Whatever.');
@@ -76,7 +76,7 @@ describe('migrator', () => {
 				.then(() => {
 					const migratorMock = new Migrator();
 
-					migratorMock._tryLoadAdapter = () => {
+					migratorMock._tryLoadModule = () => {
 						throw new Error('Whatever.');
 					};
 
