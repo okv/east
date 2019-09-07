@@ -53,14 +53,18 @@ describe(describeTitle, () => {
 		expect(calledPluginHooks[0].name).equal('beforeMigrate');
 		expect(calledPluginHooks[0].args).length(1);
 		expect(calledPluginHooks[0].args[0]).an(Object);
-		expect(calledPluginHooks[0].args[0]).only.keys('migration');
+		expect(calledPluginHooks[0].args[0]).only.keys(
+			'migration', 'migrationParams'
+		);
 		expect(calledPluginHooks[0].args[0].migration).eql(
 			_(migration).pick('name')
 		);
 		expect(calledPluginHooks[1].name).equal('afterMigrate');
 		expect(calledPluginHooks[1].args).length(1);
 		expect(calledPluginHooks[1].args[0]).an(Object);
-		expect(calledPluginHooks[1].args[0]).only.keys('migration');
+		expect(calledPluginHooks[1].args[0]).only.keys(
+			'migration', 'migrationParams'
+		);
 		expect(calledPluginHooks[1].args[0].migration).eql(
 			_(migration).pick('name')
 		);
