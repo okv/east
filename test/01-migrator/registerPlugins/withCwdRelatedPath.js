@@ -13,7 +13,7 @@ const describeTitle = (
 
 describe(describeTitle, () => {
 	let migratorMock;
-	let pluginMock;
+	let plugin;
 
 	const calledPluginMethods = [];
 	const loadModulePaths = [];
@@ -26,10 +26,10 @@ describe(describeTitle, () => {
 		migratorMock._tryLoadModule = (path) => {
 			loadModulePaths.push(path);
 
-			return loadModulePaths.length === 2 ? pluginMock : new Error('Whatever.');
+			return loadModulePaths.length === 2 ? plugin : new Error('Whatever.');
 		};
 
-		pluginMock = testUtils.createPlugin({
+		plugin = testUtils.createPlugin({
 			register: (params) => {
 				calledPluginMethods.push({
 					name: 'register',

@@ -13,7 +13,7 @@ const describeTitle = (
 
 describe(describeTitle, () => {
 	let migratorMock;
-	let pluginMock;
+	let plugin;
 
 	before(() => {
 		migratorMock = new Migrator();
@@ -24,7 +24,7 @@ describe(describeTitle, () => {
 			throw new Error('Some error');
 		};
 
-		pluginMock = testUtils.createPlugin({
+		plugin = testUtils.createPlugin({
 			register: () => {
 				throw new Error('Some register error');
 			}
@@ -34,7 +34,7 @@ describe(describeTitle, () => {
 	it('should throw an error', () => {
 		return Promise.resolve()
 			.then(() => {
-				return migratorMock.configure({plugins: [pluginMock]});
+				return migratorMock.configure({plugins: [plugin]});
 			})
 			.then((result) => {
 				throw new Error(`Error expected, but got result: ${result}`);

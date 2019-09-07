@@ -13,7 +13,7 @@ const describeTitle = (
 
 describe(describeTitle, () => {
 	let migratorMock;
-	let pluginMock;
+	let plugin;
 
 	const calledPluginMethods = [];
 
@@ -26,7 +26,7 @@ describe(describeTitle, () => {
 			throw new Error('Some error');
 		};
 
-		pluginMock = testUtils.createPlugin({
+		plugin = testUtils.createPlugin({
 			register: (params) => {
 				return new Promise((resolve) => {
 					setImmediate(() => {
@@ -43,7 +43,7 @@ describe(describeTitle, () => {
 	});
 
 	it('should be done without error', () => {
-		return migratorMock.configure({plugins: [pluginMock]});
+		return migratorMock.configure({plugins: [plugin]});
 	});
 
 	it('should call plugin register', () => {
