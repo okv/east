@@ -31,24 +31,18 @@ describe(describeTitle, () => {
 					name: 'beforeMigrate',
 					args: [params]
 				});
-
-				return Promise.resolve();
 			},
 			afterMigrate: (params) => {
 				calledPluginHooks.push({
 					name: 'afterMigrate',
 					args: [params]
 				});
-
-				return Promise.resolve();
 			},
 			migrateError: (params) => {
 				calledPluginHooks.push({
 					name: 'migrateError',
 					args: [params]
 				});
-
-				return Promise.resolve();
 			}
 		});
 
