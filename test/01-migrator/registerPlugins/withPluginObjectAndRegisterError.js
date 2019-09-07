@@ -8,26 +8,33 @@ const Migrator = require('../../../lib/migrator');
 tap.mochaGlobals();
 
 const describeTitle = (
-	'migrator configure register plugins with invalid paths'
+	'migrator configure register plugins with plugin object and register error'
 );
 
 describe(describeTitle, () => {
 	let migratorMock;
+	let pluginMock;
 
 	before(() => {
 		migratorMock = new Migrator();
 
 		migratorMock._createAdapter = () => testUtils.createAdapter();
 
-		migratorMock._tryLoadModule = (path) => {
-			return new Error(`Can't load path ${path}`);
+		migratorMock._tryLoadModule = () => {
+			throw new Error('Some error');
 		};
+
+		pluginMock = testUtils.createPlugin({
+			register: () => {
+				throw new Error('Some register error');
+			}
+		});
 	});
 
 	it('should throw an error', () => {
 		return Promise.resolve()
 			.then(() => {
-				return migratorMock.configure({plugins: ['somePlugin']});
+				return migratorMock.configure({plugins: [pluginMock]});
 			})
 			.then((result) => {
 				throw new Error(`Error expected, but got result: ${result}`);
@@ -35,8 +42,9 @@ describe(describeTitle, () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err).an(Error);
-				expect(err.message).match(/^Error loading plugin from all paths:/);
-				expect(err.message).match(/Can't load path/);
+				expect(err.message).equal(
+					'Error register plugin: Some register error'
+				);
 			});
 	});
 });

@@ -8,7 +8,7 @@ const Migrator = require('../../../lib/migrator');
 tap.mochaGlobals();
 
 const describeTitle = (
-	'migrator configure register plugins with migrator-related valid path'
+	'migrator configure register plugins with plugin object'
 );
 
 describe(describeTitle, () => {
