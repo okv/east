@@ -26,23 +26,14 @@ describe(describeTitle, () => {
 		migrator._createAdapter = () => testUtils.createAdapter();
 
 		plugin = testUtils.createPlugin({
-			beforeMigrate: (params) => {
-				calledPluginHooks.push({
-					name: 'beforeMigrate',
-					args: [params]
-				});
-			},
-			afterMigrate: (params) => {
-				calledPluginHooks.push({
-					name: 'afterMigrate',
-					args: [params]
-				});
-			},
-			migrateError: (params) => {
-				calledPluginHooks.push({
-					name: 'migrateError',
-					args: [params]
-				});
+			multiHook: {
+				actionNames: [
+					'beforeMigrate', 'afterMigrate', 'migrateError',
+					'beforeRollback', 'afterRollback', 'rollbackError'
+				],
+				handler: (actionName, params) => {
+					calledPluginHooks.push({name: actionName, args: [params]});
+				}
 			}
 		});
 

@@ -1,7 +1,10 @@
 'use strict';
 
+const _ = require('underscore');
+
 module.exports = (params) => {
 	const register = params.register;
+	const multiHook = params.multiHook;
 	const beforeMigrate = params.beforeMigrate;
 	const afterMigrate = params.afterMigrate;
 	const migrateError = params.migrateError;
@@ -13,6 +16,16 @@ module.exports = (params) => {
 
 	if (register) {
 		plugin.register = register;
+	} else if (multiHook) {
+		plugin.register = (registerParams) => {
+			const migratorHooks = registerParams.migratorHooks;
+
+			_(multiHook.actionNames).each((actionName) => {
+				migratorHooks.on(actionName, (hookParams) => {
+					return multiHook.handler(actionName, hookParams);
+				});
+			});
+		};
 	} else {
 		plugin.register = (registerParams) => {
 			const migratorHooks = registerParams.migratorHooks;
