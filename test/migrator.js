@@ -89,6 +89,41 @@ describe('migrator', () => {
 					expect(err.message).equal('Whatever.');
 				});
 		});
+
+		it('expect to use passed adapter constructor', () => {
+			let migratorMock;
+
+			return Promise.resolve()
+				.then(() => {
+					migratorMock = new Migrator();
+
+					return migratorMock.configure({adapter: mockAdapter});
+				})
+				.then(() => {
+					expect(migratorMock.adapter).a(mockAdapter);
+				});
+		});
+
+		it('expect to throw when error while using passed constructor', () => {
+			let migratorMock;
+
+			return Promise.resolve()
+				.then(() => {
+					migratorMock = new Migrator();
+
+					return migratorMock.configure({adapter: () => null});
+				})
+				.then((result) => {
+					throw new Error(`Error expected, but got result: ${result}`);
+				})
+				.catch((err) => {
+					expect(err).ok();
+					expect(err).an(Error);
+					expect(err.message).equal(
+						'Error constructing adapter:() => null is not a constructor'
+					);
+				});
+		});
 	});
 
 	describe('create', () => {
