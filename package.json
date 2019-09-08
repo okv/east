@@ -41,7 +41,7 @@
     "p-props": "1.2.0",
     "p-timeout": "2.0.1",
     "pify": "3.0.0",
-    "progress": "1.1.8",
+    "progress": "2.0.3",
     "underscore": "1.9.1"
   },
   "devDependencies": {
