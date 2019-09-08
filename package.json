@@ -20,7 +20,7 @@
     "couchbase"
   ],
   "scripts": {
-    "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail",
+    "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail --jobs-auto",
     "test": "npm run testSpecified test",
     "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run testSpecified test",
     "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",

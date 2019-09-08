@@ -6,36 +6,30 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const binPath = testUtils.getBinPath('east');
 const describeTitle = 'bin/east list with unrecognized status';
 
 describe(describeTitle, () => {
 	let commandErr;
-	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator({init: true}))
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
-
-				return testUtils.createMigrations({
-					migrator,
-					baseNames: ['someMigrationName', 'anotherMigrationName']
-				});
+			.then(() => testUtils.createEnv({migratorParams: {init: true}}))
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
 			});
 	});
 
-	after(() => testUtils.destroyMigrator({migrator}));
+	after(() => testUtils.destroyEnv(testEnv));
 
-	it('should be done without error', () => {
-		const cwd = testUtils.getTestDirPath();
-
+	it('should be done with error', () => {
 		return Promise.resolve()
 			.then(() => {
+				const binPath = testUtils.getBinPath('east');
+
 				return testUtils.execAsync(
 					`"${binPath}" list unrecognizedStatus`,
-					{cwd}
+					{cwd: testEnv.dir}
 				);
 			})
 			.then((commandResult) => {

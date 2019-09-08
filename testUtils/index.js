@@ -15,3 +15,6 @@ exports.setMigrationTags = require('./setMigrationTags');
 exports.makeMigration = require('./makeMigration');
 exports.createPlugin = require('./createPlugin');
 exports.createAdapter = require('./createAdapter');
+exports.createEastrc = require('./createEastrc');
+exports.createEnv = require('./createEnv');
+exports.destroyEnv = require('./destroyEnv');
