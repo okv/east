@@ -289,6 +289,11 @@ Other adapters:
 * [couchbase](https://github.com/ramiel/east-couchbase)
 
 
+## Plugins
+
+* [migration duration logger](https://github.com/okv/east-migration-duration-logger)
+
+
 ## Run tests
 
 into cloned repository run

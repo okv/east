@@ -4,34 +4,34 @@ const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
 const Migrator = require('../../../lib/migrator');
+const testUtils = require('../../../testUtils');
 
 tap.mochaGlobals();
 
 describe('migrator configure adapter loading', () => {
-	const MockAdapter = function MockAdapter() {
-		this.getTemplatePath = () => {};
-	};
+	let Adapter;
 
-	MockAdapter.prototype.connect = (callback) => callback;
-	MockAdapter.prototype.disconnect = (callback) => callback;
-	MockAdapter.prototype.getExecutedMigrationNames = (callback) => callback;
-	MockAdapter.prototype.markExecuted = (name, callback) => callback;
-	MockAdapter.prototype.unmarkExecuted = (name, callback) => callback;
+	before(() => {
+		Adapter = function AdapterMock() {
+		};
+
+		Adapter.prototype = testUtils.createAdapter({withCallbacMethods: true});
+	});
 
 	it('should try migrator-related path first then CWD-related', () => {
 		const paths = [];
 
 		return Promise.resolve()
 			.then(() => {
-				const migratorMock = new Migrator();
+				const migrator = new Migrator();
 
-				migratorMock._tryLoadAdapter = (path) => {
+				migrator._tryLoadModule = (path) => {
 					paths.push(path);
 
-					return paths.length === 2 ? MockAdapter : new Error('Whatever.');
+					return paths.length === 2 ? Adapter : new Error('Whatever.');
 				};
 
-				return migratorMock.configure({adapter: 'X'});
+				return migrator.configure({adapter: 'X', loadConfig: false});
 			})
 			.then(() => {
 				expect(paths[0]).eql('X');
@@ -42,13 +42,13 @@ describe('migrator configure adapter loading', () => {
 	it('should throw an error when both paths can not be resolved', () => {
 		return Promise.resolve()
 			.then(() => {
-				const migratorMock = new Migrator();
+				const migrator = new Migrator();
 
-				migratorMock._tryLoadAdapter = () => {
+				migrator._tryLoadModule = () => {
 					throw new Error('Whatever.');
 				};
 
-				return migratorMock.configure({adapter: 'X'});
+				return migrator.configure({adapter: 'X', loadConfig: false});
 			})
 			.then((result) => {
 				throw new Error(`Error expected, but got result: ${result}`);
@@ -61,8 +61,8 @@ describe('migrator configure adapter loading', () => {
 	});
 
 	it('should promisify adapter methods', () => {
-		const migratorMock = new Migrator();
-		migratorMock._tryLoadAdapter = () => MockAdapter;
+		const migrator = new Migrator();
+		migrator._tryLoadModule = () => Adapter;
 		const adapterMethodNames = [
 			'connect',
 			'disconnect',
@@ -73,10 +73,10 @@ describe('migrator configure adapter loading', () => {
 
 
 		return Promise.resolve()
-			.then(() => migratorMock.configure())
+			.then(() => migrator.configure({loadConfig: false}))
 			.then(() => {
 				_(adapterMethodNames).each((adapterMethodName) => {
-					const result = migratorMock.adapter[adapterMethodName]();
+					const result = migrator.adapter[adapterMethodName]();
 
 					expect(result).a(Promise);
 				});
