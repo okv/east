@@ -111,7 +111,11 @@ describe('migrator', () => {
 				.then(() => {
 					migratorMock = new Migrator();
 
-					return migratorMock.configure({adapter: () => null});
+					const adapter = function BrokenAdapterConstructor() {
+						throw new Error('Some error');
+					};
+
+					return migratorMock.configure({adapter});
 				})
 				.then((result) => {
 					throw new Error(`Error expected, but got result: ${result}`);
@@ -120,7 +124,7 @@ describe('migrator', () => {
 					expect(err).ok();
 					expect(err).an(Error);
 					expect(err.message).equal(
-						'Error constructing adapter:() => null is not a constructor'
+						'Error constructing adapter:Some error'
 					);
 				});
 		});
