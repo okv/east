@@ -6,6 +6,7 @@ migrations
 .eslintrc.json
 .travis.yml
 .nyc_output
+.nycrc
 coverage
 tap-snapshots
 .eastrc*
