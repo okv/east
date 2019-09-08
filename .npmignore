@@ -1,6 +1,7 @@
 .npmignore
 test
 migrations
-.jshintignore
-.jshintrc
+.eslintignore
+.eslintrc.json
 .travis.yml
+.eastrc*
