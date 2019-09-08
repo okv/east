@@ -6,38 +6,37 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const binPath = testUtils.getBinPath('east');
 const describeTitle = (
 	'bin/east rollback with name and not executed migration and force flag'
 );
 
 describe(describeTitle, () => {
 	let commandResult;
-	let migrator;
+	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createMigrator({init: true}))
-			.then((createdMigrator) => {
-				migrator = createdMigrator;
+			.then(() => testUtils.createEnv({migratorParams: {init: true}}))
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
 
 				return testUtils.createMigrations({
-					migrator,
+					migrator: testEnv.migrator,
 					baseNames: ['someMigrationName']
 				});
 			});
 	});
 
-	after(() => testUtils.destroyMigrator({migrator}));
+	after(() => testUtils.destroyEnv(testEnv));
 
 	it('should be done without error', () => {
-		const cwd = testUtils.getTestDirPath();
-
 		return Promise.resolve()
 			.then(() => {
+				const binPath = testUtils.getBinPath('east');
+
 				return testUtils.execAsync(
 					`"${binPath}" rollback someMigrationName --force`,
-					{cwd}
+					{cwd: testEnv.dir}
 				);
 			})
 			.then((result) => {
