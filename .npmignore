@@ -2,9 +2,10 @@
 test
 testUtils
 migrations
-.jshintignore
-.jshintrc
+.eslintignore
+.eslintrc.json
 .travis.yml
 .nyc_output
 coverage
 tap-snapshots
+.eastrc*

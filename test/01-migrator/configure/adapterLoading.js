@@ -82,4 +82,43 @@ describe('migrator configure adapter loading', () => {
 				});
 			});
 	});
+
+	it('expect to use passed adapter constructor', () => {
+		let migrator;
+
+		return Promise.resolve()
+			.then(() => {
+				migrator = new Migrator();
+
+				return migrator.configure({adapter: Adapter, loadConfig: false});
+			})
+			.then(() => {
+				expect(migrator.adapter).a(Adapter);
+			});
+	});
+
+	it('expect to throw when error while using passed constructor', () => {
+		let migrator;
+
+		return Promise.resolve()
+			.then(() => {
+				migrator = new Migrator();
+
+				const adapter = function BrokenAdapterConstructor() {
+					throw new Error('Some error');
+				};
+
+				return migrator.configure({adapter, loadConfig: false});
+			})
+			.then((result) => {
+				throw new Error(`Error expected, but got result: ${result}`);
+			})
+			.catch((err) => {
+				expect(err).ok();
+				expect(err).an(Error);
+				expect(err.message).equal(
+					'Error constructing adapter:Some error'
+				);
+			});
+	});
 });
