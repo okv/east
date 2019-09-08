@@ -13,6 +13,7 @@ database.
 
 [![Build Status](https://travis-ci.org/okv/east.svg?branch=master)](https://travis-ci.org/okv/east)
 [![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
+[![Npm version](https://img.shields.io/npm/v/east.svg)](https://www.npmjs.org/package/east)
 
 ## Node.js compatibility
 
