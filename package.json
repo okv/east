@@ -42,7 +42,7 @@
     "p-timeout": "2.0.1",
     "pify": "3.0.0",
     "progress": "1.1.8",
-    "underscore": "1.9.0"
+    "underscore": "1.9.1"
   },
   "devDependencies": {
     "coveralls": "3.0.6",
