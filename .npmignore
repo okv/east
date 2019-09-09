@@ -1,7 +1,12 @@
 .npmignore
 test
+testUtils
 migrations
 .eslintignore
 .eslintrc.json
 .travis.yml
+.nyc_output
+.nycrc
+coverage
+tap-snapshots
 .eastrc*

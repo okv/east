@@ -1,0 +1,13 @@
+{
+	"cache": true,
+	"all": true,
+	"exclude": [
+		"node_modules/**",
+		"test/**",
+		"testUtils/**",
+		"tap-snapshots/**",
+		"coverage/**",
+		"migrations/**",
+		"lib/migrationTemplate.js"
+	]
+}

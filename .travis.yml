@@ -3,10 +3,33 @@ language: node_js
 
 node_js:
     - "stable"
+    - "12"
+    - "10"
     - "8"
     - "6"
     - "4"
 
 script:
+    - >
+      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+
+      if [ $nodeVersionMajor -eq 12 ]; then
+        npm audit;
+      else
+        echo "*** Do not run \`npm audit\` for non node.js 12 builds ($nodeVersionMajor)";
+      fi;
+
     - npm run lint
+
     - npm test
+
+    - >
+      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+
+      if [ $nodeVersionMajor -eq 12 ]; then
+        npm run makeCodeCoverageSummaryReport;
+        npm run makeCodeCoverageDetailReport;
+        coveralls < coverage/lcov.info;
+      else
+        echo "*** Do not make coverage reports for non node.js 12 builds ($nodeVersionMajor)";
+      fi;
