@@ -292,6 +292,9 @@ Other adapters:
 
 ## Plugins
 
+East functionality could be extended by using plugins, for usage instructions
+see plugin page:
+
 * [migration duration logger](https://github.com/okv/east-migration-duration-logger)
 * [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 
