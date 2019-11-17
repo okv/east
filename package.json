@@ -50,7 +50,7 @@
     "eslint-config-airbnb-base": "12.1.0",
     "eslint-plugin-import": "2.18.2",
     "expect.js": "0.3.1",
-    "tap": "12.4.1"
+    "tap": "12.7.0"
   },
   "engines": {
     "node": ">=4.0.0"
