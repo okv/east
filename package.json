@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail --jobs-auto",
+    "testWithNode": "for file in `find test -name *.js`; do node \"$file\" || exit 1; done;",
     "test": "npm run testSpecified test",
     "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run testSpecified test",
     "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
@@ -50,7 +51,7 @@
     "eslint-config-airbnb-base": "12.1.0",
     "eslint-plugin-import": "2.18.2",
     "expect.js": "0.3.1",
-    "tap": "12.4.1"
+    "tap": "12.7.0"
   },
   "engines": {
     "node": ">=4.0.0"

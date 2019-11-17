@@ -21,7 +21,12 @@ script:
 
     - npm run lint
 
-    - npm test
+    - >
+      if [ $nodeVersionMajor -gt 4 ]; then
+        npm test;
+      else
+        npm run testWithNode;
+      fi;
 
     - >
       nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
