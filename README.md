@@ -11,9 +11,10 @@ you are already familiar with (apparently you use it for work with db at your
 application) and doesn't provide universal api for working with any kind of
 database.
 
+[![Npm version](https://img.shields.io/npm/v/east.svg)](https://www.npmjs.org/package/east)
 [![Build Status](https://travis-ci.org/okv/east.svg?branch=master)](https://travis-ci.org/okv/east)
 [![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
-[![Npm version](https://img.shields.io/npm/v/east.svg)](https://www.npmjs.org/package/east)
+[![Known Vulnerabilities](https://snyk.io/test/npm/east/badge.svg)](https://snyk.io/test/npm/east)
 
 ## Node.js compatibility
 
