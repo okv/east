@@ -10,18 +10,11 @@ node_js:
     - "4"
 
 script:
-    - >
-      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
-
-      if [ $nodeVersionMajor -eq 12 ]; then
-        npm audit;
-      else
-        echo "*** Do not run \`npm audit\` for non node.js 12 builds ($nodeVersionMajor)";
-      fi;
-
     - npm run lint
 
     - >
+      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+
       if [ $nodeVersionMajor -gt 4 ]; then
         npm test;
       else
