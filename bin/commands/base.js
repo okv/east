@@ -108,7 +108,8 @@ Command.prototype.init = function init(params) {
 			return pProps(promisesObject);
 		})
 		.then((result) => {
-			const {dirExists, migrationParams} = result;
+			const dirExists = result.dirExists;
+			const migrationParams = result.migrationParams;
 
 			if (!dirExists) {
 				throw new Error(
