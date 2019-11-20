@@ -1,9 +1,10 @@
 'use strict';
 
 const _ = require('underscore');
+const pProps = require('p-props');
 const BaseCommand = require('commander').Command;
 const inherits = require('util').inherits;
-const Migrator = require('../../lib/migrator');
+const MigrationManager = require('../../lib/migrationManager');
 
 function Command(nameAndArgs, params) {
 	params = params || {};
@@ -84,26 +85,34 @@ Command.prototype._initLogger = function _initLogger(params) {
 };
 
 Command.prototype.init = function init(params) {
-	let migrator;
+	let migrationManager;
 
 	return Promise.resolve()
 		.then(() => {
 			this._initLogger(this.parent);
 
-			migrator = new Migrator();
-			return migrator.configure(params.migratorParams);
+			migrationManager = new MigrationManager();
+			return migrationManager.configure(params.migratorParams);
 		})
 		.then(() => {
+			const promisesObject = {
+				migrationParams: migrationManager.getParams()
+			};
+
 			if (params.skipDirCheck) {
-				return true;
+				promisesObject.dirExists = true;
 			} else {
-				return migrator.isDirExists();
+				promisesObject.dirExists = migrationManager.isMigrationsDirExist();
 			}
+
+			return pProps(promisesObject);
 		})
-		.then((dirExists) => {
+		.then((result) => {
+			const {dirExists, migrationParams} = result;
+
 			if (!dirExists) {
 				throw new Error(
-					`Migrations directory: ${migrator.params.dir} doesn't exist. ` +
+					`Migrations directory: ${migrationParams.dir} doesn't exist. ` +
 					'You should run `init` command to initialize migrations or change ' +
 					'`dir` option.'
 				);
@@ -111,10 +120,12 @@ Command.prototype.init = function init(params) {
 
 			this.logger.debug(
 				'Current parameters: %s',
-				JSON.stringify(migrator.params, null, 4)
+				JSON.stringify(migrationParams, null, 4)
 			);
 
-			this.migrator = migrator;
+			this.migrationManager = migrationManager;
+			// FIXME: do not expose migrator, all should be done via manager
+			this.migrator = migrationManager.migrator;
 		});
 };
 
@@ -144,13 +155,13 @@ Command.prototype._filterMigrationNames =
 Command.prototype.execute = function execute(params) {
 	return Promise.resolve()
 		.then(() => {
-			return this.migrator.connect();
+			return this.migrationManager.connect();
 		})
 		.then(() => {
 			return this._execute(params);
 		})
 		.then(() => {
-			return this.migrator.disconnect();
+			return this.migrationManager.disconnect();
 		});
 };
 

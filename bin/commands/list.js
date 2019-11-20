@@ -13,18 +13,10 @@ exports.Command = Command;
 Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
-			return this.migrator.getMigrationNames(params.status);
-		})
-		.then((names) => {
-			if (params.command.tag) {
-				return this._filterMigrationNames({
-					by: 'tag',
-					names,
-					tag: params.command.tag
-				});
-			} else {
-				return names;
-			}
+			return this.migrationManager.getMigrationNames({
+				status: params.status,
+				tag: params.command.tag
+			});
 		})
 		.then((names) => {
 			if (names.length) {
