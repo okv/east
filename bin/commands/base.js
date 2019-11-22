@@ -138,21 +138,6 @@ Command.prototype.onError = function onError(err) {
 	}
 };
 
-Command.prototype._filterMigrationNames =
-	function _filterMigrationNames(params) {
-		return Promise.resolve()
-			.then(() => {
-				return this.migrator.filterMigrationNames({
-					by: params.by,
-					names: params.names,
-					tag: params.tag
-				});
-			})
-			.then((filterResult) => {
-				return filterResult && filterResult.names;
-			});
-	};
-
 Command.prototype.execute = function execute(params) {
 	return Promise.resolve()
 		.then(() => {

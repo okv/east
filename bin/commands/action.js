@@ -71,7 +71,7 @@ Command.prototype._execute = function _execute(params) {
 		})
 		.then((names) => {
 			if (params.command.tag) {
-				return this._filterMigrationNames({
+				return this.migrationManager._filterMigrationNames({
 					by: 'tag',
 					names,
 					tag: params.command.tag
