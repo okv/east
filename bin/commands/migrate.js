@@ -10,7 +10,6 @@ inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-
 Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
