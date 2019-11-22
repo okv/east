@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('underscore');
 const BaseCommand = require('./base').Command;
 const inherits = require('util').inherits;
 
@@ -14,7 +15,7 @@ Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrationManager.rollback({
-				migrations: params.names,
+				migrations: _(params.names).isEmpty() ? null : params.names,
 				status: params.command.status,
 				tag: params.command.tag,
 				force: params.command.force
