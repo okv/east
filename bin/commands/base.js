@@ -125,8 +125,6 @@ Command.prototype.init = function init(params) {
 			);
 
 			this.migrationManager = migrationManager;
-			// FIXME: do not expose migrator, all should be done via manager
-			this.migrator = migrationManager.migrator;
 		});
 };
 
