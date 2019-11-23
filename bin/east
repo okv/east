@@ -32,12 +32,15 @@ program
 	.asyncAction(function() {
 		return Promise.resolve()
 			.then(() => {
-				return this.migrator.init();
+				return this.migrationManager.init();
 			})
 			.then(() => {
+				return this.migrationManager.getParams();
+			})
+			.then((migrationParams) => {
 				this.logger.info(
 					'initialization successfully done, migration files will be ' +
-					'stored at: `' + this.migrator.params.dir + '`'
+					'stored at: `' + migrationParams.dir + '`'
 				);
 			});
 	});
@@ -47,17 +50,12 @@ program.command(new Command('create <basename>'))
 	.asyncAction(function(basename, command) {
 		return Promise.resolve()
 			.then(() => {
-				// TODO: remove after removing of fallbackCommaSeparatedNames
-				if (basename.indexOf(',') !== -1) {
-					throw new Error('Basename should not contain commas');
-				}
-
-				return this.migrator.create(basename);
+				return this.migrationManager.create(basename);
 			})
 			.then((name) => {
 				this.logger.info(
 					'New migration `' + name + '` created at ' +
-					this.migrator.getMigrationPathByName(name)
+					this.migrationManager.getMigrationPath(name)
 				);
 			});
 	});
