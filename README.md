@@ -284,6 +284,43 @@ east list executed
 ```
 
 
+## Library usage
+
+east exposes `MigrationManager` class (descendant of `EventEmitter`) which for
+example can be used to migrate your database from node.js app without using cli:
+
+```js
+// examples goes here
+````
+
+`MigrationManager` methods:
+
+* **configure(params)** - configures migration process, accepts object with
+parameters (`dir`, `adapter`, etc) and merges it with loaded config (when
+`loadConfig` param is truthy - true by default). Returns *Promise<void>*. **This
+method should be called before any other methods.**
+
+* **getParams()** - returns *Promise* with parameters used by migration
+process after configuration(`configure` method).
+
+* **create(basename)** - creates migration, returns *Promise* with migration
+object.
+
+
+`MigrationManager` events:
+
+* **beforeMigrateOne({migration})**
+* **afterMigrateOne({migration})**
+* **beforeMigrateMany({migrationNames})**
+* **afterMigrateMany({migrationNames})**
+* **onSeparatedMigrateNames({executedMigrationNames, newMigrationNames})**
+* **beforeRollbackOne({migration})**
+* **afterRollbackOne({migration})**
+* **beforeRollbackMany({migrationNames})**
+* **afterRollbackMany({migrationNames})**
+* **onSeparatedRollbackNames({executedMigrationNames, newMigrationNames})**
+
+
 ## Adapters
 
 adapter determines where executed migration names will be stored and what will be
