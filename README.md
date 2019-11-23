@@ -16,12 +16,14 @@ database.
 [![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
 [![Known Vulnerabilities](https://snyk.io/test/npm/east/badge.svg)](https://snyk.io/test/npm/east)
 
+
 ## Node.js compatibility
 
 east itself requires node.js >= 4 to work.
 
 Please note that particular adapter may have another requirements (see
 documentation for specific adapter).
+
 
 ## Installation
 
@@ -31,9 +33,10 @@ npm install east -g
 
 alternatively you could install it locally
 
-## Usage
 
-go to project dir and run
+## Cli usage
+
+At your project dir run
 
 ```sh
 east init
@@ -70,7 +73,7 @@ Run `east -h` to see all commands:
 
 ```
 
-run `east <command> -h` to see detail command help.
+run `east <command> -h` to see detailed command help.
 
 All options described above can be set via command line or at `.eastrc` file
 located at current directory, e.g.:
@@ -96,6 +99,7 @@ module.exports = {
 };
 
 ```
+
 
 ### create
 
@@ -152,6 +156,7 @@ exports.rollback = function(client, done) {
 
 or you can use special adapter for database (see [adapters](#adapters) section)
 
+
 #### Migration file number format
 
 The default format for migration file names is to prepend a number to the
@@ -179,6 +184,7 @@ configuration option or set it to:
     "migrationNumberFormat": "sequentialNumber"
 }
 ```
+
 
 ### migrate
 
@@ -234,6 +240,7 @@ tag `tag2`:
 east migrate --tag 'tag1 & !tag2'
 ```
 
+
 ### rollback
 
 `rollback` has similar to `migrate` command syntax but executes `rollback`
@@ -254,6 +261,7 @@ migration successfully rolled back
 rollback `1_doSomething`
 migration successfully rolled back
 ```
+
 
 ### list
 
@@ -307,6 +315,7 @@ into cloned repository run
 ```sh
 npm test
 ```
+
 
 ## Creating and testing own adapter
 
