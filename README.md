@@ -315,6 +315,21 @@ adapter). Returns *Promise<void>*.
 * **disconnect()** - disconnects from database management system (if supposed
 by adapter). Returns *Promise<void>*.
 
+* **getMigrationNames({migrations, status, tag, reverseOrderResult})** -
+returns migrations names, following options are provided:
+
+  * **migrations** - array of target migrations, each migration could be
+  defined by basename, full name, path or number.
+  * **status** - status to filter migrations, supported statuses are:
+  `new`, `executed` and `all`.
+  * **tag** - tag expression to filter migrations e.g. `'tag1 & !tag2'`
+  * **reverseOrderResult** - if true then result array will be reversed.
+
+`migrations` and `status` are mutually exclusive.
+If `migrations`, `status` not provided then all migrations will be processed
+(e.g. filtered by tag and returned).
+
+
 `MigrationManager` events:
 
 * **beforeMigrateOne({migration})**
