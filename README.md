@@ -306,6 +306,14 @@ process after configuration(`configure` method).
 * **create(basename)** - creates migration, returns *Promise* with migration
 object.
 
+* **getMigrationPath(name)** - returns absolute path of the migration on disk
+by name of the migration.
+
+* **connect()** - connects to database management system (if supposed by
+adapter). Returns *Promise<void>*.
+
+* **disconnect()** - disconnects from database management system (if supposed
+by adapter). Returns *Promise<void>*.
 
 `MigrationManager` events:
 
