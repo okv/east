@@ -303,6 +303,9 @@ method should be called before any other methods.**
 * **getParams()** - returns *Promise* with parameters used by migration
 process after configuration(`configure` method).
 
+* **init()** - initiates migration process for a project. Should be called once
+per project. Returns *Promise<void>*.
+
 * **create(basename)** - creates migration, returns *Promise* with migration
 object.
 
