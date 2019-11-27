@@ -306,17 +306,17 @@ process after configuration(`configure` method).
 * **init()** - initiates migration process for a project. Should be called once
 per project. Returns *Promise<void>*.
 
+* **isMigrationsDirExist()** - checks whether migrations dir exists or not.
+Returns *Promise<Boolean>*.
+
 * **create(basename)** - creates migration, returns *Promise* with migration
 object.
 
 * **getMigrationPath(name)** - returns absolute path of the migration on disk
-by name of the migration.
+by name of the migration. Returns *String*.
 
 * **connect()** - connects to database management system (if supposed by
 adapter). Returns *Promise<void>*.
-
-* **disconnect()** - disconnects from database management system (if supposed
-by adapter). Returns *Promise<void>*.
 
 * **getMigrationNames({migrations, status, tag, reverseOrderResult})** -
 returns migrations names, following options are provided:
@@ -344,8 +344,8 @@ Target migration could be defined by `migrations`, `status`, `tag` options
 migrations with status `executed` are chosen. Returns *Promise<void>*. `force`
 flag allows to rollback not executed migrations.
 
-* **isMigrationsDirExist()** - checks whether migrations dir exists or not.
-Returns *Promise<Boolean>*.
+* **disconnect()** - disconnects from database management system (if supposed
+by adapter). Returns *Promise<void>*.
 
 
 `MigrationManager` events:
