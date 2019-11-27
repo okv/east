@@ -332,6 +332,12 @@ returns migrations names, following options are provided:
 If `migrations`, `status` not provided then all migrations will be processed
 (e.g. filtered by tag and returned).
 
+* **migrate({migrations, status, tag, force})** - executes target migrations.
+Target migration could be defined by `migrations`, `status`, `tag` options
+(see it's description at `getMigrationNames` method). *By default*
+migrations with status `new` are chosen. Returns *Promise<void>*. `force`
+flag allows to execute already executed migrations.
+
 
 `MigrationManager` events:
 
