@@ -338,6 +338,12 @@ Target migration could be defined by `migrations`, `status`, `tag` options
 migrations with status `new` are chosen. Returns *Promise<void>*. `force`
 flag allows to execute already executed migrations.
 
+* **rollback({migrations, status, tag, force})** - rollbacks target migrations.
+Target migration could be defined by `migrations`, `status`, `tag` options
+(see it's description at `getMigrationNames` method). *By default*
+migrations with status `executed` are chosen. Returns *Promise<void>*. `force`
+flag allows to rollback not executed migrations.
+
 
 `MigrationManager` events:
 
