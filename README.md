@@ -344,6 +344,9 @@ Target migration could be defined by `migrations`, `status`, `tag` options
 migrations with status `executed` are chosen. Returns *Promise<void>*. `force`
 flag allows to rollback not executed migrations.
 
+* **isMigrationsDirExist()** - checks whether migrations dir exists or not.
+Returns *Promise<Boolean>*.
+
 
 `MigrationManager` events:
 
