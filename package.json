@@ -19,6 +19,7 @@
     "mysql",
     "couchbase"
   ],
+  "main": "lib/index.js",
   "scripts": {
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail --jobs-auto",
     "testWithNode": "for file in `find test -name *.js`; do node \"$file\" || exit 1; done;",
