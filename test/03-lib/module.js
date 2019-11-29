@@ -14,7 +14,7 @@ describe('module', () => {
 		expect(libModule.MigrationManager).eql(MigrationManager);
 	});
 
-	it('shoule be set as main in package.json', () => {
+	it('should be set as main in package.json', () => {
 		expect(packageJson.main).equal('lib/index.js');
 	});
 });
