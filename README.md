@@ -313,7 +313,7 @@ Returns *Promise<Boolean>*.
 object.
 
 * **getMigrationPath(name)** - returns absolute path of the migration on disk
-by name of the migration. Returns *String*.
+by name of the migration. Returns *Promise<String>*.
 
 * **connect()** - connects to database management system (if supposed by
 adapter). Returns *Promise<void>*.

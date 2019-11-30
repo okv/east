@@ -3,6 +3,7 @@
 'use strict';
 
 const BaseCommand = require('commander').Command;
+const pProps = require('p-props');
 const Command = require('./commands/base').Command;
 const MigrateCommand = require('./commands/migrate').Command;
 const RollbackCommand = require('./commands/rollback').Command;
@@ -53,9 +54,15 @@ program.command(new Command('create <basename>'))
 				return this.migrationManager.create(basename);
 			})
 			.then((migration) => {
+				return pProps({
+					name: migration.name,
+					path: this.migrationManager.getMigrationPath(migration.name)
+				});
+			})
+			.then((migration) => {
 				this.logger.info(
 					'New migration `' + migration.name + '` created at ' +
-					this.migrationManager.getMigrationPath(migration.name)
+					migration.path
 				);
 			});
 	});
