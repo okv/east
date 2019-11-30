@@ -100,18 +100,18 @@ Command.prototype.init = function init(params) {
 			};
 
 			if (params.skipDirCheck) {
-				promisesObject.dirExists = true;
+				promisesObject.initialized = true;
 			} else {
-				promisesObject.dirExists = migrationManager.isMigrationsDirExist();
+				promisesObject.initialized = migrationManager.isInitialized();
 			}
 
 			return pProps(promisesObject);
 		})
 		.then((result) => {
-			const dirExists = result.dirExists;
+			const initialized = result.initialized;
 			const migrationParams = result.migrationParams;
 
-			if (!dirExists) {
+			if (!initialized) {
 				throw new Error(
 					`Migrations directory: ${migrationParams.dir} doesn't exist. ` +
 					'You should run `init` command to initialize migrations or change ' +

@@ -306,7 +306,7 @@ process after configuration(`configure` method).
 * **init()** - initiates migration process for a project. Should be called once
 per project. Returns *Promise<void>*.
 
-* **isMigrationsDirExist()** - checks whether migrations dir exists or not.
+* **isInitialized()** - checks whether `init` was made or not.
 Returns *Promise<Boolean>*.
 
 * **create(basename)** - creates migration, returns *Promise* with migration
