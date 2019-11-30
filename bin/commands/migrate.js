@@ -22,8 +22,8 @@ Command.prototype._execute = function _execute(params) {
 				this.logger.log('Migration done');
 			});
 
-			this.migrationManager.on('onSeparatedMigrateNames', (event) => {
-				_(event.executedMigrationNames).each((name) => {
+			this.migrationManager.on('onSkipMigrations', (event) => {
+				_(event.migrationNames).each((name) => {
 					this.logger.log(`Skip "${name}" because it's already executed`);
 				});
 			});

@@ -32,8 +32,8 @@ Command.prototype._execute = function _execute(params) {
 				}
 			});
 
-			this.migrationManager.on('onSeparatedRollbackNames', (event) => {
-				_(event.newMigrationNames).each((name) => {
+			this.migrationManager.on('onSkipMigrations', (event) => {
+				_(event.migrationNames).each((name) => {
 					this.logger.log(`Skip "${name}" because it's not executed yet`);
 				});
 			});
