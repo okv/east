@@ -354,12 +354,11 @@ by adapter). Returns *Promise<void>*.
 * **afterMigrateOne({migration})**
 * **beforeMigrateMany({migrationNames})**
 * **afterMigrateMany({migrationNames})**
-* **onSeparatedMigrateNames({executedMigrationNames, newMigrationNames})**
 * **beforeRollbackOne({migration})**
 * **afterRollbackOne({migration})**
 * **beforeRollbackMany({migrationNames})**
 * **afterRollbackMany({migrationNames})**
-* **onSeparatedRollbackNames({executedMigrationNames, newMigrationNames})**
+* **onSkipMigrations({migrationNames})**
 
 
 ## Adapters
