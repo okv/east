@@ -358,7 +358,7 @@ by adapter). Returns *Promise<void>*.
 * **afterRollbackOne({migration})**
 * **beforeRollbackMany({migrationNames})**
 * **afterRollbackMany({migrationNames})**
-* **onSkipMigrations({migrationNames})**
+* **onSkipMigrations({migrationNames, reason})**
 
 
 ## Adapters
