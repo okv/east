@@ -15,27 +15,27 @@ Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			this.migrationManager.on('beforeRollbackOne', (event) => {
-				const migration = event.migration;
-
-				if (migration.hasRollback) {
-					this.logger.log(`Rollback "${migration.name}"`);
-				} else {
-					this.logger.log(
-						`Skip "${migration.name}" because rollback function is not set`
-					);
-				}
+				this.logger.log(`Rollback "${event.migration.name}"`);
 			});
 
-			this.migrationManager.on('afterRollbackOne', (event) => {
-				if (event.migration.hasRollback) {
-					this.logger.log('Migration successfully rolled back');
-				}
+			this.migrationManager.on('afterRollbackOne', () => {
+				this.logger.log('Migration successfully rolled back');
 			});
 
 			this.migrationManager.on('onSkipMigrations', (event) => {
-				_(event.migrationNames).each((name) => {
-					this.logger.log(`Skip "${name}" because it's not executed yet`);
-				});
+				if (event.reason === 'canNotRollbackNotExecuted') {
+					_(event.migrationNames).each((name) => {
+						this.logger.log(
+							`Skip "${name}" because it's not executed yet`
+						);
+					});
+				} else if (event.reason === 'canNotRollbackWithoutRollback') {
+					_(event.migrationNames).each((name) => {
+						this.logger.log(
+							`Skip "${name}" because rollback function is not set`
+						);
+					});
+				}
 			});
 
 			this.migrationManager.on('beforeRollbackMany', (event) => {

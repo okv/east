@@ -23,9 +23,13 @@ Command.prototype._execute = function _execute(params) {
 			});
 
 			this.migrationManager.on('onSkipMigrations', (event) => {
-				_(event.migrationNames).each((name) => {
-					this.logger.log(`Skip "${name}" because it's already executed`);
-				});
+				if (event.reason === 'canNotMigrateAlreadyExecuted') {
+					_(event.migrationNames).each((name) => {
+						this.logger.log(
+							`Skip "${name}" because it's already executed`
+						);
+					});
+				}
 			});
 
 			this.migrationManager.on('beforeMigrateMany', (event) => {
