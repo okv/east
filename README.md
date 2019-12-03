@@ -17,6 +17,19 @@ database.
 [![Known Vulnerabilities](https://snyk.io/test/npm/east/badge.svg)](https://snyk.io/test/npm/east)
 
 
+Following subjects described below:
+
+* [Node.js compatibility](#nodejs-compatibility)
+* [Installation](#installation)
+* [Cli usage](#cli-usage)
+* [Library usage](#library-usage)
+* [Adapters](#adapters)
+* [Plugins](#plugins)
+* [Run tests](#run-tests)
+* [Creating and testing own adapter](#creating-and-testing-own-adapter)
+* [License](#license)
+
+
 ## Node.js compatibility
 
 east itself requires node.js >= 4 to work.
