@@ -25,7 +25,6 @@ Following subjects described below:
 * [Library usage](#library-usage)
 * [Adapters](#adapters)
 * [Plugins](#plugins)
-* [Run tests](#run-tests)
 * [Creating and testing own adapter](#creating-and-testing-own-adapter)
 * [License](#license)
 
@@ -396,15 +395,6 @@ see plugin page:
 
 * [migration duration logger](https://github.com/okv/east-migration-duration-logger)
 * [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
-
-
-## Run tests
-
-into cloned repository run
-
-```sh
-npm test
-```
 
 
 ## Creating and testing own adapter
