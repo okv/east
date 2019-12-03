@@ -25,7 +25,7 @@ Following subjects described below:
 * [Library usage](#library-usage)
 * [Adapters](#adapters)
 * [Plugins](#plugins)
-* [Creating and testing own adapter](#creating-and-testing-own-adapter)
+* [Creating own adapter](#creating-own-adapter)
 * [License](#license)
 
 
@@ -397,7 +397,7 @@ see plugin page:
 * [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 
 
-## Creating and testing own adapter
+## Creating own adapter
 
 For writing your own adapter you should implement methods for connection,
 mark transaction as executed, etc see details inside
