@@ -299,10 +299,31 @@ east list executed
 ## Library usage
 
 east exposes `MigrationManager` class (descendant of `EventEmitter`) which for
-example can be used to migrate your database from node.js app without using cli:
+example can be used to migrate your database from node.js app without using
+east cli:
 
 ```js
-// examples goes here
+const {MigrationManager} = require('east');
+
+const main = async () => {
+  const migrationManager = new MigrationManager();
+
+  // log target migrations before execution
+  migrationManager.once('beforeMigrateMany', (migrationNames) => {
+    console.log('Target migrations: ', migrationNames);
+  });
+
+  await migrationManager.configure();
+  await migrationManager.connect();
+  // select for migrationt all not executed migrations
+  await migrationManager.migrate({status: 'new'});
+
+  await migrationManager.disconnect();
+}
+
+main().catch((err) => {
+  console.error('Some error occurred: ', err.stack || err);
+});
 ````
 
 `MigrationManager` methods:
