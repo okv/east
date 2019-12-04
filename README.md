@@ -306,23 +306,27 @@ east cli:
 const {MigrationManager} = require('east');
 
 const main = async () => {
-  const migrationManager = new MigrationManager();
+    const migrationManager = new MigrationManager();
 
-  // log target migrations before execution
-  migrationManager.once('beforeMigrateMany', (migrationNames) => {
-    console.log('Target migrations: ', migrationNames);
-  });
+    // log target migrations before execution
+    migrationManager.once('beforeMigrateMany', (migrationNames) => {
+        console.log('Target migrations: ', migrationNames);
+    });
 
-  await migrationManager.configure();
-  await migrationManager.connect();
-  // select for migrationt all not executed migrations
-  await migrationManager.migrate({status: 'new'});
+    await migrationManager.configure();
 
-  await migrationManager.disconnect();
+    try {
+        await migrationManager.connect();
+        // select for migration all not executed migrations
+        await migrationManager.migrate({status: 'new'});
+    }
+    finally {
+        await migrationManager.disconnect();
+    }
 }
 
 main().catch((err) => {
-  console.error('Some error occurred: ', err.stack || err);
+    console.error('Some error occurred: ', err.stack || err);
 });
 ````
 
