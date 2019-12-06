@@ -22,13 +22,11 @@ Command.prototype._execute = function _execute(params) {
 				this.logger.log('Migration done');
 			});
 
-			this.migrationManager.on('onSkipMigrations', (event) => {
+			this.migrationManager.on('onSkipMigration', (event) => {
 				if (event.reason === 'canNotMigrateAlreadyExecuted') {
-					_(event.migrationNames).each((name) => {
-						this.logger.log(
-							`Skip "${name}" because it's already executed`
-						);
-					});
+					this.logger.log(
+						`Skip "${event.migration.name}" because it's already executed`
+					);
 				}
 			});
 

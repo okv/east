@@ -22,19 +22,15 @@ Command.prototype._execute = function _execute(params) {
 				this.logger.log('Migration successfully rolled back');
 			});
 
-			this.migrationManager.on('onSkipMigrations', (event) => {
+			this.migrationManager.on('onSkipMigration', (event) => {
 				if (event.reason === 'canNotRollbackNotExecuted') {
-					_(event.migrationNames).each((name) => {
-						this.logger.log(
-							`Skip "${name}" because it's not executed yet`
-						);
-					});
+					this.logger.log(
+						`Skip "${event.migration.name}" because it's not executed yet`
+					);
 				} else if (event.reason === 'canNotRollbackWithoutRollback') {
-					_(event.migrationNames).each((name) => {
-						this.logger.log(
-							`Skip "${name}" because rollback function is not set`
-						);
-					});
+					this.logger.log(
+						`Skip "${event.migration.name}" because rollback function is not set`
+					);
 				}
 			});
 
