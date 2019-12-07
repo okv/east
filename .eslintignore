@@ -2,3 +2,4 @@ node_modules
 lib/migrationTemplate.js
 migrations/
 tap-snapshots
+test/env-*/
