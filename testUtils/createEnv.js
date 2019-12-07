@@ -13,6 +13,7 @@ module.exports = (params) => {
 	let dir;
 	let migrator;
 	let configPath;
+	let templatePath;
 
 	return Promise.resolve()
 		.then(() => {
@@ -27,6 +28,20 @@ module.exports = (params) => {
 			}
 		})
 		.then(() => {
+			if (
+				params.migratorParams &&
+				params.migratorParams.configureParams &&
+				params.migratorParams.configureParams.templateText
+			) {
+				templatePath = pathUtils.join(dir, 'template.js');
+
+				return fse.writeFile(
+					templatePath,
+					params.migratorParams.configureParams.templateText
+				);
+			}
+		})
+		.then(() => {
 			const migrationsDir = pathUtils.join(dir, 'migrations');
 
 			return createEastrc({dir, configParams: {dir: migrationsDir}});
@@ -35,13 +50,24 @@ module.exports = (params) => {
 			configPath = createdConfigPath;
 
 			const migratorParams = _(params.migratorParams).clone() || {};
-			migratorParams.configureParams = migratorParams.configureParams || {};
+			migratorParams.configureParams = (
+				_(migratorParams.configureParams).clone() || {}
+			);
 			migratorParams.configureParams.config = configPath;
+			if (migratorParams.configureParams.templateText) {
+				migratorParams.configureParams.template = templatePath;
+				delete migratorParams.configureParams.templateText;
+			}
 
 			return createMigrator(migratorParams);
 		})
 		.then((createdMigrator) => {
 			migrator = createdMigrator;
 		})
-		.then(() => ({dir, migrator, configPath}));
+		.then(() => ({
+			dir,
+			migrator,
+			configPath,
+			templatePath
+		}));
 };
