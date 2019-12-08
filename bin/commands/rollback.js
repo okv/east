@@ -6,6 +6,9 @@ const inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	BaseCommand.call(this, nameAndArgs, params);
+
+	// always trace errors for rollback command
+	this.trace = true;
 }
 inherits(Command, BaseCommand);
 
