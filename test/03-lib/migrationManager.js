@@ -12,7 +12,7 @@ describe('MigrationManager', () => {
 		expect(MigrationManager.prototype).ok();
 	});
 
-	const publicMethodNames = [
+	const allowedPublicMethodNames = [
 		'configure',
 		'getParams',
 		'init',
@@ -26,9 +26,24 @@ describe('MigrationManager', () => {
 		'disconnect'
 	];
 
-	_(publicMethodNames).each((publicMethodName) => {
+	_(allowedPublicMethodNames).each((publicMethodName) => {
 		it(`should have "${publicMethodName}" public method`, () => {
 			expect(MigrationManager.prototype).have.keys(publicMethodName);
 		});
+	});
+
+	it('should not have other public methods', () => {
+		const allPublicMethodNames = _(MigrationManager.prototype)
+			.chain()
+			.functions()
+			.filter((methodName) => _(MigrationManager.prototype).has(methodName))
+			.reject((methodName) => methodName.charAt(0) === '_')
+			.value();
+
+		const difference = _(allPublicMethodNames).difference(
+			allowedPublicMethodNames
+		);
+
+		expect(difference).eql([]);
 	});
 });
