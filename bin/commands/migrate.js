@@ -1,41 +1,53 @@
 'use strict';
 
-const BaseCommand = require('./action').Command;
+const _ = require('underscore');
+const BaseCommand = require('./base').Command;
 const inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	BaseCommand.call(this, nameAndArgs, params);
+
+	// always trace errors for migrate command
+	this.trace = true;
 }
 inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._getDefaultMigrationNames =
-	function _getDefaultMigrationNames(params) {
-		const status = params.command.status || 'new';
-
-		return this.migrator.getMigrationNames(status);
-	};
-
-Command.prototype._getTargetMigrationNames =
-	function _getTargetMigrationNames(separated) {
-		return separated.newNames;
-	};
-
-Command.prototype._processSeparated = function _processSeparated(separated) {
-	separated.executedNames.forEach((name) => {
-		this.logger.log(`Skip "${name}" because it's already executed`);
-	});
-};
-
-Command.prototype._executeMigration = function _executeMigration(migration) {
+Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
-			this.logger.log(`Migrate "${migration.name}"`);
+			this.migrationManager.on('beforeMigrateOne', (event) => {
+				this.logger.log(`Migrate "${event.migration.name}"`);
+			});
 
-			return this.migrator.migrate(migration);
-		})
-		.then(() => {
-			this.logger.log('Migration done');
+			this.migrationManager.on('afterMigrateOne', () => {
+				this.logger.log('Migration done');
+			});
+
+			this.migrationManager.on('onSkipMigration', (event) => {
+				if (event.reason === 'canNotMigrateAlreadyExecuted') {
+					this.logger.log(
+						`Skip "${event.migration.name}" because it's already executed`
+					);
+				}
+			});
+
+			this.migrationManager.on('beforeMigrateMany', (event) => {
+				const names = event.migrationNames;
+
+				if (names.length) {
+					this.logger.log(`Target migrations:\n\t${names.join('\n\t')}`);
+				} else {
+					this.logger.info('Nothing to migrate');
+				}
+			});
+
+			return this.migrationManager.migrate({
+				migrations: _(params.names).isEmpty() ? null : params.names,
+				status: params.command.status,
+				tag: params.command.tag,
+				force: params.command.force
+			});
 		});
 };

@@ -1,55 +1,57 @@
 'use strict';
 
-const BaseCommand = require('./action').Command;
+const _ = require('underscore');
+const BaseCommand = require('./base').Command;
 const inherits = require('util').inherits;
 
 function Command(nameAndArgs, params) {
 	BaseCommand.call(this, nameAndArgs, params);
+
+	// always trace errors for rollback command
+	this.trace = true;
 }
 inherits(Command, BaseCommand);
 
 exports.Command = Command;
 
-Command.prototype._getDefaultMigrationNames =
-	function _getDefaultMigrationNames(params) {
-		const status = params.command.status || 'executed';
-
-		return Promise.resolve()
-			.then(() => {
-				return this.migrator.getMigrationNames(status);
-			})
-			.then((names) => {
-				return names && names.reverse();
-			});
-	};
-
-Command.prototype._getTargetMigrationNames =
-	function _getTargetMigrationNames(separated) {
-		return separated.executedNames;
-	};
-
-Command.prototype._processSeparated = function _processSeparated(separated) {
-	separated.newNames.forEach((name) => {
-		this.logger.log(`Skip "${name}" because it's not executed yet`);
-	});
-};
-
-Command.prototype._executeMigration = function _executeMigration(migration) {
+Command.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
-			if (migration.rollback) {
-				this.logger.log(`Rollback "${migration.name}"`);
+			this.migrationManager.on('beforeRollbackOne', (event) => {
+				this.logger.log(`Rollback "${event.migration.name}"`);
+			});
 
-				return this.migrator.rollback(migration);
-			} else {
-				this.logger.log(
-					`Skip "${migration.name}" because rollback function is not set`
-				);
-			}
-		})
-		.then(() => {
-			if (migration.rollback) {
+			this.migrationManager.on('afterRollbackOne', () => {
 				this.logger.log('Migration successfully rolled back');
-			}
+			});
+
+			this.migrationManager.on('onSkipMigration', (event) => {
+				if (event.reason === 'canNotRollbackNotExecuted') {
+					this.logger.log(
+						`Skip "${event.migration.name}" because it's not executed yet`
+					);
+				} else if (event.reason === 'canNotRollbackWithoutRollback') {
+					this.logger.log(
+						`Skip "${event.migration.name}" because rollback function is not set`
+					);
+				}
+			});
+
+			this.migrationManager.on('beforeRollbackMany', (event) => {
+				const names = event.migrationNames;
+
+				if (names.length) {
+					this.logger.log(`Target migrations:\n\t${names.join('\n\t')}`);
+				} else {
+					this.logger.info('Nothing to rollback');
+				}
+			});
+
+			return this.migrationManager.rollback({
+				migrations: _(params.names).isEmpty() ? null : params.names,
+				status: params.command.status,
+				tag: params.command.tag,
+				force: params.command.force
+			});
 		});
 };

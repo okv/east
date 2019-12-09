@@ -3,6 +3,7 @@
 'use strict';
 
 const BaseCommand = require('commander').Command;
+const pProps = require('p-props');
 const Command = require('./commands/base').Command;
 const MigrateCommand = require('./commands/migrate').Command;
 const RollbackCommand = require('./commands/rollback').Command;
@@ -32,12 +33,15 @@ program
 	.asyncAction(function() {
 		return Promise.resolve()
 			.then(() => {
-				return this.migrator.init();
+				return this.migrationManager.init();
 			})
 			.then(() => {
+				return this.migrationManager.getParams();
+			})
+			.then((migrationParams) => {
 				this.logger.info(
 					'initialization successfully done, migration files will be ' +
-					'stored at: `' + this.migrator.params.dir + '`'
+					'stored at: `' + migrationParams.dir + '`'
 				);
 			});
 	});
@@ -47,17 +51,18 @@ program.command(new Command('create <basename>'))
 	.asyncAction(function(basename, command) {
 		return Promise.resolve()
 			.then(() => {
-				// TODO: remove after removing of fallbackCommaSeparatedNames
-				if (basename.indexOf(',') !== -1) {
-					throw new Error('Basename should not contain commas');
-				}
-
-				return this.migrator.create(basename);
+				return this.migrationManager.create(basename);
 			})
-			.then((name) => {
+			.then((migration) => {
+				return pProps({
+					name: migration.name,
+					path: this.migrationManager.getMigrationPath(migration.name)
+				});
+			})
+			.then((migration) => {
 				this.logger.info(
-					'New migration `' + name + '` created at ' +
-					this.migrator.getMigrationPathByName(name)
+					'New migration `' + migration.name + '` created at ' +
+					migration.path
 				);
 			});
 	});
