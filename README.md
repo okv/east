@@ -16,12 +16,26 @@ database.
 [![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
 [![Known Vulnerabilities](https://snyk.io/test/npm/east/badge.svg)](https://snyk.io/test/npm/east)
 
+
+Following subjects described below:
+
+* [Node.js compatibility](#nodejs-compatibility)
+* [Installation](#installation)
+* [Cli usage](#cli-usage)
+* [Library usage](#library-usage)
+* [Adapters](#adapters)
+* [Plugins](#plugins)
+* [Creating own adapter](#creating-own-adapter)
+* [License](#license)
+
+
 ## Node.js compatibility
 
 east itself requires node.js >= 4 to work.
 
 Please note that particular adapter may have another requirements (see
 documentation for specific adapter).
+
 
 ## Installation
 
@@ -31,9 +45,10 @@ npm install east -g
 
 alternatively you could install it locally
 
-## Usage
 
-go to project dir and run
+## Cli usage
+
+At your project dir run
 
 ```sh
 east init
@@ -70,7 +85,7 @@ Run `east -h` to see all commands:
 
 ```
 
-run `east <command> -h` to see detail command help.
+run `east <command> -h` to see detailed command help.
 
 All options described above can be set via command line or at `.eastrc` file
 located at current directory, e.g.:
@@ -96,6 +111,7 @@ module.exports = {
 };
 
 ```
+
 
 ### create
 
@@ -152,6 +168,7 @@ exports.rollback = function(client, done) {
 
 or you can use special adapter for database (see [adapters](#adapters) section)
 
+
 #### Migration file number format
 
 The default format for migration file names is to prepend a number to the
@@ -179,6 +196,7 @@ configuration option or set it to:
     "migrationNumberFormat": "sequentialNumber"
 }
 ```
+
 
 ### migrate
 
@@ -234,6 +252,7 @@ tag `tag2`:
 east migrate --tag 'tag1 & !tag2'
 ```
 
+
 ### rollback
 
 `rollback` has similar to `migrate` command syntax but executes `rollback`
@@ -255,6 +274,7 @@ rollback `1_doSomething`
 migration successfully rolled back
 ```
 
+
 ### list
 
 ```sh
@@ -274,6 +294,108 @@ target status could be specified as an argument e.g.
 ```sh
 east list executed
 ```
+
+
+## Library usage
+
+east exposes `MigrationManager` class (descendant of `EventEmitter`) which for
+example can be used to migrate your database from node.js app without using
+east cli:
+
+```js
+const {MigrationManager} = require('east');
+
+const main = async () => {
+    const migrationManager = new MigrationManager();
+
+    // log target migrations before execution
+    migrationManager.once('beforeMigrateMany', (migrationNames) => {
+        console.log('Target migrations: ', migrationNames);
+    });
+
+    await migrationManager.configure();
+
+    try {
+        await migrationManager.connect();
+        // select for migration all not executed migrations
+        await migrationManager.migrate({status: 'new'});
+    }
+    finally {
+        await migrationManager.disconnect();
+    }
+}
+
+main().catch((err) => {
+    console.error('Some error occurred: ', err.stack || err);
+});
+````
+
+`MigrationManager` methods:
+
+* **configure(params)** - configures migration process, accepts object with
+parameters (`dir`, `adapter`, etc) and merges it with loaded config (when
+`loadConfig` param is truthy - true by default). Returns *Promise<void>*. **This
+method should be called before any other methods.**
+
+* **getParams()** - returns *Promise* with parameters used by migration
+process after configuration(`configure` method).
+
+* **init()** - initiates migration process for a project. Should be called once
+per project. Returns *Promise<void>*.
+
+* **isInitialized()** - checks whether `init` was made or not.
+Returns *Promise<Boolean>*.
+
+* **create(basename)** - creates migration, returns *Promise* with migration
+object.
+
+* **getMigrationPath(name)** - returns absolute path of the migration on disk
+by name of the migration. Returns *Promise<String>*.
+
+* **connect()** - connects to database management system (if supposed by
+adapter). Returns *Promise<void>*.
+
+* **getMigrationNames({migrations, status, tag, reverseOrderResult})** -
+returns migrations names, following options are provided:
+
+  * **migrations** - array of target migrations, each migration could be
+  defined by basename, full name, path or number.
+  * **status** - status to filter migrations, supported statuses are:
+  `new`, `executed` and `all`.
+  * **tag** - tag expression to filter migrations e.g. `'tag1 & !tag2'`
+  * **reverseOrderResult** - if true then result array will be reversed.
+
+`migrations` and `status` are mutually exclusive.
+If `migrations`, `status` not provided then all migrations will be processed
+(e.g. filtered by tag and returned).
+
+* **migrate({migrations, status, tag, force})** - executes target migrations.
+Target migration could be defined by `migrations`, `status`, `tag` options
+(see it's description at `getMigrationNames` method). *By default*
+migrations with status `new` are chosen. Returns *Promise<void>*. `force`
+flag allows to execute already executed migrations.
+
+* **rollback({migrations, status, tag, force})** - rollbacks target migrations.
+Target migration could be defined by `migrations`, `status`, `tag` options
+(see it's description at `getMigrationNames` method). *By default*
+migrations with status `executed` are chosen. Returns *Promise<void>*. `force`
+flag allows to rollback not executed migrations.
+
+* **disconnect()** - disconnects from database management system (if supposed
+by adapter). Returns *Promise<void>*.
+
+
+`MigrationManager` events:
+
+* **beforeMigrateOne({migration})**
+* **afterMigrateOne({migration})**
+* **beforeMigrateMany({migrationNames})**
+* **afterMigrateMany({migrationNames})**
+* **beforeRollbackOne({migration})**
+* **afterRollbackOne({migration})**
+* **beforeRollbackMany({migrationNames})**
+* **afterRollbackMany({migrationNames})**
+* **onSkipMigration({migration, reason})**
 
 
 ## Adapters
@@ -300,15 +422,7 @@ see plugin page:
 * [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 
 
-## Run tests
-
-into cloned repository run
-
-```sh
-npm test
-```
-
-## Creating and testing own adapter
+## Creating own adapter
 
 For writing your own adapter you should implement methods for connection,
 mark transaction as executed, etc see details inside

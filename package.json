@@ -1,7 +1,7 @@
 {
   "name": "east",
   "description": "node.js database migration tool for mongodb, sqlite, postgres, mysql, couchbase",
-  "version": "1.2.0",
+  "version": "1.3.0-rc.1",
   "author": "Oleg Korobenko <oleg.korobenko@gmail.com>",
   "license": "MIT",
   "repository": {
@@ -19,6 +19,7 @@
     "mysql",
     "couchbase"
   ],
+  "main": "lib/index.js",
   "scripts": {
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail --jobs-auto",
     "testWithNode": "for file in `find test -name *.js`; do node \"$file\" || exit 1; done;",
