@@ -16,6 +16,8 @@ module.exports = (params) => {
 
 	return Promise.resolve()
 		.then(() => migrator.configure(params.configureParams))
+		// always connect migrator coz `removeDirBefore` makes unmark executed
+		.then(() => migrator.connect())
 		.then(() => {
 			if (params.removeDirBefore) {
 				return removeMigratorDir(migrator);
@@ -27,8 +29,9 @@ module.exports = (params) => {
 			}
 		})
 		.then(() => {
-			if (params.connect) {
-				return migrator.connect();
+			// disconnect if connected was not required
+			if (!params.connect) {
+				return migrator.disconnect();
 			}
 		})
 		.then(() => migrator);
