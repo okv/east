@@ -31,7 +31,7 @@ describe('migrator create with sequential migration number format', () => {
 
 	after(() => testUtils.destroyEnv(testEnv));
 
-	it('should create migrations sequentially without errors', () => {
+	it('should create migrations without errors', () => {
 		return Promise.resolve()
 			.then(() => testUtils.createMigrations({migrator, baseNames}))
 			.then((migrationNames) => {

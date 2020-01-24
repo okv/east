@@ -2,6 +2,7 @@
 
 const tap = require('tap');
 const expect = require('expect.js');
+const pEachSeries = require('p-each-series');
 const testUtils = require('../../../testUtils');
 
 tap.mochaGlobals();
@@ -38,7 +39,7 @@ describe('migrator create with date time migration number format', () => {
 		migrator.params.migrationNumberFormat = 'sequentialNumber';
 	});
 
-	it('should create new files with a dateTime prefix', () => {
+	it('should create migrations without errors', () => {
 		return Promise.resolve()
 			.then(() => testUtils.createMigrations({migrator, baseNames}))
 			.then((migrationNames) => {
@@ -50,5 +51,19 @@ describe('migrator create with date time migration number format', () => {
 		names.forEach((name, index) => {
 			expect(name).to.match(new RegExp(`^[0-9]{14}_${baseNames[index]}$`));
 		});
+	});
+
+	it('created migrations should exist', () => {
+		return migrator.checkMigrationsExists(names);
+	});
+
+	it('created migrations should be loadable', () => {
+		return pEachSeries(names, (name) => migrator.loadMigration(name));
+	});
+
+	it('created migrations should be listed as `new`', () => {
+		return Promise.resolve()
+			.then(() => migrator.getNewMigrationNames())
+			.then((newNames) => expect(newNames).eql(names));
 	});
 });
