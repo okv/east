@@ -12,11 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dev: code coverage reporting added
 
 ### Changed
-- dev change: mocha test runner replaced with tap
-- dev change: migrator module turned to many nested modules
-- dev change: test file turned to many test files
-- dev change: node.js versions in CI configuration updated
-- dev change: eslint, underscore, progress, commander dependencies updated
+- dev: mocha test runner replaced with tap
+- dev: migrator module turned to many nested modules
+- dev: test file turned to many test files
+- dev: node.js versions in CI configuration updated
+- dev: eslint, underscore, progress, commander dependencies updated
 
 ## [1.1.1] - 2019-09-08
 ### Fixed
@@ -36,7 +36,7 @@ files
 - Fixed undefined instead of migrations dir at bin init command logging
 
 ### Changed
-- dev change: eslint updated to 4.18.2
+- dev: eslint updated to 4.18.2
 
 ## [1.0.0] - 2018-04-25
 ### Added
@@ -44,7 +44,7 @@ files
 or function which returns promise)
 
 ### Changed
-- dev change: jshint source code linter replaced with eslint
-- dev change: source code updated to use es 6 syntax
-- dev change: promises used for control flow instead of callbacks
-- dev change: part of local utils replaced by underscore
+- dev: jshint source code linter replaced with eslint
+- dev: source code updated to use es 6 syntax
+- dev: promises used for control flow instead of callbacks
+- dev: part of local utils replaced by underscore
