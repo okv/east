@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Promisify adapter when constructor is provided
 
+### Changed
+- Add eslint and eastrc file to npmignore, publish npm package without ignored
+files
+
 ## [1.1.0] - 2019-07-26
 ### Added
 - Allow creation of migration files with timestamp-derived prefixes
@@ -48,3 +52,13 @@ or function which returns promise)
 - dev: source code updated to use es 6 syntax
 - dev: promises used for control flow instead of callbacks
 - dev: part of local utils replaced by underscore
+
+### Removed
+- dropped node.js 0.10 support, node.js >= 4 is required
+
+[1.2.0]: https://github.com/okv/east/compare/v1.1.1...v1.2.0
+[1.1.1]: https://github.com/okv/east/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/okv/east/compare/v1.0.2...v1.1.0
+[1.0.2]: https://github.com/okv/east/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/okv/east/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/okv/east/compare/v0.5.7...v1.0.0
