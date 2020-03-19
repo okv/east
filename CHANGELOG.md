@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2019-09-09
+### Added
+- Plugins API introduced
+- Links to migration duration plugin, progress indicator plugin added to readme
+- dev: integration testing for cli program added
+- dev: code coverage reporting added
+
+### Changed
+- dev change: mocha test runner replaced with tap
+- dev change: migrator module turned to many nested modules
+- dev change: test file turned to many test files
+- dev change: node.js versions in CI configuration updated
+- dev change: eslint, underscore, progress, commander dependencies updated
+
 ## [1.1.1] - 2019-09-08
 ### Fixed
 - Promisify adapter when constructor is provided
