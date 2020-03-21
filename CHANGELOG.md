@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2019-12-10
+### Added
+- `MigrationManager` class is exposed for library usage
+
+### Changed
+- dev: update tap to 12.7.0
+
 ## [1.2.0] - 2019-09-09
 ### Added
 - Plugins API introduced
@@ -56,6 +63,7 @@ or function which returns promise)
 ### Removed
 - dropped node.js 0.10 support, node.js >= 4 is required
 
+[1.3.0]: https://github.com/okv/east/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/okv/east/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/okv/east/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/okv/east/compare/v1.0.2...v1.1.0
