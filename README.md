@@ -19,6 +19,7 @@ database.
 
 Following subjects described below:
 
+* [Changelog](CHANGELOG.md)
 * [Node.js compatibility](#nodejs-compatibility)
 * [Installation](#installation)
 * [Cli usage](#cli-usage)
