@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -26,12 +27,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dev: eslint, underscore, progress, commander dependencies updated
 
 ## [1.1.1] - 2019-09-08
-### Fixed
-- Promisify adapter when constructor is provided
-
 ### Changed
 - Add eslint and eastrc file to npmignore, publish npm package without ignored
 files
+
+### Fixed
+- Promisify adapter when constructor is provided
 
 ## [1.1.0] - 2019-07-26
 ### Added
@@ -43,11 +44,11 @@ files
 files
 
 ## [1.0.1] - 2019-07-22
-### Fixed
-- Fixed undefined instead of migrations dir at bin init command logging
-
 ### Changed
 - dev: eslint updated to 4.18.2
+
+### Fixed
+- Fixed undefined instead of migrations dir at bin init command logging
 
 ## [1.0.0] - 2018-04-25
 ### Added
