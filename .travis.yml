@@ -11,14 +11,16 @@ node_js:
 
 script:
     - >
-      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+      nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
 
       if [ $nodeVersionMajor -eq 12 ]; then
         npm run lint;
+      else
+        echo "*** Do not lint for non node.js 12 builds ($nodeVersionMajor)";
       fi;
 
     - >
-      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+      nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
 
       if [ $nodeVersionMajor -gt 4 ]; then
         npm test;
@@ -27,7 +29,7 @@ script:
       fi;
 
     - >
-      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+      nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
 
       if [ $nodeVersionMajor -eq 12 ]; then
         npm run makeCodeCoverageSummaryReport;
