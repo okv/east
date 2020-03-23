@@ -10,7 +10,12 @@ node_js:
     - "4"
 
 script:
-    - npm run lint
+    - >
+      nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
+
+      if [ $nodeVersionMajor -eq 12 ]; then
+        npm run lint;
+      fi;
 
     - >
       nodeVersionMajor=`node --version | grep -Eo 'v[0-9]+' | sed 's/v//'`;
