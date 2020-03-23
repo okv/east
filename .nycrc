@@ -8,6 +8,7 @@
 		"tap-snapshots/**",
 		"coverage/**",
 		"migrations/**",
-		"lib/migrationTemplate.js"
+		"lib/migrationTemplate.js",
+		".remarkrc*.js"
 	]
 }
