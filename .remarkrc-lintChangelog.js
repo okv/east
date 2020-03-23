@@ -1,7 +1,5 @@
 module.exports = {
 	plugins: {
-		'remark-changelog': {
-			fix: false
-		}
+		'remark-changelog': {fix: false}
 	}
 };

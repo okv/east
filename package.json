@@ -28,7 +28,7 @@
     "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
     "makeCodeCoverageSummaryReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
     "lint": "eslint ./",
-    "lintChangelog": "remark --rc-path .remarkrc-lintChangelog.js --frail -o /dev/null CHANGELOG.md"
+    "lintChangelog": "remark --rc-path .remarkrc-lintChangelog.js --frail > /dev/null CHANGELOG.md"
   },
   "bin": {
     "east": "./bin/east"
