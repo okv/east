@@ -11,3 +11,4 @@ migrations
 coverage
 tap-snapshots
 .eastrc*
+.remarkrc*
