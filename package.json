@@ -57,6 +57,9 @@
     "remark": "11.0.2",
     "remark-changelog": "0.1.2",
     "remark-cli": "7.0.1",
+    "remark-lint-maximum-line-length": "1.2.1",
+    "remark-preset-lint-consistent": "2.0.3",
+    "remark-preset-lint-recommended": "3.0.3",
     "tap": "12.7.0"
   },
   "engines": {
