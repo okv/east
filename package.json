@@ -27,7 +27,9 @@
     "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run testSpecified test",
     "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
     "makeCodeCoverageSummaryReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
-    "lint": "eslint ./"
+    "lintChangelog": "remark --rc-path .remarkrc-lintChangelog.js --frail > /dev/null CHANGELOG.md",
+    "lintJs": "eslint ./",
+    "lint": "npm run lintChangelog && npm run lintJs"
   },
   "bin": {
     "east": "./bin/east"
@@ -52,6 +54,12 @@
     "eslint-config-airbnb-base": "12.1.0",
     "eslint-plugin-import": "2.18.2",
     "expect.js": "0.3.1",
+    "remark": "11.0.2",
+    "remark-changelog": "0.1.2",
+    "remark-cli": "7.0.1",
+    "remark-lint-maximum-line-length": "1.2.1",
+    "remark-preset-lint-consistent": "2.0.3",
+    "remark-preset-lint-recommended": "3.0.3",
     "tap": "12.7.0"
   },
   "engines": {
