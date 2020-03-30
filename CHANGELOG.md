@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Comma separated target migrations support
-- Progress bar helper `createBar`, use
+- Migration `createBar` helper, use
 [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 instead
 
