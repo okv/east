@@ -21,6 +21,7 @@ Following subjects described below:
 
 * [Node.js compatibility](#nodejs-compatibility)
 * [Installation](#installation)
+* [Changelog](#changelog)
 * [Cli usage](#cli-usage)
 * [Library usage](#library-usage)
 * [Adapters](#adapters)
@@ -44,6 +45,12 @@ npm install east -g
 ```
 
 alternatively you could install it locally
+
+
+## Changelog
+
+All notable changes to this project will be documented in
+[CHANGELOG.md](CHANGELOG.md).
 
 
 ## Cli usage
