@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migration `createBar` helper, use
 [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 instead
+- Callback migrator interface support
 
 ## [1.3.0][] - 2019-12-10
 
