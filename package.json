@@ -19,6 +19,7 @@
     "mysql",
     "couchbase"
   ],
+  "types": "lib/index.d.ts",
   "main": "lib/index.js",
   "scripts": {
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail --jobs-auto",
