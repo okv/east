@@ -8,6 +8,9 @@
 exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDirAndTraceFlag.js TAP > output 1`] = `
 Current parameters: {
     "dir": "[Migrations dir]",
+    "migrationExtension": "js",
+    "sourceDir": "[Migrations dir]",
+    "sourceMigrationExtension": "js",
     "timeout": 604800000,
     "adapter": "../../adapter",
     "url": null,
@@ -17,7 +20,7 @@ Current parameters: {
     "template": "[Migration template]"
 }
 
-Error: Migration directory "[Migrations dir]" already exists
+Error: Migration executables directory "[Migrations dir]" already exists
 [East source stack trace]
 
 `

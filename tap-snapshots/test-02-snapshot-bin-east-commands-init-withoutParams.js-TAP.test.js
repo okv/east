@@ -5,7 +5,7 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/02-snapshot/bin/east/commands/create/withSuitableParams.js TAP > output 1`] = `
-New migration \`1_someMigrationName\` created at [Migrations dir]/1_someMigrationName.js
+exports[`test/02-snapshot/bin/east/commands/init/withoutParams.js TAP > output 1`] = `
+initialization successfully done, migration executable and source files will be stored at \`[Migrations dir]\`
 
 `
