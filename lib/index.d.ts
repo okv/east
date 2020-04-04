@@ -11,8 +11,14 @@ export interface Adapter<TClient> {
 
     /**
      * Returns an absolute path to the template that is used by `east create <migration-name>`
+	 * If adapter supports multiple languages it should check for the extension
+	 * name and return the path to the appropriate template for the given
+	 * file extension, otherwise an error should be thrown.
+	 *
+	 * @param sourceMigrationExtension defines the file extension for the created
+	 * migration without the leading dot (e.g. 'js', 'ts', etc.)
      */
-    getTemplatePath(): string;
+    getTemplatePath(sourceMigrationExtension: string): string;
 
     /**
      * Returns the entire list of all executed migration names.
