@@ -15,7 +15,10 @@ module.exports = (params) => {
 	let configParams;
 
 	if (migrator) {
-		configParams = {dir: migrator.params.dir};
+		configParams = {
+			dir: migrator.params.dir,
+			sourceDir: migrator.params.sourceDir
+		};
 	} else {
 		configParams = params.configParams;
 	}

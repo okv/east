@@ -6,7 +6,7 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east create command with suitable params';
+const describeTitle = 'bin/east create command without params';
 
 describe(describeTitle, () => {
 	let commandResult;

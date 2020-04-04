@@ -42,9 +42,34 @@ module.exports = (params) => {
 			}
 		})
 		.then(() => {
-			const migrationsDir = pathUtils.join(dir, 'migrations');
+			let migrationsDirName = 'migrations';
+			let sourceDirName = 'migrations';
 
-			return createEastrc({dir, configParams: {dir: migrationsDir}});
+			const eastrc = {};
+
+			if (params.migratorParams && params.migratorParams.configureParams) {
+				const {configureParams} = params.migratorParams;
+
+				if (configureParams.dir) {
+					migrationsDirName = configureParams.dir;
+					delete configureParams.dir;
+				}
+				if (configureParams.sourceDir) {
+					sourceDirName = configureParams.sourceDir;
+					delete configureParams.sourceDir;
+				}
+				if (configureParams.migrationExtension) {
+					eastrc.migrationExtension = configureParams.migrationExtension;
+				}
+				if (configureParams.sourceMigrationExtension) {
+					eastrc.sourceMigrationExtension = configureParams.sourceMigrationExtension;
+				}
+			}
+
+			eastrc.dir = pathUtils.join(dir, migrationsDirName);
+			eastrc.sourceDir = pathUtils.join(dir, sourceDirName);
+
+			return createEastrc({dir, configParams: eastrc});
 		})
 		.then((createdConfigPath) => {
 			configPath = createdConfigPath;

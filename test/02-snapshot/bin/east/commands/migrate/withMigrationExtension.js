@@ -4,9 +4,10 @@ const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../../../../testUtils');
 
+
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east init command with suitable params';
+const describeTitle = 'bin/east migrate with migration extension';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -14,9 +15,21 @@ describe(describeTitle, () => {
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createEnv())
+			.then(() => testUtils.createEnv({
+				migratorParams: {
+					init: true,
+					configureParams: {
+						migrationExtension: 'ts'
+					}
+				}
+			}))
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
+
+				return testUtils.createMigrations({
+					migrator: testEnv.migrator,
+					baseNames: ['someMigrationName']
+				});
 			});
 	});
 
@@ -28,7 +41,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" init`,
+					`node -r ts-node/register "${binPath}" migrate someMigrationName`,
 					{cwd: testEnv.dir}
 				);
 			})

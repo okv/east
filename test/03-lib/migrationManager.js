@@ -19,6 +19,7 @@ describe('MigrationManager', () => {
 		'isInitialized',
 		'create',
 		'getMigrationPath',
+		'getMigrationSourcePath',
 		'connect',
 		'getMigrationNames',
 		'migrate',

@@ -1,0 +1,56 @@
+'use strict';
+
+const tap = require('tap');
+const expect = require('expect.js');
+const testUtils = require('../../../../../../testUtils');
+
+tap.mochaGlobals();
+
+const describeTitle = 'bin/east create command with source migration extension';
+
+describe(describeTitle, () => {
+	let commandResult;
+	let testEnv;
+
+	before(() => {
+		return Promise.resolve()
+			.then(() => testUtils.createEnv({
+				migratorParams: {
+					init: true,
+					configureParams: {
+						sourceMigrationExtension: 'ts'
+					}
+				}
+			}))
+			.then((createdTestEnv) => {
+				testEnv = createdTestEnv;
+			});
+	});
+
+	after(() => testUtils.destroyEnv(testEnv));
+
+	it('should be done without error', () => {
+		return Promise.resolve()
+			.then(() => {
+				const binPath = testUtils.getBinPath('east');
+
+				// source migration extension is taken from .eastrc
+				return testUtils.execAsync(
+					`"${binPath}" create someMigrationName`,
+					{cwd: testEnv.dir}
+				);
+			})
+			.then((result) => {
+				expect(result.stderr).not.ok();
+
+				commandResult = result;
+			});
+	});
+
+	it('stdout should match expected snapshot', () => {
+		tap.matchSnapshot(
+			testUtils.cleanSnapshotData(commandResult.stdout),
+			'output'
+		);
+	});
+});
