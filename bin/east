@@ -48,16 +48,17 @@ program
 			.then((migrationParams) => {
 				const {dir, sourceDir} = migrationParams;
 
-				let messageSuffix = `${'`'}${dir}${'`'}`;
-
-				if (dir !== sourceDir) {
-					messageSuffix += ` and ${'`'}${sourceDir}${'`'} respectively`;
+				if (sourceDir === dir) {
+					this.logger.info(
+						'initialization successfully done, migration files will be ' +
+						`stored at \`${dir}\``
+					);
+				} else {
+					this.logger.info(
+						'initialization successfully done, migration executable ' +
+						`and source files will be stored at \`${dir}\` and \`${sourceDir}\` respectively`
+					);
 				}
-
-				this.logger.info(
-					`${'initialization successfully done, migration executable ' +
-					'and source files will be stored at '}${messageSuffix}`
-				);
 			});
 	});
 
