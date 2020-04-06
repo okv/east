@@ -35,12 +35,15 @@ module.exports = (migrator) => {
 			return Promise.all(allMigrations);
 		})
 		.then((exeAndSourceNames) => {
-			const names = new Set(exeAndSourceNames.flat());
+			const namesSet = new Set();
+			exeAndSourceNames.forEach((fileNames) => {
+				fileNames.forEach((fileName) => namesSet.add(fileName));
+			});
 
-			if (names.size) {
+			if (namesSet.size) {
 				return Promise.all([
-					removeMigrations({migrator, names}),
-					unmarkMigrationsExecuted({migrator, names})
+					removeMigrations({migrator, names: namesSet}),
+					unmarkMigrationsExecuted({migrator, names: namesSet})
 				]);
 			}
 		})
