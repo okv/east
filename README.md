@@ -356,11 +356,9 @@ Returns *Promise<Boolean>*.
 * **create(basename)** - creates migration, returns *Promise* with migration
 object.
 
-* **getMigrationPath(name)** - returns an absolute path of the migration executable
-file on disk by the name of the migration. Returns *Promise<String>*.
-
-* **getMigrationSourcePath(name)** - returns an absolute path of the migration source
-file on disk by the name of the migration. Returns *Promise<String>*.
+* **getMigrationPath(name, migrationFileType)** - returns an absolute path of the migration
+file on disk by the name of the migration, `migrationFileType` can be one of
+`'executable'` or `'source'` (`'executable'` by default). Returns *Promise<String>*.
 
 * **connect()** - connects to database management system (if supposed by
 adapter). Returns *Promise<void>*.

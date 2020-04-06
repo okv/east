@@ -6,7 +6,7 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east migrate with migration extension';
+const describeTitle = 'bin/east rollback with migration extension';
 
 describe(describeTitle, () => {
 	let commandResult;

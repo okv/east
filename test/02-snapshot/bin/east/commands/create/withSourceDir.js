@@ -3,7 +3,6 @@
 const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../../../../testUtils');
-const pathUtils = require('path');
 
 tap.mochaGlobals();
 

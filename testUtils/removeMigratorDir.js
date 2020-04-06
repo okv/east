@@ -30,7 +30,7 @@ module.exports = (migrator) => {
 				allMigrations.push(migrator.getAllMigrationNames());
 			}
 			if (sourceDirExists) {
-				allMigrations.push(migrator.getAllMigrationSourceNames());
+				allMigrations.push(migrator.getAllMigrationNames('source'));
 			}
 			return Promise.all(allMigrations);
 		})
