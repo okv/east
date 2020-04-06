@@ -41,7 +41,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`node -r ts-node/register "${binPath}" migrate someMigrationName`,
+					`node -r ts-node/register "${binPath}" migrate someMigrationName --migrationExtension ts`,
 					{cwd: testEnv.dir}
 				);
 			})

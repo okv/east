@@ -34,9 +34,8 @@ describe(describeTitle, () => {
 			.then(() => {
 				const binPath = testUtils.getBinPath('east');
 
-				// source migration extension is taken from .eastrc
 				return testUtils.execAsync(
-					`"${binPath}" create someMigrationName`,
+					`"${binPath}" create someMigrationName --sourceMigrationExtension 'ts'`,
 					{cwd: testEnv.dir}
 				);
 			})

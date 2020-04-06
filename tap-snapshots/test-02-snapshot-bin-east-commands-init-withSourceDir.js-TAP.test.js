@@ -6,6 +6,6 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/init/withSourceDir.js TAP > output 1`] = `
-initialization successfully done, migration executable and source files will be stored at \`[Migrations dir]\` and \`[Migrations dir]Source\` respectively
+initialization successfully done, migration executable and source files will be stored at \`[Migrations dir]\` and \`migrationsSource\` respectively
 
 `

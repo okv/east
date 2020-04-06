@@ -17,13 +17,23 @@ program
 	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
 	.option('--template <path>', 'path to template for new migrations')
-	.option('--dir <dir>', 'dir where migration executable files are stored')
-	.option('--sourceDir <dir>', 'dir where migration source files are stored')
 	.option(
-		'--migrationExtension <ext>', 'migration executable files extension name'
+		'--dir <dir>',
+		'dir where migration executable files are stored (default: ./migrations)',
 	)
 	.option(
-		'--sourceMigrationExtension <ext>', 'migration source files extension name'
+		'--sourceDir <dir>',
+		'dir where migration source files are stored, equal to --dir by default'
+	)
+	.option(
+		'--migrationExtension <ext>',
+		'migration executable files extension name',
+		'js'
+	)
+	.option(
+		'--sourceMigrationExtension <ext>',
+		'migration source files extension name, ' +
+		'equal to --migrationExtension by default'
 	)
 	.option('--url <url>', 'db connect url')
 	.option('--trace', 'verbose mode (includes error stack trace)')

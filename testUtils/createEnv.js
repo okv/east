@@ -42,34 +42,9 @@ module.exports = (params) => {
 			}
 		})
 		.then(() => {
-			let migrationsDirName = 'migrations';
-			let sourceDirName = 'migrations';
+			const migrationsDir = pathUtils.join(dir, 'migrations');
 
-			const eastrc = {};
-
-			if (params.migratorParams && params.migratorParams.configureParams) {
-				const {configureParams} = params.migratorParams;
-
-				if (configureParams.dir) {
-					migrationsDirName = configureParams.dir;
-					delete configureParams.dir;
-				}
-				if (configureParams.sourceDir) {
-					sourceDirName = configureParams.sourceDir;
-					delete configureParams.sourceDir;
-				}
-				if (configureParams.migrationExtension) {
-					eastrc.migrationExtension = configureParams.migrationExtension;
-				}
-				if (configureParams.sourceMigrationExtension) {
-					eastrc.sourceMigrationExtension = configureParams.sourceMigrationExtension;
-				}
-			}
-
-			eastrc.dir = pathUtils.join(dir, migrationsDirName);
-			eastrc.sourceDir = pathUtils.join(dir, sourceDirName);
-
-			return createEastrc({dir, configParams: eastrc});
+			return createEastrc({dir, configParams: {dir: migrationsDir}});
 		})
 		.then((createdConfigPath) => {
 			configPath = createdConfigPath;
@@ -82,6 +57,16 @@ module.exports = (params) => {
 			if (migratorParams.configureParams.templateText) {
 				migratorParams.configureParams.template = templatePath;
 				delete migratorParams.configureParams.templateText;
+			}
+			if (migratorParams.configureParams.dir) {
+				migratorParams.configureParams.dir = pathUtils.join(
+					dir, migratorParams.configureParams.dir
+				);
+			}
+			if (migratorParams.configureParams.sourceDir) {
+				migratorParams.configureParams.sourceDir = pathUtils.join(
+					dir, migratorParams.configureParams.sourceDir
+				);
 			}
 
 			return createMigrator(migratorParams);

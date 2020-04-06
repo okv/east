@@ -3,6 +3,7 @@
 const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../../../../testUtils');
+const pathUtils = require('path');
 
 tap.mochaGlobals();
 
@@ -17,7 +18,9 @@ describe(describeTitle, () => {
 			.then(() => testUtils.createEnv({
 				migratorParams: {
 					init: true,
-					configureParams: {sourceDir: 'migrationsSource'}
+					configureParams: {
+						sourceDir: 'migrationsSource'
+					}
 				}
 			}))
 			.then((createdTestEnv) => {
@@ -33,7 +36,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" create someMigrationName`, // sourceDir is taken from .eastrc
+					`"${binPath}" create someMigrationName --sourceDir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})

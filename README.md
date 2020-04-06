@@ -467,10 +467,16 @@ You can configure separate executable and source files directories as well as
 separate executable and source files extensions with `--dir`, `--sourceDir`,
 `--migrationExtension`, `--sourceMigrationExtension` respectively.
 
-By default if you specify only sources or executables dir or file extension the
-other (executable or source) option will get the same value. E.g. if you passed
-only `--migrationExtension ts`, then `--sourceMigrationExtension` will take its value `ts`
-(and vice-versa of course).
+By default if you specify only `--dir` and/or `--migrationExtension`, then
+`--sourceDir` and/or `--sourceMigrationExtension` will be equal to it, however
+it doesn't work on the other way around, e.g. if you specify
+```
+--sourceDir mySourceDir --sourceMigrationExtension ts
+```
+then `--dir` and
+`--migrationExtension` will habe `migrations` and `js` values by default,
+so it is recommended to specify at least `--dir`, `--sourceDir` and `--sourceMigrationExtension`
+when you are building a transpiled language.
 
 If you use TypeScript you can run `east` with [`ts-node`](https://github.com/TypeStrong/ts-node)
 if you don't want to transpile you migration scripts before running them:
