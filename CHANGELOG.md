@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 instead
 - Callback migrator interface support
+- Nodejs 4, 6, 8 support, node.js >= 10 is required
 
 ## [1.3.0][] - 2019-12-10
 
