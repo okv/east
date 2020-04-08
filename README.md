@@ -84,10 +84,10 @@ Run `east -h` to see all commands:
     --config <path>                     config file to use
     --timeout <timeout>                 timeout for migrate/rollback
     --template <path>                   path to template for new migrations
-    --dir <dir>                         dir where migration executable files are stored
-    --sourceDir <dir>                   dir where migration source files are stored
-    --migrationExtension <ext>          migration executable files extension name
-    --sourceMigrationExtension <ext>    migration source files extension name
+    --dir <dir>                         dir where migration executable files are stored (default: "./migrations")
+    --sourceDir <dir>                   dir where migration source files are stored, equal to --dir by default
+    --migrationExtension <ext>          migration executable files extension name (default: "js")
+    --sourceMigrationExtension <ext>    migration source files extension name, equal to --migrationExtension by default
     --url <url>                         db connect url
     --trace                             verbose mode (includes error stack trace)
 

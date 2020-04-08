@@ -19,7 +19,7 @@ program
 	.option('--template <path>', 'path to template for new migrations')
 	.option(
 		'--dir <dir>',
-		'dir where migration executable files are stored (default: ./migrations)'
+		'dir where migration executable files are stored (default: "./migrations")'
 	)
 	.option(
 		'--sourceDir <dir>',
