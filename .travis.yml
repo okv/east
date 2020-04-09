@@ -17,14 +17,7 @@ script:
         echo "*** Do not lint for non node.js 12 builds ($nodeVersionMajor)";
       fi;
 
-    - >
-      nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
-
-      if [ $nodeVersionMajor -gt 4 ]; then
-        npm test;
-      else
-        npm run testWithNode;
-      fi;
+    - npm test;
 
     - >
       nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;

@@ -22,7 +22,6 @@
   "main": "lib/index.js",
   "scripts": {
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 10 --bail --jobs-auto",
-    "testWithNode": "for file in `find test -name *.js`; do node \"$file\" || exit 1; done;",
     "test": "npm run testSpecified test",
     "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run testSpecified test",
     "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
