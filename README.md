@@ -410,8 +410,8 @@ by adapter). Returns *Promise<void>*.
 
 adapter determines where executed migration names will be stored and what will be
 passed to `migrate` and `rollback` function as `client`.
-Default adapter store executed migration names at file `.migrations` which is
-located at migrations directory and pass `null` as `client`.
+Default adapter stores executed migration names at file `.migrations` which is
+located at migrations executables directory and passes `null` as `client`.
 
 Other adapters:
 * [mongodb](https://github.com/okv/east-mongo)
