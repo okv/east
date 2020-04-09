@@ -1,6 +1,6 @@
 /**
  * Adapter determines where executed migration names will be stored and what will be
- * passed to `migrate` and `rollback` function as `client`.
+ * passed to `migrate` and `rollback` function as a parameter.
  */
 export interface Adapter<P = unknown> {
     /**
@@ -55,8 +55,8 @@ export interface AdapterConstructorParams<P = unknown> extends MigratorParams<P>
 }
 
 /**
- * Creates an instance of `Adapter` passing the parsed `.eastrc` config
- * file object.
+ * Creates an instance of `Adapter` passing the config object (that will also
+ * contain properties from `.eastrc` if not overriden in code).
  */
 export type AdapterConstructor<P = unknown> = new (params: AdapterConstructorParams<P>) => Adapter<P>;
 
@@ -72,7 +72,8 @@ export interface MigratorParams<P = unknown> {
      * Path to the adapter to require or the `AdpaterConstructor` itself.
      *
      * Default: path to the builtin adapter that stores executed migration names
-     * at file `.migrations` dir which is located at `dir` and passes `null` as `client`
+     * at file `.migrations` in dir which is located at `dir` and passes `null`
+     * to `migrate()/rollback()`
      */
     adapter: string | AdapterConstructor<P>;
 
@@ -105,9 +106,10 @@ export interface MigratorParams<P = unknown> {
     timeout: number;
 
     /**
-     * Database url. This is not used be `east` itself, it is just passed to the
-     * adapter and only it determines what to do with it. By convention, adapters
-     * should use `url` for passing the target database cluster domain endpoint.
+     * Database url. This is not used by `east` itself, it is just passed to the
+     * adapter and only the adapter determines what to do with it. By convention,
+     * adapters * should use `url` for passing the target database cluster domain
+     * endpoint.
      *
      * Default: `null`
      */
@@ -155,9 +157,9 @@ export interface MigratorParams<P = unknown> {
      * Array of paths to plugin modules or plugin objects themselves.
      * `module.exports` of the plugin module should conform to `Plugin` interface.
      *
-     * Default: `[]`
+     * Default: `undefined`
      */
-    plugins: (string | Plugin<P>)[];
+    plugins?: (string | Plugin<P>)[];
 }
 
 export interface Plugin<P = unknown> {
@@ -172,7 +174,7 @@ export interface RegisterPluginParams<P = unknown> {
 export interface OkHookParams<P = unknown> {
     migrationName: string;
     /**
-     * Paramter value that is passed to `migrate(param: P)/rollback(param: P)`
+     * Parameter value that is passed to `migrate(param: P)/rollback(param: P)`
      */
     migrationParams: P;
 }
@@ -208,8 +210,8 @@ export interface Hooks<P = unknown> {
 export type MigrationNumberFormat = "sequentialNumber" | "dateTime";
 
 /**
- * Parameters for the default builtin adapter that stores the migration state in the file
- * on the local filesystem.
+ * Parameters for the default builtin adapter that stores the migration state in
+ * a file on the local filesystem.
  */
 export interface FileStorageAdapterParams {
     /**
@@ -222,7 +224,7 @@ export interface FileStorageAdapterParams {
 
 export interface CreateResult {
     /**
-     * Name of the migration that was cretead. Doesn't include the file
+     * Name of the migration that was created. Doesn't include the file
      * extension. It has the following format: `<migrationNumber>_<basename>`
      */
     name: string;
@@ -249,7 +251,8 @@ type MigrationFilters =
         tag?: string;
     } & ({
         /**
-         * Array of target migrations, each migration could be defined by basename, full name, path or number
+         * Array of target migrations, each migration could be defined by basename,
+         * full name, path or number
          */
         migrations: string[];
         status?: undefined;
@@ -275,12 +278,13 @@ export type MigrateParams = Partial<MigrationFilters> & {
 
 export type RollbackParams = MigrateParams;
 
-
 /**
- * `T` defines the type of the parameter that is passed to `migrate(param: P)/rollback(param: P)`
+ * `P` defines the type of the parameter that is passed to `migrate(param: P)/rollback(param: P)`
+ * most of the time this will be the database api client instance.
+ *
  * `U` defines the object type of configurations for the adapter.
  */
-export class MigrationManager<P = unknown, U extends object = FileStorageAdapterParams> {
+export class MigrationManager<P = unknown, U	 extends object = FileStorageAdapterParams> {
     /**
      * Configures migration process (dir, adapter, etc). Merges `params` with loaded config
      * (when `loadConfig` param is truthy - `true` by default).
@@ -344,7 +348,7 @@ export class MigrationManager<P = unknown, U extends object = FileStorageAdapter
     migrate(params: MigrateParams): Promise<void>;
 
     /**
-     * Rollbacks target migrations. By default migrations with  `status` `"executed"` are chosen.
+     * Rollbacks target migrations. By default migrations with `status` `"executed"` are chosen.
      */
     rollback(params: RollbackParams): Promise<void>;
 }
