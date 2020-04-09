@@ -32,7 +32,7 @@ Following subjects described below:
 
 ## Node.js compatibility
 
-east itself requires node.js >= 4 to work.
+east itself requires node.js >= 8 to work.
 
 Please note that particular adapter may have another requirements (see
 documentation for specific adapter).
