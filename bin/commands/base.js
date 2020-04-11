@@ -46,7 +46,8 @@ Command.prototype.asyncAction = function asyncAction(func) {
 
 				initParams.migratorParams = _(self.parent).pick(
 					'config', 'dir', 'timeout', 'template', 'adapter',
-					'url', 'trace', 'silent'
+					'url', 'trace', 'silent', 'sourceDir', 'migrationExtension',
+					'sourceMigrationExtension'
 				);
 
 				return self.init(initParams);

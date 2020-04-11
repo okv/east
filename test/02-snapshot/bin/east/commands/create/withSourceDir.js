@@ -6,7 +6,7 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east create command with suitable params';
+const describeTitle = 'bin/east create command with source directory';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -14,7 +14,14 @@ describe(describeTitle, () => {
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createEnv({migratorParams: {init: true}}))
+			.then(() => testUtils.createEnv({
+				migratorParams: {
+					init: true,
+					configureParams: {
+						sourceDir: 'migrationsSource'
+					}
+				}
+			}))
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
 			});
@@ -28,7 +35,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" create someMigrationName`,
+					`"${binPath}" create someMigrationName --sourceDir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})

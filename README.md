@@ -1,7 +1,7 @@
 # east
 
 east - node.js database migration tool for different databases (extensible via
-[adapters](#adapters)).
+[adapters](#adapters)) with [transpiled languages support (e.g. TypeScript)](#typescript-and-other-transpiled-languages-support).
 
 east connects to the db using particular adapter (mongodb, sqlite, postgres,
 mysql, couchbase), keeps track of executed migrations by storing their names
@@ -29,12 +29,11 @@ Following subjects described below:
 * [Creating own adapter](#creating-own-adapter)
 * [License](#license)
 
-
 ## Node.js compatibility
 
 east itself requires node.js >= 8 to work.
 
-Please note that particular adapter may have another requirements (see
+Please note that particular adapter may have other requirements (see
 documentation for specific adapter).
 
 
@@ -71,24 +70,26 @@ Run `east -h` to see all commands:
 
   Commands:
 
-    init                   initialize migration system
-    create <basename>      create new migration based on template
-    migrate [options]      run all or selected migrations
-    rollback [options]     rollback all or selected migrations
-    list [status]          list migration with selected status (`new`, `executed` or `all`), `new` by default
+    init                                initialize migration system
+    create <basename>                   create new migration based on template
+    migrate [options] [migrations...]   run all or selected migrations
+    rollback [options] [migrations...]  rollback all or selected migrations
+    list [options] [status]             list migration with selected status (`new`, `executed` or `all`), `new` by default
     *
 
-  Options:
+   Options:
 
-    -h, --help           output usage information
-    -V, --version        output the version number
-    --adapter <name>     which db adapter to use
-    --config <path>      config file to use
-    --timeout <timeout>  timeout for migrate/rollback
-    --template <path>    path to template for new migrations
-    --dir <dir>          dir where migrations stored
-    --url <url>          db connect url
-    --trace              verbose mode (including error stack trace)
+    -V, --version                       output the version number
+    --adapter <name>                    which db adapter to use
+    --config <path>                     config file to use
+    --timeout <timeout>                 timeout for migrate/rollback
+    --template <path>                   path to template for new migrations
+    --dir <dir>                         dir where migration executable files are stored (default: "./migrations")
+    --sourceDir <dir>                   dir where migration source files are stored, equal to --dir by default
+    --migrationExtension <ext>          migration executable files extension name (default: "js")
+    --sourceMigrationExtension <ext>    migration source files extension name, equal to --migrationExtension by default
+    --url <url>                         db connect url
+    --trace                             verbose mode (includes error stack trace)
 
 ```
 
@@ -132,7 +133,7 @@ produces something like this
 New migration `1_doSomething` created at migrations/1_doSomething.js
 ```
 
-created file will contain
+the created file will contain
 
 ```js
 exports.migrate = function(client, done) {
@@ -144,14 +145,14 @@ exports.rollback = function(client, done) {
 };
 ```
 
-* `client` is connect to current db and he determined by adapter (see [adapters](#adapters) section)
-* `done` is function which should be called at the end of migration (if any
-error occured you can pass it as first argument)
+* `client` is represents a connection to the current db and he is determined by the adapter (see [adapters](#adapters) section)
+* `done` is the function which should be called at the end of the migration (if any
+error occures you can pass it as the first argument)
 * instead of using `done` argument promise can be returned or async function can be used
 * migration also can be synchronous - declare only `client` at `migrate` or `rollback`
 * `rollback` function is optional and may be omitted
 
-Migration file is regular node.js module and allows migrate any database e.g.
+Migration file is a regular node.js module and allows migrating any database e.g.
 
 ```js
 // include your database wrapper which you already use in app
@@ -173,7 +174,7 @@ exports.rollback = function(client, done) {
 
 ```
 
-or you can use special adapter for database (see [adapters](#adapters) section)
+or you can use a special adapter for database (see [adapters](#adapters) section)
 
 
 #### Migration file number format
@@ -182,7 +183,7 @@ The default format for migration file names is to prepend a number to the
 filename which is incremented with every new file. This creates migration files
 such as `migrations/1_doSomething.js`, `migrations/2_doSomethingElse.js`.
 
-If you prefer your files to be created with a date time instead of sequential
+If you prefer your files to be created with a date-time instead of sequential
 numbers, you can set the `migrationNumberFormat` configuration parameter in
 your `.eastrc` to `dateTime`:
 
@@ -192,10 +193,10 @@ your `.eastrc` to `dateTime`:
 }
 ```
 
-This will create migration files with date time prefix in `YYYYMMDDhhmmss`
+This will create migration files with date-time prefix in `YYYYMMDDhhmmss`
 format (e.g. `migrations/20190720172730_doSomething.js`).
 
-For the default behaviour, you can omit the `migrationNumberFormat`
+For the default behavior, you can omit the `migrationNumberFormat`
 configuration option or set it to:
 
 ```json
@@ -232,7 +233,7 @@ migration done
 ```
 
 selected migrations can be executed by passing their names (or numbers or
-basenames or paths) as argument
+basenames or paths) as an argument
 
 ```sh
 east migrate 1_doSomething 2
@@ -249,11 +250,10 @@ nothing to migrate
 you can pass `--force` option to execute already executed migrations.
 This is useful while you develop and test your migration.
 
-You also can export `tags` array from migration and then migrate only
-migrations that satisfied expression specified by option `--tag`. Expression
+You also can export `tags` array from migration and then run only
+migrations that satisfy the expression specified by `--tag` option. The expression
 consists of tag names and boolean operators `&`, `|` and `!`. For example,
-following command will migrate all migrations that have tag `tag1` and not have
-tag `tag2`:
+the following command will run all migrations that have `tag1` tag and do not have `tag2` tag :
 
 ```sh
 east migrate --tag 'tag1 & !tag2'
@@ -263,7 +263,7 @@ east migrate --tag 'tag1 & !tag2'
 ### rollback
 
 `rollback` has similar to `migrate` command syntax but executes `rollback`
-function from migration file
+function from the migration file
 
 ```sh
 east rollback
@@ -356,8 +356,9 @@ Returns *Promise<Boolean>*.
 * **create(basename)** - creates migration, returns *Promise* with migration
 object.
 
-* **getMigrationPath(name)** - returns absolute path of the migration on disk
-by name of the migration. Returns *Promise<String>*.
+* **getMigrationPath(name, migrationFileType)** - returns an absolute path of the migration
+file on disk by the name of the migration, `migrationFileType` can be one of
+`'executable'` or `'source'` (`'executable'` by default). Returns *Promise<String>*.
 
 * **connect()** - connects to database management system (if supposed by
 adapter). Returns *Promise<void>*.
@@ -409,8 +410,8 @@ by adapter). Returns *Promise<void>*.
 
 adapter determines where executed migration names will be stored and what will be
 passed to `migrate` and `rollback` function as `client`.
-Default adapter store executed migration names at file `.migrations` which is
-located at migrations directory and pass `null` as `client`.
+Default adapter stores executed migration names at file `.migrations` which is
+located at migrations executables directory and passes `null` as `client`.
 
 Other adapters:
 * [mongodb](https://github.com/okv/east-mongo)
@@ -434,6 +435,8 @@ see plugin page:
 For writing your own adapter you should implement methods for connection,
 mark transaction as executed, etc see details inside
 [built-in adapter](lib/adapter.js) and [other adapters](#adapters).
+See [TypeScript support](#typescript-and-other-transpiled-languages-support) for the details on the required
+adapter interface.
 
 You also can run migrator tests from current repository against your adapter:
 
@@ -451,6 +454,55 @@ your adapter e.g.
 
 * Run `NODE_EAST_TEST_LOAD_CONFIG=1 npm run testSpecified test/01-migrator` at
 root of the cloned repository.
+
+
+## TypeScript and other transpiled languages support
+
+`east` allows you to opt-in writing and executing your migrations with any transpiled languages,
+while by default it uses a single dir called `migrations` and looks for `.js` files in it.
+
+You can configure separate executable and source files directories as well as
+separate executable and source files extensions with `--dir`, `--sourceDir`,
+`--migrationExtension`, `--sourceMigrationExtension` respectively.
+
+By default if you specify only `--dir` and/or `--migrationExtension`, then
+`--sourceDir` and/or `--sourceMigrationExtension` will be equal to it, however
+it doesn't work on the other way around, e.g. if you specify
+```
+--sourceDir mySourceDir --sourceMigrationExtension ts
+```
+then `--dir` and
+`--migrationExtension` will habe `migrations` and `js` values by default,
+so it is recommended to specify at least `--dir`, `--sourceDir` and `--sourceMigrationExtension`
+when you are building a transpiled language.
+
+If you use TypeScript you can run `east` with [`ts-node`](https://github.com/TypeStrong/ts-node)
+if you don't want to transpile you migration scripts before running them:
+```sh
+ts-node $(which east) migrate
+```
+Just be sure to specify `--migrationExtension ts` so that `east` does look for
+TypeScript files when `require()`-ing the migration scripts.
+
+### TypeScript typings
+
+`east` exposes TypeScript declarations of the `Adapter` interface.
+You can access it by importing the interfaces from `east` module itself:
+```ts
+import { DbClient } from 'some-mainstream-db';
+import type { Adapter, AdapterConstructor } from 'east';
+
+class MyAdapter implements Adapter<DbClient> {
+	// go to definition of Adapter interface for documentation on required methods
+	// you can also leverage your ide features to generate
+	// stub method impementations here
+}
+
+// type-check the class static type (i.e. its constructor)
+const _: AdpaterConstructor<DbClient> = MyAdapter;
+
+export = MyAdapter;
+```
 
 
 ## License

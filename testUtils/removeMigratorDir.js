@@ -11,24 +11,39 @@ module.exports = (migrator) => {
 		'.migrations'
 	);
 	let dirExists;
+	let sourceDirExists;
 
 	return Promise.resolve()
 		.then(() => {
-			return fse.pathExists(migrator.params.dir);
+			return Promise.all([
+				fse.pathExists(migrator.params.dir),
+				fse.pathExists(migrator.params.sourceDir)
+			]);
 		})
-		.then((exists) => {
-			dirExists = exists;
+		.then(([dirExistsResult, sourceDirExistsResult]) => {
+			dirExists = dirExistsResult;
+			sourceDirExists = sourceDirExistsResult;
 		})
 		.then(() => {
+			const allMigrations = [];
 			if (dirExists) {
-				return migrator.getAllMigrationNames();
+				allMigrations.push(migrator.getAllMigrationNames());
 			}
+			if (sourceDirExists) {
+				allMigrations.push(migrator.getAllMigrationNames('source'));
+			}
+			return Promise.all(allMigrations);
 		})
-		.then((names) => {
-			if (names && names.length) {
+		.then((exeAndSourceNames) => {
+			const namesSet = new Set();
+			exeAndSourceNames.forEach((fileNames) => {
+				fileNames.forEach((fileName) => namesSet.add(fileName));
+			});
+
+			if (namesSet.size) {
 				return Promise.all([
-					removeMigrations({migrator, names}),
-					unmarkMigrationsExecuted({migrator, names})
+					removeMigrations({migrator, names: namesSet}),
+					unmarkMigrationsExecuted({migrator, names: namesSet})
 				]);
 			}
 		})
@@ -43,8 +58,17 @@ module.exports = (migrator) => {
 			}
 		})
 		.then(() => {
+			const dirsToDelete = new Set();
+
 			if (dirExists) {
-				return fse.rmdir(migrator.params.dir);
+				dirsToDelete.add(migrator.params.dir);
 			}
+			if (sourceDirExists) {
+				dirsToDelete.add(migrator.params.sourceDir);
+			}
+
+			return Promise.all(
+				[...dirsToDelete.values()].map((dir) => fse.rmdir(dir))
+			);
 		});
 };

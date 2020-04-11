@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
+### Added
+- Support for transpiled languages via `--sourceDir`, `--sourceMigrationExtension`,
+`--migrationExtension` (should also work with `ts-node`)
+- TypeScript type declarations for all exposed entities (`Adapter` interface
+and `MigrationManager` class)
+- Builtin TypeScript migration template file
+
+
+### Changed
+- `Adapter.getTemplatePath()` now gets passed the migration file extension so
+now adapters may create multiple templates for different languages (e.g
+separate tempalte for `js` and `ts`)
+- `MigrationManager.isInitialized()` now additionally checks that the `sourceDir` exists
+- `MigrationManager.getMigrationPath()` now accepts a second optional parameter
+`migrationFileType` to let take apart `source` and `executable` files.
+
+
 ### Removed
 - Comma separated target migrations support
 - Migration `createBar` helper, use

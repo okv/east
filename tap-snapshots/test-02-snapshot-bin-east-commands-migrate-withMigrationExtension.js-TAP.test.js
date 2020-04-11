@@ -5,7 +5,10 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDir.js TAP > output 1`] = `
-Migration executables directory "[Migrations dir]" already exists
+exports[`test/02-snapshot/bin/east/commands/migrate/withMigrationExtension.js TAP > output 1`] = `
+Target migrations:
+	1_someMigrationName
+Migrate "1_someMigrationName"
+Migration done
 
 `

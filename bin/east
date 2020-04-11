@@ -17,7 +17,24 @@ program
 	.option('--config <path>', 'config file to use')
 	.option('--timeout <timeout>', 'timeout for migrate/rollback')
 	.option('--template <path>', 'path to template for new migrations')
-	.option('--dir <dir>', 'dir where migrations stored')
+	.option(
+		'--dir <dir>',
+		'dir where migration executable files are stored (default: "./migrations")'
+	)
+	.option(
+		'--sourceDir <dir>',
+		'dir where migration source files are stored, equal to --dir by default'
+	)
+	.option(
+		'--migrationExtension <ext>',
+		'migration executable files extension name',
+		'js'
+	)
+	.option(
+		'--sourceMigrationExtension <ext>',
+		'migration source files extension name, ' +
+		'equal to --migrationExtension by default'
+	)
 	.option('--url <url>', 'db connect url')
 	.option('--trace', 'verbose mode (includes error stack trace)')
 	.option('--silent', 'prevent output of detailed log')
@@ -39,10 +56,19 @@ program
 				return this.migrationManager.getParams();
 			})
 			.then((migrationParams) => {
-				this.logger.info(
-					'initialization successfully done, migration files will be ' +
-					'stored at: `' + migrationParams.dir + '`'
-				);
+				const {dir, sourceDir} = migrationParams;
+
+				if (sourceDir === dir) {
+					this.logger.info(
+						'initialization successfully done, migration files will be ' +
+						`stored at \`${dir}\``
+					);
+				} else {
+					this.logger.info(
+						'initialization successfully done, migration executable ' +
+						`and source files will be stored at \`${dir}\` and \`${sourceDir}\` respectively`
+					);
+				}
 			});
 	});
 
@@ -56,7 +82,7 @@ program.command(new Command('create <basename>'))
 			.then((migration) => {
 				return pProps({
 					name: migration.name,
-					path: this.migrationManager.getMigrationPath(migration.name)
+					path: this.migrationManager.getMigrationPath(migration.name, 'source')
 				});
 			})
 			.then((migration) => {

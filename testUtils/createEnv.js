@@ -58,6 +58,16 @@ module.exports = (params) => {
 				migratorParams.configureParams.template = templatePath;
 				delete migratorParams.configureParams.templateText;
 			}
+			if (migratorParams.configureParams.dir) {
+				migratorParams.configureParams.dir = pathUtils.join(
+					dir, migratorParams.configureParams.dir
+				);
+			}
+			if (migratorParams.configureParams.sourceDir) {
+				migratorParams.configureParams.sourceDir = pathUtils.join(
+					dir, migratorParams.configureParams.sourceDir
+				);
+			}
 
 			return createMigrator(migratorParams);
 		})

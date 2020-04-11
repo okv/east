@@ -5,7 +5,8 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDir.js TAP > output 1`] = `
-Migration executables directory "[Migrations dir]" already exists
+exports[`test/02-snapshot/bin/east/commands/rollback/withMigrationExtension.js TAP > output 1`] = `
+Skip "1_someMigrationName" because it's not executed yet
+Nothing to rollback
 
 `
