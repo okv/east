@@ -2,20 +2,23 @@
 
 const tap = require('tap');
 const expect = require('expect.js');
+const fse = require('fs-extra');
 const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east init command with already existing source dir';
+const describeTitle = 'bin/east init command with source dir which only exist';
 
 describe(describeTitle, () => {
-	let commandErr;
+	let commandResult;
 	let testEnv;
 
 	before(() => {
 		return Promise.resolve()
 			.then(() => testUtils.createEnv({
 				migratorParams: {
+					// this creates `dir` and `sourceDir`, but `dir will be
+					// removed later`
 					init: true,
 					configureParams: {
 						sourceDir: 'migrationsSource'
@@ -24,12 +27,14 @@ describe(describeTitle, () => {
 			}))
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
+				// remove dir
+				return fse.rmdir(testEnv.migrator.params.dir);
 			});
 	});
 
 	after(() => testUtils.destroyEnv(testEnv));
 
-	it('should be done with error', () => {
+	it('should be done without error', () => {
 		return Promise.resolve()
 			.then(() => {
 				const binPath = testUtils.getBinPath('east');
@@ -39,23 +44,16 @@ describe(describeTitle, () => {
 					{cwd: testEnv.dir}
 				);
 			})
-			.then((commandResult) => {
-				throw new Error(
-					`Error expexted but result returned: ${commandResult.stdout}`
-				);
-			})
-			.catch((err) => {
-				expect(err).ok();
-				expect(err.code).equal(1);
-				expect(err.stdout).not.ok();
+			.then((result) => {
+				expect(result.stderr).not.ok();
 
-				commandErr = err;
+				commandResult = result;
 			});
 	});
 
-	it('stderr should match expected snapshot', () => {
+	it('stdout should match expected snapshot', () => {
 		tap.matchSnapshot(
-			testUtils.cleanSnapshotData(commandErr.stderr),
+			testUtils.cleanSnapshotData(commandResult.stdout),
 			'output'
 		);
 	});

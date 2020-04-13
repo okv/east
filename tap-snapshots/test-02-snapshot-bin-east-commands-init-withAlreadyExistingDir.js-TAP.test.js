@@ -6,6 +6,6 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDir.js TAP > output 1`] = `
-Migration executables directory "[Migrations dir]" already exists
+Migration directory "[Migrations dir]" already exists
 
 `

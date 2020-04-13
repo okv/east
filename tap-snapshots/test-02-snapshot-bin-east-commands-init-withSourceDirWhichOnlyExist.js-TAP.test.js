@@ -5,7 +5,7 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingSourceDir.js TAP > output 1`] = `
-Migration executables directory "[Migrations dir]" and sourcesdirectory "migrationsSource" already exist
+exports[`test/02-snapshot/bin/east/commands/init/withSourceDirWhichOnlyExist.js TAP > output 1`] = `
+initialization successfully done, migration executable and source files will be stored at \`[Migrations dir]\` and \`migrationsSource\` respectively
 
 `
