@@ -472,22 +472,28 @@ it doesn't work on the other way around, e.g. if you specify
 --sourceDir mySourceDir --sourceMigrationExtension ts
 ```
 then `--dir` and
-`--migrationExtension` will habe `migrations` and `js` values by default,
+`--migrationExtension` will have `migrations` and `js` values by default,
 so it is recommended to specify at least `--dir`, `--sourceDir` and `--sourceMigrationExtension`
 when you are building a transpiled language.
 
 If you use TypeScript you can run `east` with [`ts-node`](https://github.com/TypeStrong/ts-node)
 if you don't want to transpile you migration scripts before running them:
+
 ```sh
 ts-node $(which east) migrate
 ```
+
 Just be sure to specify `--migrationExtension ts` so that `east` does look for
 TypeScript files when `require()`-ing the migration scripts.
 
+
 ### TypeScript typings
 
-`east` exposes TypeScript declarations of the `Adapter` interface.
+`east` exposes TypeScript declarations of the `Adapter`, `MigrationManager`
+and other related interfaces.
+
 You can access it by importing the interfaces from `east` module itself:
+
 ```ts
 import { DbClient } from 'some-mainstream-db';
 import type { Adapter, AdapterConstructor } from 'east';
