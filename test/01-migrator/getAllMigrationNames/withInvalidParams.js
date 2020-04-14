@@ -35,8 +35,8 @@ describe('migrator getAllMigrationNames with invalid params', () => {
 				(err) => {
 					expect(err).to.be.an(Error);
 					expect(err.message).to.equal(
-						"Invalid migration file type, expected 'executable' or 'source' " +
-						"but got '<invalid migration file type>'"
+						'Invalid migration file type, expected "executable" or "source" ' +
+						'but got "<invalid migration file type>"'
 					);
 				}
 			);
