@@ -6,7 +6,9 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east rollback with not initialized env';
+const describeTitle = (
+	'bin/east rollback with not initialized env and source dir'
+);
 
 describe(describeTitle, () => {
 	let commandErr;
@@ -28,7 +30,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" rollback`,
+					`"${binPath}" rollback --sourceDir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})

@@ -125,7 +125,8 @@ Command.prototype.init = function init(params) {
 					throw new Error(
 						`Migration executable dir "${dir}" or ` +
 						`source dir "${sourceDir}" dosn't exist. ` +
-						'You should run `init` command to initialize migrations.'
+						'You should run "init" command to initialize migrations or ' +
+						'change "dir", "sourceDir" options.'
 					);
 				}
 			}
