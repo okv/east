@@ -6,7 +6,9 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/rollback/withMigrationExtension.js TAP > output 1`] = `
-Skip "1_someMigrationName" because it's not executed yet
-Nothing to rollback
+Target migrations:
+	1_someMigrationName
+Rollback "1_someMigrationName"
+Migration successfully rolled back
 
 `
