@@ -6,18 +6,16 @@ const removeMigrations = require('./removeMigrations');
 const unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
 
 module.exports = (migrator) => {
-	const migrationsFilePath = pathUtils.join(
-		migrator.params.dir,
-		'.migrations'
-	);
+	const {dir, sourceDir} = migrator.params;
+	const migrationsFilePath = pathUtils.join(dir, '.migrations');
 	let dirExists;
 	let sourceDirExists;
 
 	return Promise.resolve()
 		.then(() => {
 			return Promise.all([
-				fse.pathExists(migrator.params.dir),
-				fse.pathExists(migrator.params.sourceDir)
+				fse.pathExists(dir),
+				fse.pathExists(sourceDir)
 			]);
 		})
 		.then(([dirExistsResult, sourceDirExistsResult]) => {
@@ -25,25 +23,25 @@ module.exports = (migrator) => {
 			sourceDirExists = sourceDirExistsResult;
 		})
 		.then(() => {
-			const allMigrations = [];
+			const allMigrationPromises = [];
 			if (dirExists) {
-				allMigrations.push(migrator.getAllMigrationNames());
+				allMigrationPromises.push(migrator.getAllMigrationNames('executable'));
 			}
 			if (sourceDirExists) {
-				allMigrations.push(migrator.getAllMigrationNames('source'));
+				allMigrationPromises.push(migrator.getAllMigrationNames('source'));
 			}
-			return Promise.all(allMigrations);
+			return Promise.all(allMigrationPromises);
 		})
-		.then((exeAndSourceNames) => {
+		.then(([executableNames, sourceNames]) => {
 			const namesSet = new Set();
-			exeAndSourceNames.forEach((fileNames) => {
-				fileNames.forEach((fileName) => namesSet.add(fileName));
-			});
+			if (executableNames) executableNames.forEach((name) => namesSet.add(name));
+			if (sourceNames) sourceNames.forEach((name) => namesSet.add(name));
 
 			if (namesSet.size) {
+				const names = Array.from(namesSet.values());
 				return Promise.all([
-					removeMigrations({migrator, names: namesSet}),
-					unmarkMigrationsExecuted({migrator, names: namesSet})
+					removeMigrations({migrator, names}),
+					unmarkMigrationsExecuted({migrator, names})
 				]);
 			}
 		})
@@ -58,17 +56,11 @@ module.exports = (migrator) => {
 			}
 		})
 		.then(() => {
-			const dirsToDelete = new Set();
+			const dirPathsSet = new Set();
+			if (dirExists) dirPathsSet.add(dir);
+			if (sourceDirExists) dirPathsSet.add(sourceDir);
+			const dirPaths = Array.from(dirPathsSet.values());
 
-			if (dirExists) {
-				dirsToDelete.add(migrator.params.dir);
-			}
-			if (sourceDirExists) {
-				dirsToDelete.add(migrator.params.sourceDir);
-			}
-
-			return Promise.all(
-				[...dirsToDelete.values()].map((dir) => fse.rmdir(dir))
-			);
+			return Promise.all(dirPaths.map((dirPath) => fse.rmdir(dirPath)));
 		});
 };

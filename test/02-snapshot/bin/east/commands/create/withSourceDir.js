@@ -6,7 +6,7 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east create command with source directory';
+const describeTitle = 'bin/east create command with source dir';
 
 describe(describeTitle, () => {
 	let commandResult;
