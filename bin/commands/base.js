@@ -113,11 +113,22 @@ Command.prototype.init = function init(params) {
 			const migrationParams = result.migrationParams;
 
 			if (!initialized) {
-				throw new Error(
-					`Migrations directory: ${migrationParams.dir} doesn't exist. ` +
-					'You should run `init` command to initialize migrations or change ' +
-					'`dir` option.'
-				);
+				const {dir, sourceDir} = migrationParams;
+
+				if (sourceDir === dir) {
+					throw new Error(
+						`Migrations directory: ${dir} doesn't exist. ` +
+						'You should run `init` command to initialize migrations or change ' +
+						'`dir` option.'
+					);
+				} else {
+					throw new Error(
+						`Migration executable dir "${dir}" or ` +
+						`source dir "${sourceDir}" dosn't exist. ` +
+						'You should run "init" command to initialize migrations or ' +
+						'change "dir", "sourceDir" options.'
+					);
+				}
 			}
 
 			this.logger.debug(

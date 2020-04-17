@@ -29,6 +29,11 @@ describe(describeTitle, () => {
 					migrator: testEnv.migrator,
 					baseNames: ['someMigrationName']
 				});
+			})
+			.then((names) => {
+				return testUtils.markMigrationsExecuted({
+					migrator: testEnv.migrator, names
+				});
 			});
 	});
 
@@ -40,7 +45,8 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`node -r ts-node/register "${binPath}" rollback someMigrationName --migrationExtension ts`,
+					`node -r ts-node/register "${binPath}" ` +
+					'rollback someMigrationName --migrationExtension ts',
 					{cwd: testEnv.dir}
 				);
 			})

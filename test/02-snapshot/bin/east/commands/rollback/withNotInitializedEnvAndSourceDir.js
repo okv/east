@@ -6,7 +6,9 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east init command with already existing source dir';
+const describeTitle = (
+	'bin/east rollback with not initialized env and source dir'
+);
 
 describe(describeTitle, () => {
 	let commandErr;
@@ -14,14 +16,7 @@ describe(describeTitle, () => {
 
 	before(() => {
 		return Promise.resolve()
-			.then(() => testUtils.createEnv({
-				migratorParams: {
-					init: true,
-					configureParams: {
-						sourceDir: 'migrationsSource'
-					}
-				}
-			}))
+			.then(() => testUtils.createEnv({migratorParams: {init: false}}))
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
 			});
@@ -35,7 +30,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" init --sourceDir migrationsSource`,
+					`"${binPath}" rollback --sourceDir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})
@@ -47,15 +42,16 @@ describe(describeTitle, () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err.code).equal(1);
-				expect(err.stdout).not.ok();
 
 				commandErr = err;
 			});
 	});
 
-	it('stderr should match expected snapshot', () => {
+	it('output should match expected snapshot', () => {
+		const output = `${commandErr.stdout}\n${commandErr.stderr}`;
+
 		tap.matchSnapshot(
-			testUtils.cleanSnapshotData(commandErr.stderr),
+			testUtils.cleanSnapshotData(output),
 			'output'
 		);
 	});

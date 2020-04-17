@@ -20,7 +20,7 @@ Current parameters: {
     "template": "[Migration template]"
 }
 
-Error: Migration executables directory "[Migrations dir]" already exists
+Error: Migration directory "[Migrations dir]" already exists
 [East source stack trace]
 
 `

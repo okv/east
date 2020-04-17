@@ -22,7 +22,7 @@ describe(describeTitle, () => {
 
 	after(() => testUtils.destroyEnv(testEnv));
 
-	it('should be done without error', () => {
+	it('should be done with error', () => {
 		return Promise.resolve()
 			.then(() => {
 				const binPath = testUtils.getBinPath('east');

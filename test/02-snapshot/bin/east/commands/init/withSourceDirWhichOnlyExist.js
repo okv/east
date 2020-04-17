@@ -2,11 +2,12 @@
 
 const tap = require('tap');
 const expect = require('expect.js');
+const fse = require('fs-extra');
 const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east create command with source dir';
+const describeTitle = 'bin/east init command with source dir which only exist';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -16,6 +17,8 @@ describe(describeTitle, () => {
 		return Promise.resolve()
 			.then(() => testUtils.createEnv({
 				migratorParams: {
+					// this creates `dir` and `sourceDir`, but `dir will be
+					// removed later`
 					init: true,
 					configureParams: {
 						sourceDir: 'migrationsSource'
@@ -24,6 +27,8 @@ describe(describeTitle, () => {
 			}))
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
+				// remove dir
+				return fse.rmdir(testEnv.migrator.params.dir);
 			});
 	});
 
@@ -35,7 +40,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" create someMigrationName --sourceDir migrationsSource`,
+					`"${binPath}" init --sourceDir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})

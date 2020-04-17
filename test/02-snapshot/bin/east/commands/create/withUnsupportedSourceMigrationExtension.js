@@ -23,7 +23,7 @@ describe(describeTitle, () => {
 
 	after(() => testUtils.destroyEnv(testEnv));
 
-	it('should be done with an error', () => {
+	it('should be done with error', () => {
 		return Promise.resolve()
 			.then(() => {
 				const binPath = testUtils.getBinPath('east');
@@ -33,15 +33,13 @@ describe(describeTitle, () => {
 					{cwd: testEnv.dir}
 				);
 			})
-			.then(
-				(result) => {
-					throw new Error(`Error expected, but got result: ${result}`);
-				},
-				(err) => {
-					commandResult = err;
-					expect(err.stderr).ok();
-				}
-			);
+			.then((result) => {
+				throw new Error(`Error expected, but got result: ${result}`);
+			})
+			.catch((err) => {
+				commandResult = err;
+				expect(err.stderr).ok();
+			});
 	});
 
 	it('stdout should match expected snapshot', () => {
