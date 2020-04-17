@@ -468,11 +468,12 @@ separate executable and source files extensions with `--dir`, `--sourceDir`,
 By default if you specify only `--dir` and/or `--migrationExtension`, then
 `--sourceDir` and/or `--sourceMigrationExtension` will be equal to it, however
 it doesn't work on the other way around, e.g. if you specify
+
 ```
 --sourceDir mySourceDir --sourceMigrationExtension ts
 ```
-then `--dir` and
-`--migrationExtension` will have `migrations` and `js` values by default,
+
+then `--dir` and `--migrationExtension` will have `migrations` and `js` values by default,
 so it is recommended to specify at least `--dir`, `--sourceDir` and `--sourceMigrationExtension`
 when you are building a transpiled language.
 
