@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 and `MigrationManager` class)
 - Builtin TypeScript migration template file
 
-
 ### Changed
 - `Adapter.getTemplatePath()` now gets passed the migration file extension so
 now adapters may create multiple templates for different languages (e.g
@@ -23,14 +22,13 @@ separate tempalte for `js` and `ts`)
 - `MigrationManager.getMigrationPath()` now accepts a second optional parameter
 `migrationFileType` to let take apart `source` and `executable` files.
 
-
 ### Removed
 - Comma separated target migrations support
 - Migration `createBar` helper, use
 [migration progress indicator helper](https://github.com/okv/east-migration-progress-indicator-helper)
 instead
 - Callback migrator interface support
-- Nodejs 4, 6 support, node.js >= 8 is required
+- Nodejs 4, 6, 8 support, node.js >= 10 is required
 
 ## [1.3.0][] - 2019-12-10
 
