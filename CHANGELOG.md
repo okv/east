@@ -21,6 +21,8 @@ separate tempalte for `js` and `ts`)
 - `MigrationManager.isInitialized()` now additionally checks that the `sourceDir` exists
 - `MigrationManager.getMigrationPath()` now accepts a second optional parameter
 `migrationFileType` to let take apart `source` and `executable` files.
+- dev: drop p-each-series dependency (replaced with p-map)
+- dev: drop pify dependency (replaced with util.promisify)
 
 ### Removed
 - Comma separated target migrations support
