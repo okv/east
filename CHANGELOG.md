@@ -18,9 +18,14 @@ and `MigrationManager` class)
 - `Adapter.getTemplatePath()` now gets passed the migration file extension so
 now adapters may create multiple templates for different languages (e.g
 separate tempalte for `js` and `ts`)
-- `MigrationManager.isInitialized()` now additionally checks that the `sourceDir` exists
+- `MigrationManager.isInitialized()` now additionally checks that the `sourceDir`
+exists
 - `MigrationManager.getMigrationPath()` now accepts a second optional parameter
 `migrationFileType` to let take apart `source` and `executable` files.
+- dev: drop p-each-series dependency (replaced with p-map)
+- dev: drop pify dependency (replaced with util.promisify)
+- dev: drop fs extra dependency (replaced with builtin fs module and pathExists
+helper)
 
 ### Removed
 - Comma separated target migrations support

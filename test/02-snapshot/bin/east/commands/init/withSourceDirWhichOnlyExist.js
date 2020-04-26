@@ -2,7 +2,7 @@
 
 const tap = require('tap');
 const expect = require('expect.js');
-const fse = require('fs-extra');
+const fs = require('fs');
 const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
@@ -28,7 +28,7 @@ describe(describeTitle, () => {
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
 				// remove dir
-				return fse.rmdir(testEnv.migrator.params.dir);
+				return fs.promises.rmdir(testEnv.migrator.params.dir);
 			});
 	});
 

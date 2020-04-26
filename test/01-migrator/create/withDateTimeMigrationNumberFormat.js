@@ -2,7 +2,7 @@
 
 const tap = require('tap');
 const expect = require('expect.js');
-const pEachSeries = require('p-each-series');
+const pMap = require('p-map');
 const testUtils = require('../../../testUtils');
 
 tap.mochaGlobals();
@@ -58,7 +58,7 @@ describe('migrator create with date time migration number format', () => {
 	});
 
 	it('created migrations should be loadable', () => {
-		return pEachSeries(names, (name) => migrator.loadMigration(name));
+		return pMap(names, (name) => migrator.loadMigration(name));
 	});
 
 	it('created migrations should be listed as `new`', () => {

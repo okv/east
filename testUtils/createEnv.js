@@ -1,8 +1,9 @@
 'use strict';
 
 const pathUtils = require('path');
-const fse = require('fs-extra');
+const fs = require('fs');
 const _ = require('underscore');
+const {pathExists} = require('../lib/utils');
 const getTestDirPath = require('./getTestDirPath');
 const createMigrator = require('./createMigrator');
 const createEastrc = require('./createEastrc');
@@ -20,11 +21,11 @@ module.exports = (params) => {
 			const testDir = getTestDirPath();
 			dir = pathUtils.join(testDir, `env-${process.env.TAP_CHILD_ID}`);
 
-			return fse.pathExists(dir);
+			return pathExists(dir);
 		})
 		.then((dirExists) => {
 			if (!dirExists) {
-				return fse.mkdir(dir);
+				return fs.promises.mkdir(dir);
 			}
 		})
 		.then(() => {
@@ -35,9 +36,10 @@ module.exports = (params) => {
 			) {
 				templatePath = pathUtils.join(dir, 'template.js');
 
-				return fse.writeFile(
+				return fs.promises.writeFile(
 					templatePath,
-					params.migratorParams.configureParams.templateText
+					params.migratorParams.configureParams.templateText,
+					'utf-8'
 				);
 			}
 		})
