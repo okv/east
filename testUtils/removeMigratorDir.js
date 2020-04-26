@@ -1,7 +1,8 @@
 'use strict';
 
 const pathUtils = require('path');
-const fse = require('fs-extra');
+const fs = require('fs');
+const {pathExists} = require('../lib/utils');
 const removeMigrations = require('./removeMigrations');
 const unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
 
@@ -14,8 +15,8 @@ module.exports = (migrator) => {
 	return Promise.resolve()
 		.then(() => {
 			return Promise.all([
-				fse.pathExists(dir),
-				fse.pathExists(sourceDir)
+				pathExists(dir),
+				pathExists(sourceDir)
 			]);
 		})
 		.then(([dirExistsResult, sourceDirExistsResult]) => {
@@ -47,12 +48,12 @@ module.exports = (migrator) => {
 		})
 		.then(() => {
 			if (dirExists) {
-				return fse.pathExists(migrationsFilePath);
+				return pathExists(migrationsFilePath);
 			}
 		})
 		.then((fileExists) => {
 			if (fileExists) {
-				return fse.unlink(migrationsFilePath);
+				return fs.promises.unlink(migrationsFilePath);
 			}
 		})
 		.then(() => {
@@ -61,6 +62,8 @@ module.exports = (migrator) => {
 			if (sourceDirExists) dirPathsSet.add(sourceDir);
 			const dirPaths = Array.from(dirPathsSet.values());
 
-			return Promise.all(dirPaths.map((dirPath) => fse.rmdir(dirPath)));
+			return Promise.all(
+				dirPaths.map((dirPath) => fs.promises.rmdir(dirPath))
+			);
 		});
 };

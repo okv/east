@@ -1,6 +1,6 @@
 'use strict';
 
-const fse = require('fs-extra');
+const fs = require('fs');
 
 module.exports = (params) => {
 	const migrator = params.migrator;
@@ -11,10 +11,10 @@ module.exports = (params) => {
 		.then(() => {
 			const path = migrator.getMigrationPathByName(name);
 
-			return fse.writeFile(
+			return fs.promises.writeFile(
 				path,
 				`\nexports.tags = ${JSON.stringify(tags)};\n`,
-				{flag: 'a'}
+				{flag: 'a', encoding: 'utf-8'}
 			);
 		})
 		.then(() => null);
