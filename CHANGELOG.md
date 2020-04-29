@@ -26,7 +26,7 @@ exists
 - dev: drop pify dependency (replaced with util.promisify)
 - dev: drop fs extra dependency (replaced with builtin fs module and pathExists
 helper)
-- dev: update dependencies (p-map -> 4.0.0, p-props -> 4.0.0)
+- dev: update dependencies (p-map -> 4.0.0, p-props -> 4.0.0, p-timeout -> 3.2.0)
 
 ### Removed
 - Comma separated target migrations support
