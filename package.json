@@ -39,7 +39,7 @@
     "commander": "3.0.1",
     "expressionify": "0.9.3",
     "mhook": "1.0.1",
-    "p-map": "1.2.0",
+    "p-map": "4.0.0",
     "p-props": "1.2.0",
     "p-timeout": "2.0.1",
     "underscore": "1.9.1"
