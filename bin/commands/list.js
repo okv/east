@@ -1,7 +1,7 @@
 'use strict';
 
-const BaseCommand = require('./base').Command;
 const inherits = require('util').inherits;
+const BaseCommand = require('./base').Command;
 
 function Command(nameAndArgs) {
 	BaseCommand.call(this, nameAndArgs);

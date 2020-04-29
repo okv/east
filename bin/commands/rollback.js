@@ -1,8 +1,8 @@
 'use strict';
 
 const _ = require('underscore');
-const BaseCommand = require('./base').Command;
 const inherits = require('util').inherits;
+const BaseCommand = require('./base').Command;
 
 function Command(nameAndArgs, params) {
 	BaseCommand.call(this, nameAndArgs, params);

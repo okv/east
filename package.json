@@ -46,9 +46,9 @@
   },
   "devDependencies": {
     "coveralls": "3.0.6",
-    "eslint": "4.19.1",
-    "eslint-config-airbnb-base": "12.1.0",
-    "eslint-plugin-import": "2.18.2",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.1.0",
+    "eslint-plugin-import": "2.20.2",
     "expect.js": "0.3.1",
     "remark": "11.0.2",
     "remark-changelog": "0.1.2",
