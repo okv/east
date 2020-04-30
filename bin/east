@@ -2,14 +2,14 @@
 
 'use strict';
 
-const BaseCommand = require('commander').Command;
-const pProps = require('p-props');
-const Command = require('./commands/base').Command;
-const MigrateCommand = require('./commands/migrate').Command;
-const RollbackCommand = require('./commands/rollback').Command;
-const ListCommand = require('./commands/list').Command;
-
-const program = new Command();
+const _ = require('underscore');
+const program = require('commander').program;
+const InitAction = require('./actions/init');
+const CreateAction = require('./actions/create');
+const MigrateAction = require('./actions/migrate');
+const RollbackAction = require('./actions/rollback');
+const ListAction = require('./actions/list');
+const DefaultAction = require('./actions/default');
 
 program
 	.version(require('../package.json').version)
@@ -45,61 +45,28 @@ program
 	);
 
 program
-	.command(new Command('init', {initParams: {skipDirCheck: true}}))
+	.command('init')
 	.description('initialize migration system')
-	.asyncAction(function() {
+	.action(function(basename) {
+		const action = new InitAction({opts: program.opts()});
 		return Promise.resolve()
-			.then(() => {
-				return this.migrationManager.init();
-			})
-			.then(() => {
-				return this.migrationManager.getParams();
-			})
-			.then((migrationParams) => {
-				const {dir, sourceDir} = migrationParams;
-
-				if (sourceDir === dir) {
-					this.logger.info(
-						'initialization successfully done, migration files will be ' +
-						`stored at \`${dir}\``
-					);
-				} else {
-					this.logger.info(
-						'initialization successfully done, migration executable ' +
-						`and source files will be stored at \`${dir}\` and \`${sourceDir}\` respectively`
-					);
-				}
-			});
+			.then(() => action.init({skipDirCheck: true}))
+			.then(() => action.execute())
+			.catch((err) => action.onError(err))
 	});
 
-program.command(new Command('create <basename>'))
+program.command('create <basename>')
 	.description('create new migration based on template')
-	.asyncAction(function(basename, command) {
+	.action(function(basename) {
+		const action = new CreateAction({opts: program.opts()});
 		return Promise.resolve()
-			.then(() => {
-				return this.migrationManager.create(basename);
-			})
-			.then((migration) => {
-				return pProps({
-					name: migration.name,
-					path: this.migrationManager.getMigrationPath(migration.name, 'source')
-				});
-			})
-			.then((migration) => {
-				this.logger.info(
-					'New migration `' + migration.name + '` created at ' +
-					migration.path
-				);
-			});
+			.then(() => action.init())
+			.then(() => action.execute({basename}))
+			.catch((err) => action.onError(err))
 	});
-
-// async action handler for migrate and rollback commands
-var actionCommandAsyncAction = function(names, command) {
-	return this.execute({names: names, command: command});
-};
 
 program
-	.command(new MigrateCommand('migrate [migrations...]'))
+	.command('migrate [migrations...]')
 	.option(
 		'-s, --status <name>', 'which migrations execute by default (when ' +
 		'particular migrations are not set), default status is `new`'
@@ -109,10 +76,20 @@ program
 		'-t, --tag <expression>', 'execute only migrations that satisfied expression'
 	)
 	.description('run all or selected migrations')
-	.asyncAction(actionCommandAsyncAction);
+	.action(function(names, command) {
+		const action = new MigrateAction({opts: program.opts()});
+		const executeParams = {
+			..._(command).pick('status', 'tag', 'force'),
+			names
+		};
+		return Promise.resolve()
+			.then(() => action.init())
+			.then(() => action.execute(executeParams))
+			.catch((err) => action.onError(err))
+	});
 
 program
-	.command(new RollbackCommand('rollback [migrations...]'))
+	.command('rollback [migrations...]')
 	.option(
 		'-s, --status <name>', 'which migrations execute by default (when ' +
 		'particular migrations are not set), default status is `executed`'
@@ -122,10 +99,20 @@ program
 		'-t, --tag <expression>', 'rollback only migrations that satisfied expression'
 	)
 	.description('rollback all or selected migrations')
-	.asyncAction(actionCommandAsyncAction);
+	.action(function(names, command) {
+		const action = new RollbackAction({opts: program.opts()});
+		const executeParams = {
+			..._(command).pick('status', 'tag', 'force'),
+			names
+		};
+		return Promise.resolve()
+			.then(() => action.init())
+			.then(() => action.execute(executeParams))
+			.catch((err) => action.onError(err))
+	});
 
 program
-	.command(new ListCommand('list [status]'))
+	.command('list [status]')
 	.option(
 		'-t, --tag <expression>', 'list only migrations that satisfied expression'
 	)
@@ -133,21 +120,27 @@ program
 		'list migration with selected status (`new`, `executed` or `all`), ' +
 		'`new` by default'
 	)
-	.asyncAction(function(status, command, callback) {
+	.action(function(status, command) {
 		status = status || 'new';
-		return this.execute({status: status, command: command}, callback);
+		const action = new ListAction({opts: program.opts()});
+		return Promise.resolve()
+			.then(() => action.init())
+			.then(() => action.execute({status: status, tag: command.tag}))
+			.catch((err) => action.onError(err))
 	});
 
-
-// Default command
 program
-	.command(new Command('*'))
-	.asyncAction(function(name) {
-		throw new Error('Unrecognized command `' + name + '`');
+	.command('*')
+	.action(function(command) {
+		const action = new DefaultAction({opts: program.opts()});
+		return Promise.resolve()
+			.then(() => action.execute({command}))
+			.catch((err) => action.onError(err))
 	});
 
 
 // let's start the party (program entry point)
-program.parse(process.argv);
-
-if (!Command.isInitialized()) program.help();
+program.parseAsync(process.argv)
+	.catch((err) => {
+		console.error('Error occurred: ', err.stack || err);
+	});

@@ -2,70 +2,18 @@
 
 const _ = require('underscore');
 const pProps = require('p-props');
-const BaseCommand = require('commander').Command;
-const inherits = require('util').inherits;
 const MigrationManager = require('../../lib/migrationManager');
 
-function Command(nameAndArgs, params) {
-	params = params || {};
-	nameAndArgs = nameAndArgs || '';
-
-	const args = nameAndArgs.split(/ +/);
-	const name = args.shift();
-
-	BaseCommand.call(this, name);
-
-	this.parseExpectedArgs(args);
-
-	this._initParams = params.initParams;
-}
-inherits(Command, BaseCommand);
-
-exports.Command = Command;
-
-// eslint-disable-next-line no-shadow
-Command.prototype.command = function command(command) {
-	this.commands.push(command);
-
-	command.parent = this;
-
-	return command;
-};
-
-Command.prototype.asyncAction = function asyncAction(func) {
-	const self = this;
-
-	self.action(function action() {
-		const args = _(arguments).toArray();
-
-		Command.initialized = true;
-
-		Promise.resolve()
-			.then(() => {
-				const initParams = _({}).extend(self._initParams);
-
-				initParams.migratorParams = _(self.parent).pick(
-					'config', 'dir', 'timeout', 'template', 'adapter',
-					'url', 'trace', 'silent', 'sourceDir', 'migrationExtension',
-					'sourceMigrationExtension'
-				);
-
-				return self.init(initParams);
-			})
-			.then(() => {
-				return func.apply(self, args);
-			})
-			.then(() => {
-				if (self.parent.exit) {
-					process.exit();
-				}
-			})
-			.catch((err) => {
-				self.onError(err);
-				process.exit(1);
-			});
+function Action(params = {}) {
+	const opts = {};
+	_(params.opts).each((value, key) => {
+		if (!_(value).isUndefined()) opts[key] = value;
 	});
-};
+	this.opts = opts;
+
+	const loggerParams = _(opts).pick('trace', 'silent');
+	this._initLogger(loggerParams);
+}
 
 /*
  * Init logger. Log levels: debug, log, info, error
@@ -73,7 +21,7 @@ Command.prototype.asyncAction = function asyncAction(func) {
  * `log` could be supressed by --silent
  * `info`, `error` will be shown anyway
  */
-Command.prototype._initLogger = function _initLogger(params) {
+Action.prototype._initLogger = function _initLogger(params) {
 	const logger = _({}).extend(console);
 
 	logger.debug = params.trace ? logger.log : _.noop;
@@ -85,15 +33,19 @@ Command.prototype._initLogger = function _initLogger(params) {
 	this.logger = logger;
 };
 
-Command.prototype.init = function init(params) {
+Action.prototype.init = function init(params = {}) {
 	let migrationManager;
 
 	return Promise.resolve()
 		.then(() => {
-			this._initLogger(this.parent);
-
 			migrationManager = new MigrationManager();
-			return migrationManager.configure(params.migratorParams);
+
+			const migratorParams = _(this.opts).pick(
+				'config', 'dir', 'timeout', 'template', 'adapter',
+				'url', 'trace', 'silent', 'sourceDir', 'migrationExtension',
+				'sourceMigrationExtension'
+			);
+			return migrationManager.configure(migratorParams);
 		})
 		.then(() => {
 			const promisesObject = {
@@ -137,18 +89,20 @@ Command.prototype.init = function init(params) {
 			);
 
 			this.migrationManager = migrationManager;
+			this.initialized = true;
 		});
 };
 
-Command.prototype.onError = function onError(err) {
-	if (this.trace || this.parent.trace) {
+Action.prototype.onError = function onError(err) {
+	if (this.opts.trace || this.traceOnError) {
 		this.logger.error(err.stack || err);
 	} else {
 		this.logger.error(err.message);
 	}
+	process.exit(1);
 };
 
-Command.prototype.execute = function execute(params) {
+Action.prototype.execute = function execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			return this.migrationManager.connect();
@@ -158,9 +112,14 @@ Command.prototype.execute = function execute(params) {
 		})
 		.then(() => {
 			return this.migrationManager.disconnect();
+		})
+		.then(() => {
+			if (this.opts.exits) process.exit();
 		});
 };
 
-Command.isInitialized = function isInitialized() {
-	return Boolean(Command.initialized);
+Action.isInitialized = function isInitialized() {
+	return Boolean(Action.initialized);
 };
+
+module.exports = Action;

@@ -2,19 +2,17 @@
 
 const _ = require('underscore');
 const inherits = require('util').inherits;
-const BaseCommand = require('./base').Command;
+const BaseAction = require('./base');
 
-function Command(nameAndArgs, params) {
-	BaseCommand.call(this, nameAndArgs, params);
+function Action(params) {
+	BaseAction.call(this, params);
 
 	// always trace errors for rollback command
-	this.trace = true;
+	this.traceOnError = true;
 }
-inherits(Command, BaseCommand);
+inherits(Action, BaseAction);
 
-exports.Command = Command;
-
-Command.prototype._execute = function _execute(params) {
+Action.prototype._execute = function _execute(params) {
 	return Promise.resolve()
 		.then(() => {
 			this.migrationManager.on('beforeRollbackOne', (event) => {
@@ -49,9 +47,11 @@ Command.prototype._execute = function _execute(params) {
 
 			return this.migrationManager.rollback({
 				migrations: _(params.names).isEmpty() ? null : params.names,
-				status: params.command.status,
-				tag: params.command.tag,
-				force: params.command.force
+				status: params.status,
+				tag: params.tag,
+				force: params.force
 			});
 		});
 };
+
+module.exports = Action;

@@ -36,7 +36,7 @@
     "east": "./bin/east"
   },
   "dependencies": {
-    "commander": "3.0.1",
+    "commander": "5.1.0",
     "expressionify": "0.9.3",
     "mhook": "1.0.1",
     "p-map": "4.0.0",
