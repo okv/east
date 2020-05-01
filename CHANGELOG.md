@@ -34,7 +34,8 @@ p-timeout -> 3.2.0)
 eslint-config-airbnb-base -> 14.1.0, eslint-plugin-import -> 2.20.2,
 remark-lint-maximum-line-length -> 2.0.0,
 coveralls -> 3.1.0, remark -> 12.0.0, remark-cli -> 8.0.0,
-remark-preset-lint-consistent -> 3.0.0, remark-preset-lint-recommended -> 4.0.0)
+remark-preset-lint-consistent -> 3.0.0, remark-preset-lint-recommended -> 4.0.0,
+ts-node -> 8.9.1)
 
 ### Removed
 - Comma separated target migrations support
