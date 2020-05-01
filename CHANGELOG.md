@@ -22,10 +22,20 @@ separate tempalte for `js` and `ts`)
 exists
 - `MigrationManager.getMigrationPath()` now accepts a second optional parameter
 `migrationFileType` to let take apart `source` and `executable` files.
+- cli arguments parsing rewrite using updated commander 5.1, in most cases
+cli behaves same way as before
 - dev: drop p-each-series dependency (replaced with p-map)
 - dev: drop pify dependency (replaced with util.promisify)
 - dev: drop fs extra dependency (replaced with builtin fs module and pathExists
 helper)
+- dev: update dependencies (p-map -> 4.0.0, p-props -> 4.0.0,
+p-timeout -> 3.2.0)
+- dev: update dev dependencies (eslint -> 6.8.0,
+eslint-config-airbnb-base -> 14.1.0, eslint-plugin-import -> 2.20.2,
+remark-lint-maximum-line-length -> 2.0.0,
+coveralls -> 3.1.0, remark -> 12.0.0, remark-cli -> 8.0.0,
+remark-preset-lint-consistent -> 3.0.0, remark-preset-lint-recommended -> 4.0.0,
+ts-node -> 8.9.1)
 
 ### Removed
 - Comma separated target migrations support

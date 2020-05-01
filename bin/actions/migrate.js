@@ -1,20 +1,20 @@
 'use strict';
 
 const _ = require('underscore');
-const BaseCommand = require('./base').Command;
 const inherits = require('util').inherits;
+const BaseAction = require('./base');
 
-function Command(nameAndArgs, params) {
-	BaseCommand.call(this, nameAndArgs, params);
+function Action(params) {
+	BaseAction.call(this, params);
 
 	// always trace errors for migrate command
-	this.trace = true;
+	this.traceOnError = true;
 }
-inherits(Command, BaseCommand);
+inherits(Action, BaseAction);
 
-exports.Command = Command;
-
-Command.prototype._execute = function _execute(params) {
+Action.prototype._execute = function _execute({
+	names, status, tag, force
+}) {
 	return Promise.resolve()
 		.then(() => {
 			this.migrationManager.on('beforeMigrateOne', (event) => {
@@ -34,20 +34,24 @@ Command.prototype._execute = function _execute(params) {
 			});
 
 			this.migrationManager.on('beforeMigrateMany', (event) => {
-				const names = event.migrationNames;
+				const {migrationNames} = event;
 
-				if (names.length) {
-					this.logger.log(`Target migrations:\n\t${names.join('\n\t')}`);
+				if (migrationNames.length) {
+					this.logger.log(
+						`Target migrations:\n\t${migrationNames.join('\n\t')}`
+					);
 				} else {
 					this.logger.info('Nothing to migrate');
 				}
 			});
 
 			return this.migrationManager.migrate({
-				migrations: _(params.names).isEmpty() ? null : params.names,
-				status: params.command.status,
-				tag: params.command.tag,
-				force: params.command.force
+				migrations: _(names).isEmpty() ? null : names,
+				status,
+				tag,
+				force
 			});
 		});
 };
+
+module.exports = Action;
