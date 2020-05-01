@@ -12,7 +12,9 @@ function Action(params) {
 }
 inherits(Action, BaseAction);
 
-Action.prototype._execute = function _execute(params) {
+Action.prototype._execute = function _execute({
+	names, status, tag, force
+}) {
 	return Promise.resolve()
 		.then(() => {
 			this.migrationManager.on('beforeRollbackOne', (event) => {
@@ -36,20 +38,22 @@ Action.prototype._execute = function _execute(params) {
 			});
 
 			this.migrationManager.on('beforeRollbackMany', (event) => {
-				const names = event.migrationNames;
+				const {migrationNames} = event;
 
-				if (names.length) {
-					this.logger.log(`Target migrations:\n\t${names.join('\n\t')}`);
+				if (migrationNames.length) {
+					this.logger.log(
+						`Target migrations:\n\t${migrationNames.join('\n\t')}`
+					);
 				} else {
 					this.logger.info('Nothing to rollback');
 				}
 			});
 
 			return this.migrationManager.rollback({
-				migrations: _(params.names).isEmpty() ? null : params.names,
-				status: params.status,
-				tag: params.tag,
-				force: params.force
+				migrations: _(names).isEmpty() ? null : names,
+				status,
+				tag,
+				force
 			});
 		});
 };

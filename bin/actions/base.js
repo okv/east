@@ -21,14 +21,12 @@ function Action(params = {}) {
  * `log` could be supressed by --silent
  * `info`, `error` will be shown anyway
  */
-Action.prototype._initLogger = function _initLogger(params) {
+Action.prototype._initLogger = function _initLogger({trace, silent}) {
 	const logger = _({}).extend(console);
 
-	logger.debug = params.trace ? logger.log : _.noop;
+	logger.debug = trace ? logger.log : _.noop;
 
-	if (params.silent) {
-		logger.log = _.noop;
-	}
+	if (silent) logger.log = _.noop;
 
 	this.logger = logger;
 };

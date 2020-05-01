@@ -9,9 +9,9 @@ function Action(params) {
 }
 inherits(Action, BaseAction);
 
-Action.prototype.execute = function execute(params) {
+Action.prototype.execute = function execute({basename}) {
 	return Promise.resolve()
-		.then(() => this.migrationManager.create(params.basename))
+		.then(() => this.migrationManager.create(basename))
 		.then((migration) => {
 			return pProps({
 				name: migration.name,

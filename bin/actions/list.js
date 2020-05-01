@@ -8,14 +8,14 @@ function Action(params) {
 }
 inherits(Action, BaseAction);
 
-Action.prototype._execute = function _execute(params) {
+Action.prototype._execute = function _execute({status, tag}) {
 	return Promise.resolve()
-		.then(() => this.migrationManager.getMigrationNames(params))
+		.then(() => this.migrationManager.getMigrationNames({status, tag}))
 		.then((names) => {
 			if (names.length) {
-				this.logger.info(`${params.status} migrations:`);
+				this.logger.info(`${status} migrations:`);
 			} else {
-				this.logger.info(`there is no ${params.status} migrations`);
+				this.logger.info(`there is no ${status} migrations`);
 			}
 
 			names.forEach((name) => {

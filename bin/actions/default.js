@@ -8,10 +8,10 @@ function Action(params) {
 }
 inherits(Action, BaseAction);
 
-Action.prototype.execute = function execute(params) {
+Action.prototype.execute = function execute({command}) {
 	return Promise.resolve()
 		.then(() => {
-			const name = params.command.args.shift();
+			const name = command.args.shift();
 			throw new Error(`Unrecognized command \`${name}\``);
 		});
 };
