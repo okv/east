@@ -31,7 +31,8 @@ helper)
 - dev: update dependencies (p-map -> 4.0.0, p-props -> 4.0.0,
 p-timeout -> 3.2.0)
 - dev: update dev dependencies (eslint -> 6.8.0,
-eslint-config-airbnb-base -> 14.1.0, eslint-plugin-import -> 2.20.2)
+eslint-config-airbnb-base -> 14.1.0, eslint-plugin-import -> 2.20.2,
+coveralls -> 3.1.0)
 
 ### Removed
 - Comma separated target migrations support
