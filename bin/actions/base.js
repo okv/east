@@ -89,7 +89,6 @@ Action.prototype.init = function init(params = {}) {
 			);
 
 			this.migrationManager = migrationManager;
-			this.initialized = true;
 		});
 };
 
@@ -116,10 +115,6 @@ Action.prototype.execute = function execute(params) {
 		.then(() => {
 			if (this.opts.exits) process.exit();
 		});
-};
-
-Action.isInitialized = function isInitialized() {
-	return Boolean(Action.initialized);
 };
 
 module.exports = Action;
