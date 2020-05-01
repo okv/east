@@ -45,7 +45,7 @@ describe('migrator configure adapter loading', () => {
 				const migrator = new Migrator();
 
 				migrator._tryLoadModule = () => {
-					throw new Error('Whatever.');
+					return new Error('Whatever.');
 				};
 
 				return migrator.configure({adapter: 'X', loadConfig: false});
@@ -56,7 +56,9 @@ describe('migrator configure adapter loading', () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err).an(Error);
-				expect(err.message).equal('Whatever.');
+				expect(err.message).match(
+					/Error loading adapter from all paths:\s+Error: Whatever./
+				);
 			});
 	});
 
