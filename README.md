@@ -27,6 +27,7 @@ Following subjects described below:
 * [Adapters](#adapters)
 * [Plugins](#plugins)
 * [Creating own adapter](#creating-own-adapter)
+* [TypeScript and other transpiled languages support](#typescript-and-other-transpiled-languages-support)
 * [License](#license)
 
 ## Node.js compatibility
