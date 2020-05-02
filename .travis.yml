@@ -2,29 +2,20 @@
 language: node_js
 
 node_js:
-    - "stable"
-    - "12"
-    - "10"
+  - "stable"
+  - "14"
+  - "12"
+  - "10"
 
 script:
-    - >
-      nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
-
-      if [ $nodeVersionMajor -eq 12 ]; then
-        npm run lint;
-      else
-        echo "*** Do not lint for non node.js 12 builds ($nodeVersionMajor)";
-      fi;
-
-    - npm test;
-
-    - >
-      nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
-
-      if [ $nodeVersionMajor -eq 12 ]; then
-        npm run makeCodeCoverageSummaryReport;
-        npm run makeCodeCoverageDetailReport;
-        coveralls < coverage/lcov.info;
-      else
-        echo "*** Do not make coverage reports for non node.js 12 builds ($nodeVersionMajor)";
-      fi;
+  - npm run lint
+  - npm test
+  - >
+    nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
+    if [ $nodeVersionMajor -eq 14 ]; then
+      npm run makeCodeCoverageSummaryReport;
+      npm run makeCodeCoverageDetailReport;
+      coveralls < coverage/lcov.info;
+    else
+      echo "*** Do not make coverage reports for non node.js 14 builds ($nodeVersionMajor)";
+    fi;
