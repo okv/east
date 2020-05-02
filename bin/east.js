@@ -47,22 +47,22 @@ program
 program
 	.command('init')
 	.description('initialize migration system')
-	.action(function(basename) {
+	.action(() => {
 		const action = new InitAction({opts: program.opts()});
 		return Promise.resolve()
 			.then(() => action.init({skipDirCheck: true}))
 			.then(() => action.execute())
-			.catch((err) => action.onError(err))
+			.catch((err) => action.onError(err));
 	});
 
 program.command('create <basename>')
 	.description('create new migration based on template')
-	.action(function(basename) {
+	.action((basename) => {
 		const action = new CreateAction({opts: program.opts()});
 		return Promise.resolve()
 			.then(() => action.init())
 			.then(() => action.execute({basename}))
-			.catch((err) => action.onError(err))
+			.catch((err) => action.onError(err));
 	});
 
 program
@@ -76,16 +76,15 @@ program
 		'-t, --tag <expression>', 'execute only migrations that satisfied expression'
 	)
 	.description('run all or selected migrations')
-	.action(function(names, command) {
+	.action((names, command) => {
 		const action = new MigrateAction({opts: program.opts()});
-		const executeParams = {
-			..._(command).pick('status', 'tag', 'force'),
-			names
-		};
+		const executeParams = _(command).pick('status', 'tag', 'force');
+		_(executeParams).extend({names});
+
 		return Promise.resolve()
 			.then(() => action.init())
 			.then(() => action.execute(executeParams))
-			.catch((err) => action.onError(err))
+			.catch((err) => action.onError(err));
 	});
 
 program
@@ -99,16 +98,15 @@ program
 		'-t, --tag <expression>', 'rollback only migrations that satisfied expression'
 	)
 	.description('rollback all or selected migrations')
-	.action(function(names, command) {
+	.action((names, command) => {
 		const action = new RollbackAction({opts: program.opts()});
-		const executeParams = {
-			..._(command).pick('status', 'tag', 'force'),
-			names
-		};
+		const executeParams = _(command).pick('status', 'tag', 'force');
+		_(executeParams).extend({names});
+
 		return Promise.resolve()
 			.then(() => action.init())
 			.then(() => action.execute(executeParams))
-			.catch((err) => action.onError(err))
+			.catch((err) => action.onError(err));
 	});
 
 program
@@ -120,27 +118,28 @@ program
 		'list migration with selected status (`new`, `executed` or `all`), ' +
 		'`new` by default'
 	)
-	.action(function(status, command) {
+	.action((status, command) => {
 		status = status || 'new';
 		const action = new ListAction({opts: program.opts()});
 		return Promise.resolve()
 			.then(() => action.init())
-			.then(() => action.execute({status: status, tag: command.tag}))
-			.catch((err) => action.onError(err))
+			.then(() => action.execute({tag: command.tag, status}))
+			.catch((err) => action.onError(err));
 	});
 
 program
 	.command('*')
-	.action(function(command) {
+	.action((command) => {
 		const action = new DefaultAction({opts: program.opts()});
 		return Promise.resolve()
 			.then(() => action.execute({command}))
-			.catch((err) => action.onError(err))
+			.catch((err) => action.onError(err));
 	});
 
 
 // let's start the party (program entry point)
 program.parseAsync(process.argv)
 	.catch((err) => {
+		// eslint-disable-next-line no-console
 		console.error('Error occurred: ', err.stack || err);
 	});

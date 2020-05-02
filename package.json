@@ -33,7 +33,7 @@
     "lint": "npm run lintChangelog && npm run lintTsTypes && npm run lintJs"
   },
   "bin": {
-    "east": "./bin/east"
+    "east": "bin/east.js"
   },
   "dependencies": {
     "commander": "5.1.0",

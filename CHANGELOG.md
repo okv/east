@@ -24,6 +24,7 @@ exists
 `migrationFileType` to let take apart `source` and `executable` files.
 - cli arguments parsing rewrite using updated commander 5.1, in most cases
 cli behaves same way as before
+- bin/east renamed to bin/east.js but exposed as earlier - east
 - dev: drop p-each-series dependency (replaced with p-map)
 - dev: drop pify dependency (replaced with util.promisify)
 - dev: drop fs extra dependency (replaced with builtin fs module and pathExists
