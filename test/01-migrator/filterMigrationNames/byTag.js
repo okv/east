@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');

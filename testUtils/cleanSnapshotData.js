@@ -1,5 +1,3 @@
-'use strict';
-
 const migrationsDirRegExp = new RegExp(
 	'/.+?/migrations',
 	'g'

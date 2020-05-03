@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('underscore');
 const Migrator = require('../lib/migrator');
 const removeMigratorDir = require('./removeMigratorDir');

@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('underscore');
 const pProps = require('p-props');
 const MigrationManager = require('../../lib/migrationManager');

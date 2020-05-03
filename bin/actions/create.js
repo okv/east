@@ -1,5 +1,3 @@
-'use strict';
-
 const inherits = require('util').inherits;
 const pProps = require('p-props');
 const BaseAction = require('./base');

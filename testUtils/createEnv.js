@@ -1,5 +1,3 @@
-'use strict';
-
 const pathUtils = require('path');
 const fs = require('fs');
 const _ = require('underscore');

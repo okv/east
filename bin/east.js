@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
-
 const _ = require('underscore');
 const program = require('commander').program;
 const InitAction = require('./actions/init');

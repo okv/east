@@ -1,5 +1,3 @@
-'use strict';
-
 const removeMigratorDir = require('./removeMigratorDir');
 
 module.exports = (params) => {

@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('underscore');
 const inherits = require('util').inherits;
 const BaseAction = require('./base');
