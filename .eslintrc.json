@@ -27,7 +27,6 @@
 		"no-else-return": ["off"],
 		"no-param-reassign": ["off"],
 		"consistent-return": ["off"],
-		"prefer-rest-params": ["off"],
 		"operator-linebreak": ["error", "after"]
 	},
 	"env": {
