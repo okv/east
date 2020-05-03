@@ -1,22 +1,17 @@
 const _ = require('underscore');
 
-module.exports = (params) => {
-	const register = params.register;
-	const multiHook = params.multiHook;
-	const beforeMigrate = params.beforeMigrate;
-	const afterMigrate = params.afterMigrate;
-	const migrateError = params.migrateError;
-	const beforeRollback = params.beforeRollback;
-	const afterRollback = params.afterRollback;
-	const rollbackError = params.rollbackError;
-
+module.exports = ({
+	register, multiHook,
+	beforeMigrate, afterMigrate, migrateError,
+	beforeRollback, afterRollback, rollbackError
+}) => {
 	const plugin = {};
 
 	if (register) {
 		plugin.register = register;
 	} else if (multiHook) {
 		plugin.register = (registerParams) => {
-			const migratorHooks = registerParams.migratorHooks;
+			const {migratorHooks} = registerParams;
 
 			_(multiHook.actionNames).each((actionName) => {
 				migratorHooks.on(actionName, (hookParams) => {
@@ -26,7 +21,7 @@ module.exports = (params) => {
 		};
 	} else {
 		plugin.register = (registerParams) => {
-			const migratorHooks = registerParams.migratorHooks;
+			const {migratorHooks} = registerParams;
 
 			if (beforeMigrate) migratorHooks.on('beforeMigrate', beforeMigrate);
 			if (afterMigrate) migratorHooks.on('afterMigrate', afterMigrate);
@@ -36,7 +31,6 @@ module.exports = (params) => {
 			if (rollbackError) migratorHooks.on('rollbackError', rollbackError);
 		};
 	}
-
 
 	return plugin;
 };

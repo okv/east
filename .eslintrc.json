@@ -23,7 +23,6 @@
 		"function-paren-newline": ["error", "consistent"],
 		"class-methods-use-this": [0],
 		"global-require": ["off"],
-		"prefer-destructuring": ["off"],
 		"no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
 		"no-else-return": ["off"],
 		"no-lonely-if": ["off"],

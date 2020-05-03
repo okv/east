@@ -29,7 +29,7 @@ Action.prototype._initLogger = function _initLogger({trace, silent}) {
 	this.logger = logger;
 };
 
-Action.prototype.init = function init(params = {}) {
+Action.prototype.init = function init({skipDirCheck} = {}) {
 	let migrationManager;
 
 	return Promise.resolve()
@@ -48,7 +48,7 @@ Action.prototype.init = function init(params = {}) {
 				migrationParams: migrationManager.getParams()
 			};
 
-			if (params.skipDirCheck) {
+			if (skipDirCheck) {
 				promisesObject.initialized = true;
 			} else {
 				promisesObject.initialized = migrationManager.isInitialized();
@@ -56,10 +56,7 @@ Action.prototype.init = function init(params = {}) {
 
 			return pProps(promisesObject);
 		})
-		.then((result) => {
-			const initialized = result.initialized;
-			const migrationParams = result.migrationParams;
-
+		.then(({initialized, migrationParams}) => {
 			if (!initialized) {
 				const {dir, sourceDir} = migrationParams;
 

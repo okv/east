@@ -7,8 +7,7 @@ const fs = require('fs');
 const loadConfig = Boolean(Number(process.env.NODE_EAST_TEST_LOAD_CONFIG));
 
 module.exports = (params) => {
-	const dir = params.dir;
-	const migrator = params.migrator;
+	const {dir, migrator} = params;
 
 	let configParams;
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const _ = require('underscore');
-const program = require('commander').program;
+const {program} = require('commander');
 const InitAction = require('./actions/init');
 const CreateAction = require('./actions/create');
 const MigrateAction = require('./actions/migrate');

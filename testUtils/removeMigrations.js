@@ -1,8 +1,5 @@
 const pMap = require('p-map');
 
-module.exports = (params) => {
-	const migrator = params.migrator;
-	const names = params.names;
-
+module.exports = ({migrator, names}) => {
 	return pMap(names, (name) => migrator.remove(name));
 };

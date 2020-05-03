@@ -1,4 +1,4 @@
-const inherits = require('util').inherits;
+const {inherits} = require('util');
 const pProps = require('p-props');
 const BaseAction = require('./base');
 

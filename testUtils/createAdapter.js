@@ -1,9 +1,6 @@
 const _ = require('underscore');
 
-module.exports = (params) => {
-	params = params || {};
-	const withCallbacMethods = params.withCallbacMethods;
-
+module.exports = ({withCallbacMethods} = {}) => {
 	const adapter = {};
 
 	adapter.getTemplatePath = _.noop;
