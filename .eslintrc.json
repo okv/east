@@ -25,7 +25,6 @@
 		"global-require": ["off"],
 		"no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
 		"no-else-return": ["off"],
-		"no-param-reassign": ["off"],
 		"consistent-return": ["off"],
 		"operator-linebreak": ["error", "after"]
 	},

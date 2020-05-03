@@ -6,9 +6,7 @@ const getTestDirPath = require('./getTestDirPath');
 const createMigrator = require('./createMigrator');
 const createEastrc = require('./createEastrc');
 
-module.exports = (params) => {
-	params = params || {};
-
+module.exports = (params = {}) => {
 	let dir;
 	let migrator;
 	let configPath;

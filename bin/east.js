@@ -116,8 +116,7 @@ program
 		'list migration with selected status (`new`, `executed` or `all`), ' +
 		'`new` by default'
 	)
-	.action((status, command) => {
-		status = status || 'new';
+	.action((status = 'new', command) => {
 		const action = new ListAction({opts: program.opts()});
 		return Promise.resolve()
 			.then(() => action.init())
