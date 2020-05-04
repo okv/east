@@ -1,14 +1,9 @@
-'use strict';
-
 const fs = require('fs');
 const destroyMigrator = require('./destroyMigrator');
 
-module.exports = (env) => {
-	const dir = env.dir;
-	const migrator = env.migrator;
-	const configPath = env.configPath;
-	const templatePath = env.templatePath;
-
+module.exports = ({
+	dir, migrator, configPath, templatePath
+}) => {
 	return Promise.resolve()
 		.then(() => destroyMigrator({migrator}))
 		.then(() => {

@@ -1,12 +1,6 @@
-'use strict';
-
 const fs = require('fs');
 
-module.exports = (params) => {
-	const migrator = params.migrator;
-	const name = params.name;
-	const tags = params.tags;
-
+module.exports = ({migrator, name, tags}) => {
 	return Promise.resolve()
 		.then(() => {
 			const path = migrator.getMigrationPathByName(name);

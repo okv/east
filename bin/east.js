@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
-'use strict';
-
 const _ = require('underscore');
-const program = require('commander').program;
+const {program} = require('commander');
 const InitAction = require('./actions/init');
 const CreateAction = require('./actions/create');
 const MigrateAction = require('./actions/migrate');
@@ -118,8 +116,7 @@ program
 		'list migration with selected status (`new`, `executed` or `all`), ' +
 		'`new` by default'
 	)
-	.action((status, command) => {
-		status = status || 'new';
+	.action((status = 'new', command) => {
 		const action = new ListAction({opts: program.opts()});
 		return Promise.resolve()
 			.then(() => action.init())

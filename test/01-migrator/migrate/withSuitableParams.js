@@ -1,5 +1,3 @@
-'use strict';
-
 const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../testUtils');
@@ -57,6 +55,7 @@ describe('migrator migrate with suitable params', () => {
 			return Promise.resolve()
 				.then(() => migrator.loadMigration(names[0]))
 				.then((migration) => {
+					// eslint-disable-next-line no-param-reassign
 					migration.force = true;
 
 					return migrator.migrate(migration);

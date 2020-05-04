@@ -1,5 +1,3 @@
-'use strict';
-
 const tap = require('tap');
 const expect = require('expect.js');
 const libModule = require('../../lib');
