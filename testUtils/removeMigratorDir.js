@@ -1,6 +1,6 @@
 const pathUtils = require('path');
 const fs = require('fs');
-const {pathExists} = require('../lib/utils');
+const pathExists = require('path-exists');
 const removeMigrations = require('./removeMigrations');
 const unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
 
