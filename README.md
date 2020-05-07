@@ -49,8 +49,7 @@ alternatively you could install it locally
 
 ## Changelog
 
-All notable changes to this project will be documented in
-[CHANGELOG.md](CHANGELOG.md).
+All notable changes to this project documented in [CHANGELOG.md](CHANGELOG.md).
 
 
 ## Cli usage
