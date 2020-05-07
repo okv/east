@@ -15,6 +15,7 @@ and `MigrationManager` class)
 - Builtin TypeScript migration template file
 
 ### Changed
+- *Breaking change:* Default migration template now uses `async` functions
 - `Adapter.getTemplatePath()` now gets passed the migration file extension so
 now adapters may create multiple templates for different languages (e.g
 separate tempalte for `js` and `ts`)
