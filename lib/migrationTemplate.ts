@@ -1,3 +1,4 @@
+export const tags: String[] = []
 
 export async function migrate(client: any) {
 }

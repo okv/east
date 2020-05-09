@@ -28,9 +28,10 @@
     "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
     "makeCodeCoverageSummaryReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
     "lintChangelog": "remark --rc-path .remarkrc-lintChangelog.js --frail > /dev/null CHANGELOG.md",
+    "lintTsMigrationTemplate": "tsc lib/migrationTemplate.ts --noEmit",
     "lintTsTypes": "tsc lib/index.d.ts",
     "lintJs": "eslint ./",
-    "lint": "npm run lintChangelog && npm run lintTsTypes && npm run lintJs"
+    "lint": "npm run lintChangelog && npm run lintTsMigrationTemplate && npm run lintTsTypes && npm run lintJs"
   },
   "bin": {
     "east": "bin/east.js"
