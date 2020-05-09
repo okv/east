@@ -136,6 +136,8 @@ New migration `1_doSomething` created at migrations/1_doSomething.js
 the created file will contain
 
 ```js
+exports.tags = [];
+
 exports.migrate = async (client) => {
 
 };
@@ -168,7 +170,7 @@ exports.rollback = async (client) => {
 };
 ```
 
-or you can use a special adapter for database (see [adapters](#adapters) section)
+or you can use a special adapter for database (see [adapters](#adapters) section).
 
 
 #### Migration file number format
