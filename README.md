@@ -49,8 +49,7 @@ alternatively you could install it locally
 
 ## Changelog
 
-All notable changes to this project will be documented in
-[CHANGELOG.md](CHANGELOG.md).
+All notable changes to this project documented in [CHANGELOG.md](CHANGELOG.md).
 
 
 ## Cli usage
@@ -137,45 +136,41 @@ New migration `1_doSomething` created at migrations/1_doSomething.js
 the created file will contain
 
 ```js
-exports.migrate = function(client, done) {
-    done();
+exports.tags = [];
+
+exports.migrate = async (client) => {
+
 };
 
-exports.rollback = function(client, done) {
-    done();
+exports.rollback = async (client) => {
+
 };
 ```
 
-* `client` is represents a connection to the current db and he is determined by the adapter (see [adapters](#adapters) section)
-* `done` is the function which should be called at the end of the migration (if any
-error occures you can pass it as the first argument)
-* instead of using `done` argument promise can be returned or async function can be used
-* migration also can be synchronous - declare only `client` at `migrate` or `rollback`
+* `client` represents a connection to the current db and it's determined by the
+adapter (see [adapters](#adapters) section)
+* `done` callback may be defined as second argument - should be called at the
+end of the migration (if any error occures you can pass it as the first argument)
 * `rollback` function is optional and may be omitted
 
 Migration file is a regular node.js module and allows migrating any database e.g.
 
 ```js
 // include your database wrapper which you already use in app
-var db = require('./db');
+const db = require('./db');
 
-exports.migrate = function(client, done) {
-    db.connect(function(err) {
-        if (err) done(err);
-        db.things.insert({_id: 1, name: 'apple', color: 'red'}, done);
-    });
+exports.migrate = async (client) => {
+    await db.connect();
+    await db.things.insert({_id: 1, name: 'apple', color: 'red'});
 };
 
-exports.rollback = function(client, done) {
-    db.connect(function(err) {
-        if (err) done(err);
-        db.things.remove({_id: 1}, done);
-    });
+exports.rollback = async (client) => {
+    await db.connect();
+    await db.things.remove({_id: 1});
 };
-
 ```
 
-or you can use a special adapter for database (see [adapters](#adapters) section)
+or you can use a special adapter for database (see [adapters](#adapters) section).
 
 
 #### Migration file number format
