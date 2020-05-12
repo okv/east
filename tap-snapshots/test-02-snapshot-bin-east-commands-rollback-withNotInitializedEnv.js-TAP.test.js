@@ -7,7 +7,7 @@
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/rollback/withNotInitializedEnv.js TAP > output 1`] = `
 
-Error: Migrations directory: [Migrations dir] doesn't exist. You should run \`init\` command to initialize migrations or change \`dir\` option.
+Error: Migrations directory: [Migrations dir] doesn't exist. You should run "init" command to initialize migrations or change "dir" option.
 [East source stack trace]
 
 `

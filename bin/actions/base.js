@@ -63,8 +63,8 @@ Action.prototype.init = function init({skipDirCheck} = {}) {
 				if (sourceDir === dir) {
 					throw new Error(
 						`Migrations directory: ${dir} doesn't exist. ` +
-						'You should run `init` command to initialize migrations or change ' +
-						'`dir` option.'
+						'You should run "init" command to initialize migrations or change ' +
+						'"dir" option.'
 					);
 				} else {
 					throw new Error(
