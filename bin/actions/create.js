@@ -18,7 +18,7 @@ Action.prototype.execute = function execute({basename}) {
 		})
 		.then((migration) => {
 			this.logger.info(
-				`New migration \`${migration.name}\` created at ${migration.path}`
+				`New migration "${migration.name}" created at "${migration.path}"`
 			);
 		});
 };

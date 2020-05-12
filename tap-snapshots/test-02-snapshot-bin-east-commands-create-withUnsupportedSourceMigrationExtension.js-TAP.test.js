@@ -6,6 +6,6 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/create/withUnsupportedSourceMigrationExtension.js TAP > output 1`] = `
-Adapter doesn't provide template '.bruh' source files
+Adapter doesn't provide template ".bruh" source files
 
 `

@@ -6,6 +6,6 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/create/withSourceDir.js TAP > output 1`] = `
-New migration \`1_someMigrationName\` created at [Migrations dir]Source/1_someMigrationName.js
+New migration "1_someMigrationName" created at "[Migrations dir]Source/1_someMigrationName.js"
 
 `
