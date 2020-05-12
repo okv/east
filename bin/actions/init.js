@@ -20,12 +20,12 @@ Action.prototype.execute = function execute() {
 			if (sourceDir === dir) {
 				this.logger.info(
 					'initialization successfully done, migration files will be ' +
-					`stored at \`${dir}\``
+					`stored at "${dir}"`
 				);
 			} else {
 				this.logger.info(
 					'initialization successfully done, migration executable ' +
-					`and source files will be stored at \`${dir}\` and \`${sourceDir}\` respectively`
+					`and source files will be stored at "${dir}" and "${sourceDir}" respectively`
 				);
 			}
 		});
