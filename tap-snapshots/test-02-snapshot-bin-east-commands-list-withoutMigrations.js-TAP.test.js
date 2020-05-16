@@ -6,6 +6,6 @@
  */
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/list/withoutMigrations.js TAP > output 1`] = `
-there is no new migrations
+there are no new migrations
 
 `
