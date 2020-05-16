@@ -24,11 +24,11 @@ Action.prototype._execute = function _execute({
 			});
 
 			this.migrationManager.on('onSkipMigration', (event) => {
-				if (event.reason === 'canNotRollbackNotExecuted') {
+				if (event.reason === 'cannotRollbackNotExecuted') {
 					this.logger.log(
 						`Skip "${event.migration.name}" because it's not executed yet`
 					);
-				} else if (event.reason === 'canNotRollbackWithoutRollback') {
+				} else if (event.reason === 'cannotRollbackWithoutRollback') {
 					this.logger.log(
 						`Skip "${event.migration.name}" because rollback function is not set`
 					);

@@ -386,9 +386,9 @@ export interface SkipMigrationEvent {
     reason: SkipMigrationReason;
 }
 export type SkipMigrationReason =
-    | "canNotMigrateAlreadyExecuted"
-    | "canNotRollbackNotExecuted"
-    | "canNotRollbackWithoutRollback";
+    | "cannotMigrateAlreadyExecuted"
+    | "cannotRollbackNotExecuted"
+    | "cannotRollbackWithoutRollback";
 
 export type RollbackManyEvent = MigrateManyEvent;
 export interface MigrateManyEvent {
