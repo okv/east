@@ -69,7 +69,7 @@ Action.prototype.init = function init({skipDirCheck} = {}) {
 				} else {
 					throw new Error(
 						`Migration executable dir "${dir}" or ` +
-						`source dir "${sourceDir}" dosn't exist. ` +
+						`source dir "${sourceDir}" doesn't exist. ` +
 						'You should run "init" command to initialize migrations or ' +
 						'change "dir", "sourceDir" options.'
 					);
