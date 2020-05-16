@@ -10,7 +10,7 @@ Action.prototype.execute = function execute({command}) {
 	return Promise.resolve()
 		.then(() => {
 			const name = command.args.shift();
-			throw new Error(`Unrecognized command \`${name}\``);
+			throw new Error(`Unrecognized command "${name}"`);
 		});
 };
 
