@@ -66,30 +66,32 @@ Run `east -h` to see all commands:
 
 ```sh
 
-  Usage: east [options] [command]
+Usage: east [options] [command]
 
-  Commands:
+Options:
+  -V, --version                       output the version number
+  --adapter <name>                    which db adapter to use
+  --config <path>                     config file to use
+  --timeout <timeout>                 timeout for migrate/rollback
+  --template <path>                   path to template for new migrations
+  --dir <dir>                         dir where migration executable files are stored (default: "./migrations")
+  --sourceDir <dir>                   dir where migration source files are stored, equal to --dir by default
+  --migrationExtension <ext>          migration executable files extension name (default: "js")
+  --sourceMigrationExtension <ext>    migration source files extension name, equal to --migrationExtension by default
+  --url <url>                         db connect url
+  --trace                             verbose mode (includes error stack trace)
+  --silent                            prevent output of detailed log
+  --no-exit                           require a clean shutdown of the event loop: process.exit will not be called at the end
+  -h, --help                          display help for command
 
-    init                                initialize migration system
-    create <basename>                   create new migration based on template
-    migrate [options] [migrations...]   run all or selected migrations
-    rollback [options] [migrations...]  rollback all or selected migrations
-    list [options] [status]             list migration with selected status (`new`, `executed` or `all`), `new` by default
-    *
-
-   Options:
-
-    -V, --version                       output the version number
-    --adapter <name>                    which db adapter to use
-    --config <path>                     config file to use
-    --timeout <timeout>                 timeout for migrate/rollback
-    --template <path>                   path to template for new migrations
-    --dir <dir>                         dir where migration executable files are stored (default: "./migrations")
-    --sourceDir <dir>                   dir where migration source files are stored, equal to --dir by default
-    --migrationExtension <ext>          migration executable files extension name (default: "js")
-    --sourceMigrationExtension <ext>    migration source files extension name, equal to --migrationExtension by default
-    --url <url>                         db connect url
-    --trace                             verbose mode (includes error stack trace)
+Commands:
+  init                                initialize migration system
+  create <basename>                   create new migration based on template
+  migrate [options] [migrations...]   run all or selected migrations
+  rollback [options] [migrations...]  rollback all or selected migrations
+  list [options] [status]             list migration with selected status ("new", "executed" or "all"), "new" by default
+  *
+  help [command]                      display help for command
 
 ```
 
