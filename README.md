@@ -179,11 +179,11 @@ or you can use a special adapter for database (see [adapters](#adapters) section
 
 The default format for migration file names is to prepend a number to the
 filename which is incremented with every new file. This creates migration files
-such as `migrations/1_doSomething.js`, `migrations/2_doSomethingElse.js`.
+such as "migrations/1_doSomething.js", "migrations/2_doSomethingElse.js".
 
 If you prefer your files to be created with a date-time instead of sequential
 numbers, you can set the `migrationNumberFormat` configuration parameter in
-your `.eastrc` to `dateTime`:
+your `.eastrc` to "dateTime":
 
 ```json
 {
@@ -251,7 +251,7 @@ This is useful while you develop and test your migration.
 You also can export `tags` array from migration and then run only
 migrations that satisfy the expression specified by `--tag` option. The expression
 consists of tag names and boolean operators `&`, `|` and `!`. For example,
-the following command will run all migrations that have `tag1` tag and do not have `tag2` tag :
+the following command will run all migrations that have "tag1" tag and do not have "tag2" tag:
 
 ```sh
 east migrate --tag 'tag1 & !tag2'
@@ -356,7 +356,7 @@ object.
 
 * **getMigrationPath(name, migrationFileType)** - returns an absolute path of the migration
 file on disk by the name of the migration, `migrationFileType` can be one of
-`'executable'` or `'source'` (`'executable'` by default). Returns *Promise<String>*.
+"executable" or "source" ("executable" by default). Returns *Promise<String>*.
 
 * **connect()** - connects to database management system (if supposed by
 adapter). Returns *Promise<void>*.
@@ -367,8 +367,8 @@ returns migrations names, following options are provided:
   * **migrations** - array of target migrations, each migration could be
   defined by basename, full name, path or number.
   * **status** - status to filter migrations, supported statuses are:
-  `new`, `executed` and `all`.
-  * **tag** - tag expression to filter migrations e.g. `'tag1 & !tag2'`
+  "new", "executed" and "all".
+  * **tag** - tag expression to filter migrations e.g. "tag1 & !tag2"
   * **reverseOrderResult** - if true then result array will be reversed.
 
 `migrations` and `status` are mutually exclusive.
@@ -378,13 +378,13 @@ If `migrations`, `status` not provided then all migrations will be processed
 * **migrate({migrations, status, tag, force})** - executes target migrations.
 Target migration could be defined by `migrations`, `status`, `tag` options
 (see it's description at `getMigrationNames` method). *By default*
-migrations with status `new` are chosen. Returns *Promise<void>*. `force`
+migrations with status "new" are chosen. Returns *Promise<void>*. `force`
 flag allows to execute already executed migrations.
 
 * **rollback({migrations, status, tag, force})** - rollbacks target migrations.
 Target migration could be defined by `migrations`, `status`, `tag` options
 (see it's description at `getMigrationNames` method). *By default*
-migrations with status `executed` are chosen. Returns *Promise<void>*. `force`
+migrations with status "executed" are chosen. Returns *Promise<void>*. `force`
 flag allows to rollback not executed migrations.
 
 * **disconnect()** - disconnects from database management system (if supposed
@@ -457,7 +457,7 @@ root of the cloned repository.
 ## TypeScript and other transpiled languages support
 
 `east` allows you to opt-in writing and executing your migrations with any transpiled languages,
-while by default it uses a single dir called `migrations` and looks for `.js` files in it.
+while by default it uses a single dir called "migrations" and looks for ".js" files in it.
 
 You can configure separate executable and source files directories as well as
 separate executable and source files extensions with `--dir`, `--sourceDir`,
