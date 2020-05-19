@@ -132,7 +132,7 @@ east create doSomething
 produces something like this
 
 ```sh
-New migration `1_doSomething` created at migrations/1_doSomething.js
+New migration "1_doSomething" created at "migrations/1_doSomething.js"
 ```
 
 the created file will contain
@@ -192,7 +192,7 @@ your `.eastrc` to "dateTime":
 ```
 
 This will create migration files with date-time prefix in `YYYYMMDDhhmmss`
-format (e.g. `migrations/20190720172730_doSomething.js`).
+format (e.g. "migrations/20190720172730_doSomething.js").
 
 For the default behavior, you can omit the `migrationNumberFormat`
 configuration option or set it to:
@@ -224,9 +224,9 @@ it sequentially executes all new migrations and produces
 target migrations:
     1_doSomething
     2_doSomethingElse
-migrate `1_doSomething`
+migrate "1_doSomething"
 migration done
-migrate `2_doSomethingElse`
+migrate "2_doSomethingElse"
 migration done
 ```
 
@@ -240,8 +240,8 @@ east migrate 1_doSomething 2
 in our case this command will skip all of them
 
 ```sh
-skip `1_doSomething` because it`s already executed
-skip `2_doSomethingElse` because it`s already executed
+skip "1_doSomething" because it's already executed
+skip "2_doSomethingElse" because it's already executed
 nothing to migrate
 ```
 
@@ -273,9 +273,9 @@ will produce
 target migrations:
     2_doSomethingElse
     1_doSomething
-rollback `2_doSomethingElse`
+rollback "2_doSomethingElse"
 migration successfully rolled back
-rollback `1_doSomething`
+rollback "1_doSomething"
 migration successfully rolled back
 ```
 
