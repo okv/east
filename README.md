@@ -438,7 +438,8 @@ mark transaction as executed, etc see details inside
 You also can run migrator tests from current repository against your adapter:
 
 * Clone current repository
-* Create file `.eastrc` inside `test` directory with path and parameters for
+* Change current directory to it
+* Create file `.eastrc` with path and parameters for
 your adapter e.g.
 
 ```js
@@ -449,7 +450,7 @@ your adapter e.g.
 }
 ```
 
-* Run `NODE_EAST_TEST_LOAD_CONFIG=1 npm run testSpecified test/01-migrator` at
+* Run `NODE_EAST_TEST_LOAD_CONFIG=1 npm run testSpecified test/01-migrator -- --jobs=1` at
 root of the cloned repository.
 
 
