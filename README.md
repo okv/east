@@ -418,6 +418,7 @@ Other adapters:
 * [postgres](https://github.com/2do2go/east-postgres)
 * [mysql](https://github.com/riggerthegeek/east-mysql)
 * [couchbase](https://github.com/ramiel/east-couchbase)
+* [couchdb](https://github.com/schipiga/east-couchdb)
 
 
 ## Plugins
