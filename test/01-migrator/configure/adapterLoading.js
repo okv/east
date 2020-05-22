@@ -26,7 +26,9 @@ describe('migrator configure adapter loading', () => {
 				migrator._tryLoadModule = (path) => {
 					paths.push(path);
 
-					return paths.length === 2 ? Adapter : new Error('Whatever.');
+					return paths.length === 2 ?
+						Promise.resolve(Adapter) :
+						Promise.reject(new Error('Whatever.'));
 				};
 
 				return migrator.configure({adapter: 'X', loadConfig: false});
@@ -42,9 +44,7 @@ describe('migrator configure adapter loading', () => {
 			.then(() => {
 				const migrator = new Migrator();
 
-				migrator._tryLoadModule = () => {
-					return new Error('Whatever.');
-				};
+				migrator._tryLoadModule = () => Promise.reject(new Error('Whatever.'));
 
 				return migrator.configure({adapter: 'X', loadConfig: false});
 			})
@@ -62,7 +62,7 @@ describe('migrator configure adapter loading', () => {
 
 	it('should promisify adapter methods', () => {
 		const migrator = new Migrator();
-		migrator._tryLoadModule = () => Adapter;
+		migrator._tryLoadModule = () => Promise.resolve(Adapter);
 		const adapterMethodNames = [
 			'connect',
 			'disconnect',
