@@ -7,7 +7,7 @@
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/migrate/withStatusAndParticularMigrations.js TAP > output 1`] = `
 
-Error: \`status\` option cannot be used when particular migrations are specified
+Error: "status" option can\'t be used when particular migrations are specified
 [East source stack trace]
 
 `

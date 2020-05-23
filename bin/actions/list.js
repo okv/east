@@ -13,7 +13,7 @@ Action.prototype._execute = function _execute({status, tag}) {
 			if (names.length) {
 				this.logger.info(`${status} migrations:`);
 			} else {
-				this.logger.info(`there is no ${status} migrations`);
+				this.logger.info(`there are no ${status} migrations`);
 			}
 
 			names.forEach((name) => {

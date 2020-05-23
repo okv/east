@@ -67,7 +67,7 @@ program
 	.command('migrate [migrations...]')
 	.option(
 		'-s, --status <name>', 'which migrations execute by default (when ' +
-		'particular migrations are not set), default status is `new`'
+		'particular migrations are not set), default status is "new"'
 	)
 	.option('-f, --force', 'force to execute already executed migrations')
 	.option(
@@ -89,7 +89,7 @@ program
 	.command('rollback [migrations...]')
 	.option(
 		'-s, --status <name>', 'which migrations execute by default (when ' +
-		'particular migrations are not set), default status is `executed`'
+		'particular migrations are not set), default status is "executed"'
 	)
 	.option('-f, --force', 'force to rollback not yet executed migrations')
 	.option(
@@ -113,8 +113,8 @@ program
 		'-t, --tag <expression>', 'list only migrations that satisfied expression'
 	)
 	.description(
-		'list migration with selected status (`new`, `executed` or `all`), ' +
-		'`new` by default'
+		'list migration with selected status ("new", "executed" or "all"), ' +
+		'"new" by default'
 	)
 	.action((status = 'new', command) => {
 		const action = new ListAction({opts: program.opts()});

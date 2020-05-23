@@ -7,7 +7,7 @@
 'use strict'
 exports[`test/02-snapshot/bin/east/commands/migrate/withNotInitializedEnvAndSourceDir.js TAP > output 1`] = `
 
-Error: Migration executable dir "[Migrations dir]" or source dir "migrationsSource" dosn't exist. You should run "init" command to initialize migrations or change "dir", "sourceDir" options.
+Error: Migration executable dir "[Migrations dir]" or source dir "migrationsSource" doesn't exist. You should run "init" command to initialize migrations or change "dir", "sourceDir" options.
 [East source stack trace]
 
 `

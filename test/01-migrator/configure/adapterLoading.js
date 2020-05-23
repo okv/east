@@ -37,7 +37,7 @@ describe('migrator configure adapter loading', () => {
 			});
 	});
 
-	it('should throw an error when both paths can not be resolved', () => {
+	it('should throw an error when both paths cannot be resolved', () => {
 		return Promise.resolve()
 			.then(() => {
 				const migrator = new Migrator();

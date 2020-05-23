@@ -16,6 +16,13 @@ and `MigrationManager` class)
 
 ### Changed
 - *Breaking change:* Default migration template now uses `async` functions
+- *Breaking change:* `MigrationManager` `onSkipMigration` event reasons are
+renamed: canNotMigrateAlreadyExecuted -> cannotMigrateAlreadyExecuted,
+canNotRollbackNotExecuted -> cannotRollbackNotExecuted,
+canNotMigrateAlreadyExecuted -> cannotMigrateAlreadyExecuted
+- *Breaking change:* Output text messages changed - now quotes used in
+consistent way (double quotes in most cases). This can only breaks if you parse
+east text messages (errors, log messages, etc).
 - `Adapter.getTemplatePath()` now gets passed the migration file extension so
 now adapters may create multiple templates for different languages (e.g
 separate tempalte for `js` and `ts`)

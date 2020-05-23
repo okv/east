@@ -7,6 +7,6 @@
 'use strict'
 exports[`test/02-snapshot/bin/east/withUnrecognizedCommand.js TAP > output 1`] = `
 
-Unrecognized command \`notKnownCommand\`
+Unrecognized command "notKnownCommand"
 
 `

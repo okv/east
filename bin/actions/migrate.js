@@ -24,7 +24,7 @@ Action.prototype._execute = function _execute({
 			});
 
 			this.migrationManager.on('onSkipMigration', (event) => {
-				if (event.reason === 'canNotMigrateAlreadyExecuted') {
+				if (event.reason === 'cannotMigrateAlreadyExecuted') {
 					this.logger.log(
 						`Skip "${event.migration.name}" because it's already executed`
 					);
