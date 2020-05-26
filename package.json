@@ -17,7 +17,8 @@
     "sqlite",
     "postgres",
     "mysql",
-    "couchbase"
+    "couchbase",
+    "couchdb"
   ],
   "types": "lib/index.d.ts",
   "main": "lib/index.js",
