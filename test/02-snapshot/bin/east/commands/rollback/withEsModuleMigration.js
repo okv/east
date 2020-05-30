@@ -4,7 +4,7 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east migrate with migration as ES Module';
+const describeTitle = 'bin/east rollback with migration as ES Module';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -17,7 +17,10 @@ describe(describeTitle, () => {
 					init: true,
 					configureParams: {
 						esModules: true,
-						templateText: 'export const migrate = async (client) => {}'
+						templateText: [
+							'export const migrate = async (client) => {}',
+							'export const rollback = async (client) => {}'
+						].join('\n\n')
 					}
 				}
 			}))
@@ -27,6 +30,11 @@ describe(describeTitle, () => {
 				return testUtils.createMigrations({
 					migrator: testEnv.migrator,
 					baseNames: ['someMigrationName', 'anotherMigrationName']
+				});
+			})
+			.then((names) => {
+				return testUtils.markMigrationsExecuted({
+					migrator: testEnv.migrator, names
 				});
 			});
 	});
@@ -39,7 +47,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" migrate --es-modules`,
+					`"${binPath}" rollback --es-modules`,
 					{cwd: testEnv.dir}
 				);
 			})
