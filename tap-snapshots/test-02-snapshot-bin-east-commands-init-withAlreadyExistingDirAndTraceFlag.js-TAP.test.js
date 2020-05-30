@@ -12,7 +12,7 @@ Current parameters: {
     "sourceDir": "[Migrations dir]",
     "sourceMigrationExtension": "js",
     "timeout": 604800000,
-    "adapter": "../../adapter",
+    "adapter": "[Adapter dir]",
     "url": null,
     "migrationNumberFormat": "sequentialNumber",
     "trace": true,
