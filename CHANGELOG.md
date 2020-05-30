@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased][]
 
 ### Added
+- Support ES Modules for config, migrations, adapter and plugins via `--es-modules` flag
 - Support for transpiled languages via `--sourceDir`, `--sourceMigrationExtension`,
 `--migrationExtension` (should also work with `ts-node`)
 - TypeScript type declarations for all exposed entities (`Adapter` interface

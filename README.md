@@ -81,6 +81,7 @@ Options:
   --url <url>                         db connect url
   --trace                             verbose mode (includes error stack trace)
   --silent                            prevent output of detailed log
+  --es-modules                        config, migrations, adapter and plugins could be provided as ES Modules with this flag
   --no-exit                           require a clean shutdown of the event loop: process.exit will not be called at the end
   -h, --help                          display help for command
 
