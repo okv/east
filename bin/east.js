@@ -36,6 +36,7 @@ program
 	.option('--url <url>', 'db connect url')
 	.option('--trace', 'verbose mode (includes error stack trace)')
 	.option('--silent', 'prevent output of detailed log')
+	.option('--es-modules', 'turn on ES modules support')
 	.option(
 		'--no-exit',
 		'require a clean shutdown of the event loop: process.exit will not be ' +

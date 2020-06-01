@@ -11,6 +11,7 @@ module.exports = (params = {}) => {
 	let migrator;
 	let configPath;
 	let templatePath;
+	let packageJsonPath;
 
 	return Promise.resolve()
 		.then(() => {
@@ -22,6 +23,21 @@ module.exports = (params = {}) => {
 		.then((dirExists) => {
 			if (!dirExists) {
 				return fs.promises.mkdir(dir);
+			}
+		})
+		.then(() => {
+			if (
+				params.migratorParams &&
+				params.migratorParams.configureParams &&
+				params.migratorParams.configureParams.esModules
+			) {
+				packageJsonPath = pathUtils.join(dir, 'package.json');
+
+				return fs.promises.writeFile(
+					packageJsonPath,
+					'{"type": "module"}',
+					'utf-8'
+				);
 			}
 		})
 		.then(() => {
@@ -76,6 +92,7 @@ module.exports = (params = {}) => {
 			dir,
 			migrator,
 			configPath,
-			templatePath
+			templatePath,
+			packageJsonPath
 		}));
 };

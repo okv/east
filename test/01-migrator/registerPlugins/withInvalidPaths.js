@@ -17,9 +17,9 @@ describe(describeTitle, () => {
 
 		migratorMock._createAdapter = () => testUtils.createAdapter();
 
-		migratorMock._tryLoadModule = (path) => {
-			return new Error(`Can't load path ${path}`);
-		};
+		migratorMock._tryLoadModule = (path) => Promise.reject(
+			new Error(`Can't load path ${path}`)
+		);
 	});
 
 	it('should throw an error', () => {

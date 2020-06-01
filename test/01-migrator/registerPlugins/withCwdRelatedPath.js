@@ -24,7 +24,9 @@ describe(describeTitle, () => {
 		migratorMock._tryLoadModule = (path) => {
 			loadModulePaths.push(path);
 
-			return loadModulePaths.length === 2 ? plugin : new Error('Whatever.');
+			return loadModulePaths.length === 2 ?
+				Promise.resolve(plugin) :
+				Promise.reject(new Error('Whatever.'));
 		};
 
 		plugin = testUtils.createPlugin({

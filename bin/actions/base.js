@@ -39,7 +39,7 @@ Action.prototype.init = function init({skipDirCheck} = {}) {
 			const migratorParams = _(this.opts).pick(
 				'config', 'dir', 'timeout', 'template', 'adapter',
 				'url', 'trace', 'silent', 'sourceDir', 'migrationExtension',
-				'sourceMigrationExtension'
+				'sourceMigrationExtension', 'esModules'
 			);
 			return migrationManager.configure(migratorParams);
 		})
