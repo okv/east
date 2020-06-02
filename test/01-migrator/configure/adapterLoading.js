@@ -55,7 +55,9 @@ describe('migrator configure adapter loading', () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err).an(Error);
-				expect(err.message).match(/Whatever\./);
+				expect(err.message).match(
+					/Error during adapter creation: Whatever\./
+				);
 			});
 	});
 
