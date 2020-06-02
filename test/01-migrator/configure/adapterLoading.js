@@ -63,7 +63,7 @@ describe('migrator configure adapter loading', () => {
 
 	it('should promisify adapter methods', () => {
 		const migrator = new Migrator();
-		migrator._tryLoadModule = () => Promise.resolve(Adapter);
+		migrator._loadModule = () => Promise.resolve(Adapter);
 		const adapterMethodNames = [
 			'connect',
 			'disconnect',
