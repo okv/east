@@ -116,7 +116,7 @@ describe('migrator configure adapter loading', () => {
 				expect(err).ok();
 				expect(err).an(Error);
 				expect(err.message).equal(
-					'Error constructing adapter:Some error'
+					'Error during adapter creation: Some error'
 				);
 			});
 	});
