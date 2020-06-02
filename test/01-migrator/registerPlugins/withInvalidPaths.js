@@ -17,7 +17,7 @@ describe(describeTitle, () => {
 
 		migratorMock._createAdapter = () => testUtils.createAdapter();
 
-		migratorMock._tryLoadModule = (path) => Promise.reject(
+		migratorMock._loadModule = (path) => Promise.reject(
 			new Error(`Can't load path ${path}`)
 		);
 	});
@@ -33,7 +33,6 @@ describe(describeTitle, () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err).an(Error);
-				expect(err.message).match(/^Error loading plugin from all paths:/);
 				expect(err.message).match(/Can't load path/);
 			});
 	});
