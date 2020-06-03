@@ -53,6 +53,8 @@ describe('migrator _loadConfig with invalid cjs module', () => {
 				));
 				expect(err.message).match(new RegExp(
 					'and as module:'
+				));				expect(err.message).match(new RegExp(
+					`Error loading module "${configPath}":`
 				));
 			});
 	});
