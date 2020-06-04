@@ -4,9 +4,13 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east migrate with migration as ES Module';
+// skip this test if es modules are not supported
+if (!testUtils.isEsmSupported()) {
+	tap.grepInvert = 1;
+	tap.grep = [/.*/];
+}
 
-describe(describeTitle, () => {
+describe('bin/east migrate with ES Module migration', () => {
 	let commandResult;
 	let testEnv;
 

@@ -6,6 +6,12 @@ const testUtils = require('../../../testUtils');
 
 tap.mochaGlobals();
 
+// skip this test if es modules are not supported
+if (!testUtils.isEsmSupported()) {
+	tap.grepInvert = 1;
+	tap.grep = [/.*/];
+}
+
 describe('migrator _loadConfig with ES Module object', () => {
 	let migrator;
 	let testEnv;

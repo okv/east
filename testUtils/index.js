@@ -16,3 +16,4 @@ exports.createAdapter = require('./createAdapter');
 exports.createEastrc = require('./createEastrc');
 exports.createEnv = require('./createEnv');
 exports.destroyEnv = require('./destroyEnv');
+exports.isEsmSupported = require('./isEsmSupported');

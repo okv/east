@@ -9,13 +9,10 @@ node_js:
 
 script:
   - npm run lint
+  - npm test
+
   - >
     nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
-    if [ $nodeVersionMajor -ge 12 ]; then
-      npm test;
-    else
-      npm run testWithoutESModules;
-    fi;
 
     if [ $nodeVersionMajor -eq 14 ]; then
       npm run makeCodeCoverageSummaryReport;
