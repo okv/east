@@ -21,12 +21,14 @@ describe(describeTitle, () => {
 
 		migratorMock._createAdapter = () => testUtils.createAdapter();
 
-		migratorMock._tryLoadModule = (path) => {
+		migratorMock._loadModule = (path) => {
 			loadModulePaths.push(path);
 
-			return loadModulePaths.length === 2 ?
-				Promise.resolve(plugin) :
-				Promise.reject(new Error('Whatever.'));
+			if (loadModulePaths.length === 1) {
+				return Promise.resolve(plugin);
+			} else {
+				return Promise.reject(new Error('Whatever.'));
+			}
 		};
 
 		plugin = testUtils.createPlugin({
@@ -43,10 +45,9 @@ describe(describeTitle, () => {
 		return migratorMock.configure({plugins: ['somePlugin']});
 	});
 
-	it('should try migrator-related path first then CWD-related', () => {
-		expect(loadModulePaths).length(2);
-		expect(loadModulePaths[0]).eql('somePlugin');
-		expect(loadModulePaths[1]).match(/\/somePlugin$/);
+	it('should load plugin related to cwd', () => {
+		expect(loadModulePaths).length(1);
+		expect(loadModulePaths[0]).match(/\/somePlugin$/);
 	});
 
 	it('should call plugin register', () => {
