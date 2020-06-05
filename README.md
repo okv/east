@@ -30,6 +30,7 @@ Following subjects described below:
 * [TypeScript and other transpiled languages support](#typescript-and-other-transpiled-languages-support)
 * [License](#license)
 
+
 ## Node.js compatibility
 
 east itself requires node.js >= 10 to work.
@@ -110,7 +111,7 @@ located at current directory, e.g.:
 
 ```
 
-`.eastrc` also can be a regular nodejs script (instead of json file):
+`.eastrc` also can be a regular commonjs module (instead of json file):
 
 ```js
 
@@ -121,6 +122,31 @@ module.exports = {
     template: './lib/node/utils/customMigrationTemplate.js'
 };
 
+```
+
+east also provides support for ECMAScript Modules by `--es-modules` cli flag.
+With this flag config, migrations, adapter and plugins will be loaded using
+[import expression](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_import_expressions)
+- it allows to provide those entities like commonjs or es modules.
+E.g. `.eastrc.mjs` can be:
+
+```js
+import path from 'path';
+
+export const dir = path.resolve('dbmigration');
+
+export const template = path.resolve('./lib/node/utils/customMigrationTemplate.js');
+````
+
+Please note, that you need to enable nodejs es modules support (use `mjs`
+extension for module or package.json with type "module", etc - see
+[nodejs esm docs](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html) for
+details).
+
+Config presented above could be used like this:
+
+```sh
+bin/east.js --config .eastrc.mjs --es-modules init
 ```
 
 
