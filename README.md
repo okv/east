@@ -126,9 +126,9 @@ module.exports = {
 
 east also provides support for ECMAScript Modules by `--es-modules` cli flag.
 With this flag config, migrations, adapter and plugins will be loaded using
-[import expression](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_import_expressions)
-- it allows to provide those entities like commonjs or es modules.
-E.g. `.eastrc.mjs` can be:
+[import expression](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_import_expressions).
+It allows to provide those entities like commonjs or es modules, e.g.
+`.eastrc.mjs`:
 
 ```js
 import path from 'path';
@@ -146,7 +146,7 @@ details).
 Config presented above could be used like this:
 
 ```sh
-bin/east.js --config .eastrc.mjs --es-modules init
+east --config .eastrc.mjs --es-modules list
 ```
 
 
