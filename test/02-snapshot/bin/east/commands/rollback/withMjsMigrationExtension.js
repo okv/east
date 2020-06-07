@@ -4,7 +4,13 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east rollback with migration extension';
+// skip this test if es modules are not supported
+if (!testUtils.isEsmSupported()) {
+	tap.grepInvert = 1;
+	tap.grep = [/.*/];
+}
+
+const describeTitle = 'bin/east rollback with mjs migration extension';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -16,7 +22,7 @@ describe(describeTitle, () => {
 				migratorParams: {
 					init: true,
 					configureParams: {
-						migrationExtension: 'ts'
+						migrationExtension: 'mjs'
 					}
 				}
 			}))
@@ -43,8 +49,8 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`node -r ts-node/register "${binPath}" ` +
-					'rollback someMigrationName --migrationExtension ts',
+					`"${binPath}" rollback someMigrationName ` +
+					'--es-modules --migrationExtension mjs',
 					{cwd: testEnv.dir}
 				);
 			})
