@@ -4,7 +4,9 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-const describeTitle = 'bin/east create command with source migration extension';
+const describeTitle = (
+	'bin/east create command with ts source migration extension'
+);
 
 describe(describeTitle, () => {
 	let commandResult;
