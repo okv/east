@@ -25,8 +25,7 @@ program
 	)
 	.option(
 		'--migrationExtension <ext>',
-		'migration executable files extension name',
-		'js'
+		'migration executable files extension name (default: "js")'
 	)
 	.option(
 		'--sourceMigrationExtension <ext>',
