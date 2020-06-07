@@ -28,6 +28,7 @@ Following subjects described below:
 * [Plugins](#plugins)
 * [Creating own adapter](#creating-own-adapter)
 * [TypeScript and other transpiled languages support](#typescript-and-other-transpiled-languages-support)
+* [ECMAScript Modules support](#ecmascript-modules-support)
 * [License](#license)
 
 
@@ -124,30 +125,16 @@ module.exports = {
 
 ```
 
-east also provides support for ECMAScript Modules by `--es-modules` cli flag.
-With this flag config, migrations, adapter and plugins will be loaded using
-[import expression](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_import_expressions).
-It allows to provide those entities like commonjs or es modules, e.g.
-`.eastrc.mjs`:
+east also supports config as ECMAScript module, config could be:
 
 ```js
 import path from 'path';
 
 export const dir = path.resolve('dbmigration');
-
 export const template = path.resolve('./lib/node/utils/customMigrationTemplate.js');
 ````
 
-Please note, that you need to enable nodejs es modules support (use `mjs`
-extension for module or package.json with type "module", etc - see
-[nodejs esm docs](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html) for
-details).
-
-Config presented above could be used like this:
-
-```sh
-east --config .eastrc.mjs --es-modules list
-```
+See [ECMAScript Modules support](#ecmascript-modules-support) for details.
 
 
 ### create
@@ -537,6 +524,35 @@ const _: AdpaterConstructor<DbClient> = MyAdapter;
 
 export = MyAdapter;
 ```
+
+
+## ECMAScript Modules support
+
+east provides support for es modules by `--es-modules` cli flag.
+With this flag config, migrations, adapter and plugins will be loaded using
+[import expression](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html#esm_import_expressions).
+It allows to provide those entities like commonjs or es modules, e.g.
+`.eastrc.mjs`:
+
+```js
+import path from 'path';
+export const dir = path.resolve('dbmigration');
+export const template = path.resolve('./lib/node/utils/customMigrationTemplate.js');
+````
+
+Please note, that you need to enable nodejs es modules support (use `mjs`
+extension for module or package.json with type "module", etc - see
+[nodejs esm docs](https://nodejs.org/dist/latest-v12.x/docs/api/esm.html) for
+details).
+
+Config presented above could be used like this:
+
+```sh
+east --config .eastrc.mjs --es-modules list
+```
+
+When migration files as es module are desired `--migrationExtension` and
+`--sourceMigrationExtension` set to mjs could be used.
 
 
 ## License
