@@ -4,13 +4,9 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-// skip this test if es modules are not supported
-if (!testUtils.isEsmSupported()) {
-	tap.grepInvert = 1;
-	tap.grep = [/.*/];
-}
+const describeTitle = 'bin/east rollback with ts migration extension';
 
-describe('bin/east migrate with ES Module migration', () => {
+describe(describeTitle, () => {
 	let commandResult;
 	let testEnv;
 
@@ -20,8 +16,7 @@ describe('bin/east migrate with ES Module migration', () => {
 				migratorParams: {
 					init: true,
 					configureParams: {
-						esModules: true,
-						templateText: 'export const migrate = async (client) => {}'
+						migrationExtension: 'ts'
 					}
 				}
 			}))
@@ -30,7 +25,12 @@ describe('bin/east migrate with ES Module migration', () => {
 
 				return testUtils.createMigrations({
 					migrator: testEnv.migrator,
-					baseNames: ['someMigrationName', 'anotherMigrationName']
+					baseNames: ['someMigrationName']
+				});
+			})
+			.then((names) => {
+				return testUtils.markMigrationsExecuted({
+					migrator: testEnv.migrator, names
 				});
 			});
 	});
@@ -43,7 +43,8 @@ describe('bin/east migrate with ES Module migration', () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" migrate --es-modules`,
+					`node -r ts-node/register "${binPath}" ` +
+					'rollback someMigrationName --migrationExtension ts',
 					{cwd: testEnv.dir}
 				);
 			})

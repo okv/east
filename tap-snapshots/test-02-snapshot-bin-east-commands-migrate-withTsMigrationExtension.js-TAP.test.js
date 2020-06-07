@@ -5,7 +5,7 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/02-snapshot/bin/east/commands/migrate/withMigrationExtension.js TAP > output 1`] = `
+exports[`test/02-snapshot/bin/east/commands/migrate/withTsMigrationExtension.js TAP > output 1`] = `
 Target migrations:
 	1_someMigrationName
 Migrate "1_someMigrationName"

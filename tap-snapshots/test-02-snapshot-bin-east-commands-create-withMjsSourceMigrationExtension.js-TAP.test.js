@@ -5,10 +5,7 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/02-snapshot/bin/east/commands/rollback/withMigrationExtension.js TAP > output 1`] = `
-Target migrations:
-	1_someMigrationName
-Rollback "1_someMigrationName"
-Migration successfully rolled back
+exports[`test/02-snapshot/bin/east/commands/create/withMjsSourceMigrationExtension.js TAP > output 1`] = `
+New migration "1_someMigrationName" created at "[Migrations dir]/1_someMigrationName.mjs"
 
 `

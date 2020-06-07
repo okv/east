@@ -6,7 +6,13 @@ const testUtils = require('../../../testUtils');
 
 tap.mochaGlobals();
 
-describe('migrator _loadConfig with ES Module object', () => {
+// skip this test if es modules are not supported
+if (!testUtils.isEsmSupported()) {
+	tap.grepInvert = 1;
+	tap.grep = [/.*/];
+}
+
+describe('migrator _loadConfig with ES Module without default object', () => {
 	let migrator;
 	let testEnv;
 	let configPath;
@@ -34,7 +40,7 @@ describe('migrator _loadConfig with ES Module object', () => {
 				configPath = pathUtils.join(testEnv.dir, 'config.mjs');
 				return fs.promises.writeFile(
 					configPath,
-					'export default {adapter: "test"};',
+					'export const adapter = "test";',
 					'utf-8'
 				);
 			});

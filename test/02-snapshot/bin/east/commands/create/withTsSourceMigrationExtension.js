@@ -4,13 +4,11 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-// skip this test if es modules are not supported
-if (!testUtils.isEsmSupported()) {
-	tap.grepInvert = 1;
-	tap.grep = [/.*/];
-}
+const describeTitle = (
+	'bin/east create command with ts source migration extension'
+);
 
-describe('bin/east migrate with ES Module migration', () => {
+describe(describeTitle, () => {
 	let commandResult;
 	let testEnv;
 
@@ -20,18 +18,12 @@ describe('bin/east migrate with ES Module migration', () => {
 				migratorParams: {
 					init: true,
 					configureParams: {
-						esModules: true,
-						templateText: 'export const migrate = async (client) => {}'
+						sourceMigrationExtension: 'ts'
 					}
 				}
 			}))
 			.then((createdTestEnv) => {
 				testEnv = createdTestEnv;
-
-				return testUtils.createMigrations({
-					migrator: testEnv.migrator,
-					baseNames: ['someMigrationName', 'anotherMigrationName']
-				});
 			});
 	});
 
@@ -43,7 +35,7 @@ describe('bin/east migrate with ES Module migration', () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" migrate --es-modules`,
+					`"${binPath}" create someMigrationName --sourceMigrationExtension "ts"`,
 					{cwd: testEnv.dir}
 				);
 			})
