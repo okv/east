@@ -46,7 +46,7 @@ describe(describeTitle, () => {
 
 				return testUtils.execAsync(
 					`"${binPath}" migrate someMigrationName ` +
-					'--es-modules --migrationExtension mjs',
+					'--es-modules --migration-extension mjs',
 					{cwd: testEnv.dir}
 				);
 			})

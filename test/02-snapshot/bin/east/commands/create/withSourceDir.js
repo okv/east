@@ -33,7 +33,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" create someMigrationName --sourceDir migrationsSource`,
+					`"${binPath}" create someMigrationName --source-dir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})

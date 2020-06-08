@@ -28,7 +28,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" rollback --sourceDir migrationsSource`,
+					`"${binPath}" rollback --source-dir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})

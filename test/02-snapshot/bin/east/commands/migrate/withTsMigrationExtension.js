@@ -40,7 +40,7 @@ describe(describeTitle, () => {
 
 				return testUtils.execAsync(
 					`node -r ts-node/register "${binPath}" migrate ` +
-					'someMigrationName --migrationExtension ts',
+					'someMigrationName --migration-extension ts',
 					{cwd: testEnv.dir}
 				);
 			})

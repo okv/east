@@ -35,7 +35,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" create someMigrationName --sourceMigrationExtension "mjs"`,
+					`"${binPath}" create someMigrationName --source-migration-extension "mjs"`,
 					{cwd: testEnv.dir}
 				);
 			})

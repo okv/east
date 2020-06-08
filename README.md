@@ -77,9 +77,9 @@ Options:
   --timeout <timeout>                 timeout for migrate/rollback
   --template <path>                   path to template for new migrations
   --dir <dir>                         dir where migration executable files are stored (default: "./migrations")
-  --sourceDir <dir>                   dir where migration source files are stored, equal to --dir by default
-  --migrationExtension <ext>          migration executable files extension name (default: "js")
-  --sourceMigrationExtension <ext>    migration source files extension name, equal to --migrationExtension by default
+  --source-dir <dir>                  dir where migration source files are stored, equal to --dir by default
+  --migration-extension <ext>         migration executable files extension name (default: "js")
+  --source-migration-extension <ext>  migration source files extension name, equal to --migration-extension by default
   --url <url>                         db connect url
   --trace                             verbose mode (includes error stack trace)
   --silent                            prevent output of detailed log
@@ -476,19 +476,19 @@ root of the cloned repository.
 while by default it uses a single dir called "migrations" and looks for ".js" files in it.
 
 You can configure separate executable and source files directories as well as
-separate executable and source files extensions with `--dir`, `--sourceDir`,
-`--migrationExtension`, `--sourceMigrationExtension` respectively.
+separate executable and source files extensions with `--dir`, `--source-dir`,
+`--migration-extension`, `--source-migration-extension` respectively.
 
-By default if you specify only `--dir` and/or `--migrationExtension`, then
-`--sourceDir` and/or `--sourceMigrationExtension` will be equal to it, however
+By default if you specify only `--dir` and/or `--migration-extension`, then
+`--source-dir` and/or `--source-migration-extension` will be equal to it, however
 it doesn't work on the other way around, e.g. if you specify
 
 ```
---sourceDir mySourceDir --sourceMigrationExtension ts
+--source-dir mySourceDir --source-migration-extension ts
 ```
 
-then `--dir` and `--migrationExtension` will have `migrations` and `js` values by default,
-so it is recommended to specify at least `--dir`, `--sourceDir` and `--sourceMigrationExtension`
+then `--dir` and `--migration-extension` will have `migrations` and `js` values by default,
+so it is recommended to specify at least `--dir`, `--source-dir` and `--source-migration-extension`
 when you are building a transpiled language.
 
 If you use TypeScript you can run `east` with [`ts-node`](https://github.com/TypeStrong/ts-node)
@@ -498,7 +498,7 @@ if you don't want to transpile you migration scripts before running them:
 ts-node $(which east) migrate
 ```
 
-Just be sure to specify `--migrationExtension ts` so that `east` does look for
+Just be sure to specify `--migration-extension ts` so that `east` does look for
 TypeScript files when `require()`-ing the migration scripts.
 
 
@@ -551,8 +551,8 @@ Config presented above could be used like this:
 east --config .eastrc.mjs --es-modules list
 ```
 
-When migration files as es module are desired `--migrationExtension` and
-`--sourceMigrationExtension` set to mjs could be used.
+When migration files as es module are desired `--migration-extension` and
+`--source-migration-extension` set to mjs could be used.
 
 
 ## License

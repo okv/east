@@ -44,7 +44,7 @@ describe(describeTitle, () => {
 
 				return testUtils.execAsync(
 					`node -r ts-node/register "${binPath}" ` +
-					'rollback someMigrationName --migrationExtension ts',
+					'rollback someMigrationName --migration-extension ts',
 					{cwd: testEnv.dir}
 				);
 			})

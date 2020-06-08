@@ -20,17 +20,17 @@ program
 		'dir where migration executable files are stored (default: "./migrations")'
 	)
 	.option(
-		'--sourceDir <dir>',
+		'--source-dir <dir>',
 		'dir where migration source files are stored, equal to --dir by default'
 	)
 	.option(
-		'--migrationExtension <ext>',
+		'--migration-extension <ext>',
 		'migration executable files extension name (default: "js")'
 	)
 	.option(
-		'--sourceMigrationExtension <ext>',
+		'--source-migration-extension <ext>',
 		'migration source files extension name, ' +
-		'equal to --migrationExtension by default'
+		'equal to --migration-extension by default'
 	)
 	.option('--url <url>', 'db connect url')
 	.option('--trace', 'verbose mode (includes error stack trace)')

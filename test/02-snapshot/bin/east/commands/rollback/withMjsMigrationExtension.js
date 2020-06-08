@@ -50,7 +50,7 @@ describe(describeTitle, () => {
 
 				return testUtils.execAsync(
 					`"${binPath}" rollback someMigrationName ` +
-					'--es-modules --migrationExtension mjs',
+					'--es-modules --migration-extension mjs',
 					{cwd: testEnv.dir}
 				);
 			})

@@ -28,7 +28,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" migrate --sourceDir migrationsSource`,
+					`"${binPath}" migrate --source-dir migrationsSource`,
 					{cwd: testEnv.dir}
 				);
 			})
