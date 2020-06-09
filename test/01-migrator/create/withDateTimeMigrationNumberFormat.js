@@ -13,7 +13,13 @@ describe('migrator create with date time migration number format', () => {
 		return Promise.resolve()
 			.then(() => {
 				return testUtils.createEnv({
-					migratorParams: {init: true, connect: true}
+					migratorParams: {
+						init: true,
+						connect: true,
+						configureParams: {
+							migrationNumberFormat: 'dateTime'
+						}
+					}
 				});
 			})
 			.then((createdTestEnv) => {
@@ -28,14 +34,6 @@ describe('migrator create with date time migration number format', () => {
 	after(() => testUtils.removeMigrations({migrator, names}));
 
 	after(() => testUtils.destroyEnv(testEnv));
-
-	before(() => {
-		migrator.params.migrationNumberFormat = 'dateTime';
-	});
-
-	after(() => {
-		migrator.params.migrationNumberFormat = 'sequentialNumber';
-	});
 
 	it('should create migrations without errors', () => {
 		return Promise.resolve()

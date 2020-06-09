@@ -191,25 +191,17 @@ or you can use a special adapter for database (see [adapters](#adapters) section
 
 #### Migration file number format
 
-The default format for migration file names is to prepend a number to the
-filename which is incremented with every new file. This creates migration files
-such as "migrations/1_doSomething.js", "migrations/2_doSomethingElse.js".
+East supports following migration file number formats (`migrationNumberFormat`
+option):
 
-If you prefer your files to be created with a date-time instead of sequential
-numbers, you can set the `migrationNumberFormat` configuration parameter in
-your `.eastrc` to "dateTime":
+* "dateTime" - will create migration files with date-time prefix in `YYYYMMDDhhmmss`
+format (e.g. "migrations/20190720172730_doSomething.js")
+* "sequentialNumber" - prepend a number to the filename which is incremented
+with every new file. This creates migration files such as
+"migrations/1_doSomething.js", "migrations/2_doSomethingElse.js".
 
-```json
-{
-    "migrationNumberFormat": "dateTime"
-}
-```
-
-This will create migration files with date-time prefix in `YYYYMMDDhhmmss`
-format (e.g. "migrations/20190720172730_doSomething.js").
-
-For the default behavior, you can omit the `migrationNumberFormat`
-configuration option or set it to:
+Default format is "dateTime", you can change `migrationNumberFormat` via your
+`.eastrc` e.g.:
 
 ```json
 {
