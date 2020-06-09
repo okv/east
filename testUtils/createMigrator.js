@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const Migrator = require('../lib/migrator');
 const removeMigratorDir = require('./removeMigratorDir');
 
@@ -11,9 +10,7 @@ module.exports = ({
 	const migrator = new Migrator();
 
 	return Promise.resolve()
-		.then(() => migrator.configure(_({
-			migrationNumberFormat: 'sequentialNumber'
-		}).extend(configureParams)))
+		.then(() => migrator.configure(configureParams))
 		// always connect migrator coz `removeDirBefore` makes unmark executed
 		.then(() => migrator.connect())
 		.then(() => {

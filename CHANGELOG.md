@@ -16,7 +16,6 @@ and `MigrationManager` class)
 - Builtin TypeScript migration template file
 
 ### Changed
-- *Breaking change:* Default migration file number format changed to "dateTime"
 - *Breaking change:* Default migration template now uses `async` functions
 - *Breaking change:* `MigrationManager` `onSkipMigration` event reasons are
 renamed: canNotMigrateAlreadyExecuted -> cannotMigrateAlreadyExecuted,

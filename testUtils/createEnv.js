@@ -58,13 +58,7 @@ module.exports = (params = {}) => {
 		.then(() => {
 			const migrationsDir = pathUtils.join(dir, 'migrations');
 
-			return createEastrc({
-				dir,
-				configParams: {
-					dir: migrationsDir,
-					migrationNumberFormat: 'sequentialNumber'
-				}
-			});
+			return createEastrc({dir, configParams: {dir: migrationsDir}});
 		})
 		.then((createdConfigPath) => {
 			configPath = createdConfigPath;

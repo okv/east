@@ -13,13 +13,7 @@ describe('migrator create with sequential migration number format', () => {
 		return Promise.resolve()
 			.then(() => {
 				return testUtils.createEnv({
-					migratorParams: {
-						init: true,
-						connect: true,
-						configureParams: {
-							migrationNumberFormat: 'sequentialNumber'
-						}
-					}
+					migratorParams: {init: true, connect: true}
 				});
 			})
 			.then((createdTestEnv) => {
