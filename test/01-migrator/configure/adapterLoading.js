@@ -1,6 +1,7 @@
 const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
+const pathUtils = require('path');
 const Migrator = require('../../../lib/migrator');
 const testUtils = require('../../../testUtils');
 
@@ -16,7 +17,7 @@ describe('migrator configure adapter loading', () => {
 		Adapter.prototype = testUtils.createAdapter({withCallbacMethods: true});
 	});
 
-	it('should load module related to cwd', () => {
+	it('should load module related to cwd when related path is passed', () => {
 		const paths = [];
 
 		return Promise.resolve()
@@ -33,10 +34,60 @@ describe('migrator configure adapter loading', () => {
 					}
 				};
 
-				return migrator.configure({adapter: 'X', loadConfig: false});
+				return migrator.configure({adapter: 'some/path', loadConfig: false});
 			})
 			.then(() => {
-				expect(paths[0].substr(-2, 2)).eql('/X');
+				expect(paths[0]).eql(
+					pathUtils.join(process.cwd(), 'some', 'path')
+				);
+			});
+	});
+
+	it('should load module by abs path when abs path is passed', () => {
+		const paths = [];
+
+		return Promise.resolve()
+			.then(() => {
+				const migrator = new Migrator();
+
+				migrator._loadModule = (path) => {
+					paths.push(path);
+
+					if (paths.length === 1) {
+						return Promise.resolve(Adapter);
+					} else {
+						return Promise.reject(new Error('Whatever.'));
+					}
+				};
+
+				return migrator.configure({adapter: '/tmp/some/path', loadConfig: false});
+			})
+			.then(() => {
+				expect(paths[0]).eql('/tmp/some/path');
+			});
+	});
+
+	it('should load module by name when module name is passed', () => {
+		const paths = [];
+
+		return Promise.resolve()
+			.then(() => {
+				const migrator = new Migrator();
+
+				migrator._loadModule = (path) => {
+					paths.push(path);
+
+					if (paths.length === 1) {
+						return Promise.resolve(Adapter);
+					} else {
+						return Promise.reject(new Error('Whatever.'));
+					}
+				};
+
+				return migrator.configure({adapter: '@scope/package', loadConfig: false});
+			})
+			.then(() => {
+				expect(paths[0]).eql('@scope/package');
 			});
 	});
 

@@ -16,8 +16,6 @@ and `MigrationManager` class)
 - Builtin TypeScript migration template file
 
 ### Changed
-- *Breaking change:* Adapter/plugin path resolves related to cwd only (earlier
-tried to resolve migrator related path first then cwd related)
 - *Breaking change:* Default migration template now uses `async` functions
 - *Breaking change:* `MigrationManager` `onSkipMigration` event reasons are
 renamed: canNotMigrateAlreadyExecuted -> cannotMigrateAlreadyExecuted,
@@ -26,6 +24,9 @@ canNotMigrateAlreadyExecuted -> cannotMigrateAlreadyExecuted
 - *Breaking change:* Output text messages changed - now quotes used in
 consistent way (double quotes in most cases). This can only breaks if you parse
 east text messages (errors, log messages, etc).
+- Adapter/plugin path resolves by it's shape (earlier tried to load migrator
+related path first then cwd related) to cwd related path, abs path or module
+name - should behave same way as before for most cases
 - `Adapter.getTemplatePath()` now gets passed the migration file extension so
 now adapters may create multiple templates for different languages (e.g
 separate tempalte for `js` and `ts`)

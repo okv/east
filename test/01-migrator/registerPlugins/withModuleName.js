@@ -6,7 +6,7 @@ const Migrator = require('../../../lib/migrator');
 tap.mochaGlobals();
 
 const describeTitle = (
-	'migrator configure register plugins with cwd-related path'
+	'migrator configure register plugins with module name'
 );
 
 describe(describeTitle, () => {
@@ -27,7 +27,7 @@ describe(describeTitle, () => {
 			if (loadModulePaths.length === 1) {
 				return Promise.resolve(plugin);
 			} else {
-				return Promise.reject(new Error('Whatever.'));
+				return Promise.reject(new Error('Some error'));
 			}
 		};
 
@@ -42,12 +42,12 @@ describe(describeTitle, () => {
 	});
 
 	it('should be done without error', () => {
-		return migratorMock.configure({plugins: ['somePlugin']});
+		return migratorMock.configure({plugins: ['@scope/somePlugin']});
 	});
 
-	it('should load plugin related to cwd', () => {
+	it('should try only module name', () => {
 		expect(loadModulePaths).length(1);
-		expect(loadModulePaths[0]).match(/\/somePlugin$/);
+		expect(loadModulePaths[0]).eql('@scope/somePlugin');
 	});
 
 	it('should call plugin register', () => {
