@@ -160,6 +160,15 @@ export interface MigratorParams<P = unknown> {
      * Default: `undefined`
      */
     plugins?: (string | Plugin<P>)[];
+
+    /**
+     * Whether to load config, migrations, adapter and plugins using import
+     * expression. It allows to provide those entities like commonjs or es
+     * modules.
+     *
+     * Default: `false`
+     */
+    esModules: boolean;
 }
 
 export interface Plugin<P = unknown> {
