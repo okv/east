@@ -1,25 +1,25 @@
-'use strict';
-
-const fse = require('fs-extra');
+const fs = require('fs');
 const destroyMigrator = require('./destroyMigrator');
 
-module.exports = (env) => {
-	const dir = env.dir;
-	const migrator = env.migrator;
-	const configPath = env.configPath;
-	const templatePath = env.templatePath;
-
+module.exports = ({
+	dir, migrator, configPath, templatePath, packageJsonPath
+}) => {
 	return Promise.resolve()
 		.then(() => destroyMigrator({migrator}))
 		.then(() => {
 			if (configPath) {
-				return fse.unlink(configPath);
+				return fs.promises.unlink(configPath);
 			}
 		})
 		.then(() => {
 			if (templatePath) {
-				return fse.unlink(templatePath);
+				return fs.promises.unlink(templatePath);
 			}
 		})
-		.then(() => fse.rmdir(dir));
+		.then(() => {
+			if (packageJsonPath) {
+				return fs.promises.unlink(packageJsonPath);
+			}
+		})
+		.then(() => fs.promises.rmdir(dir));
 };

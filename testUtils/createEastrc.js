@@ -1,21 +1,21 @@
-'use strict';
-
 const pathUtils = require('path');
 const _ = require('underscore');
-const fse = require('fs-extra');
+const fs = require('fs');
 
 // allow to enable config loading by env var, useful for integration
 // testing with different adapters
 const loadConfig = Boolean(Number(process.env.NODE_EAST_TEST_LOAD_CONFIG));
 
 module.exports = (params) => {
-	const dir = params.dir;
-	const migrator = params.migrator;
+	const {dir, migrator} = params;
 
 	let configParams;
 
 	if (migrator) {
-		configParams = {dir: migrator.params.dir};
+		configParams = {
+			dir: migrator.params.dir,
+			sourceDir: migrator.params.sourceDir
+		};
 	} else {
 		configParams = params.configParams;
 	}
@@ -27,13 +27,20 @@ module.exports = (params) => {
 			if (loadConfig) {
 				const cwdConfigPath = pathUtils.resolve('.eastrc');
 
-				return fse.readJSON(cwdConfigPath);
+				return fs.promises.readFile(cwdConfigPath, 'utf-8');
 			}
 		})
-		.then((cwdConfigParams) => {
-			return fse.writeJSON(
+		.then((cwdConfigParamsText) => {
+			let cwdConfigParams;
+			if (cwdConfigParamsText) {
+				cwdConfigParams = JSON.parse(cwdConfigParamsText);
+			} else {
+				cwdConfigParams = {};
+			}
+			return fs.promises.writeFile(
 				configPath,
-				_(configParams).defaults(cwdConfigParams)
+				JSON.stringify(_(configParams).defaults(cwdConfigParams)),
+				'utf-8'
 			);
 		})
 		.then(() => configPath);

@@ -1,7 +1,5 @@
-'use strict';
-
 const migrationsDirRegExp = new RegExp(
-	'/.+/migrations',
+	'/.+?/migrations',
 	'g'
 );
 const migrationTemplateRegExp = new RegExp(
@@ -9,8 +7,12 @@ const migrationTemplateRegExp = new RegExp(
 	'g'
 );
 const eastStackTraceRegExp = new RegExp(
-	'^.*at \\(?.*/east/.*(([\\r\\n])+ {4}at <anonymous>)?',
+	'^.*at \\(?.*/east/.*(([\\r\\n])+ {4}at .*)*',
 	'gm'
+);
+const adapterPathRegExp = new RegExp(
+	'/.+?/adapter\\.js',
+	'g'
 );
 
 module.exports = (data) => {
@@ -18,5 +20,6 @@ module.exports = (data) => {
 		data.replace(migrationsDirRegExp, '[Migrations dir]')
 			.replace(migrationTemplateRegExp, '[Migration template]')
 			.replace(eastStackTraceRegExp, '[East source stack trace]')
+			.replace(adapterPathRegExp, '[Adapter path]')
 	);
 };

@@ -8,12 +8,16 @@
 exports[`test/02-snapshot/bin/east/commands/init/withAlreadyExistingDirAndTraceFlag.js TAP > output 1`] = `
 Current parameters: {
     "dir": "[Migrations dir]",
+    "migrationExtension": "js",
+    "sourceDir": "[Migrations dir]",
+    "sourceMigrationExtension": "js",
     "timeout": 604800000,
-    "adapter": "../../adapter",
+    "adapter": "[Adapter path]",
     "url": null,
     "migrationNumberFormat": "sequentialNumber",
     "trace": true,
     "loadConfig": true,
+    "esModules": false,
     "template": "[Migration template]"
 }
 

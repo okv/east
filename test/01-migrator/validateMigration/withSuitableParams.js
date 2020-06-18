@@ -1,5 +1,3 @@
-'use strict';
-
 const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../testUtils');
@@ -53,7 +51,7 @@ describe('migrator validateMigration with suitable params', () => {
 	it('migration without migrate function should fail', () => {
 		migration = testUtils.makeMigration();
 		delete migration.migrate;
-		errorMessage = '`migrate` function is not set';
+		errorMessage = '"migrate" function is not set';
 
 		return validateMigrationAndCheckError(migration, errorMessage);
 	});
@@ -61,7 +59,7 @@ describe('migrator validateMigration with suitable params', () => {
 	it('migration with non function migrate should fail', () => {
 		migration = testUtils.makeMigration();
 		migration.migrate = 1;
-		errorMessage = '`migrate` is not a function';
+		errorMessage = '"migrate" is not a function';
 
 		return validateMigrationAndCheckError(migration, errorMessage);
 	});
@@ -76,7 +74,7 @@ describe('migrator validateMigration with suitable params', () => {
 	it('migration with non function rollback should fail', () => {
 		migration = testUtils.makeMigration();
 		migration.rollback = 1;
-		errorMessage = '`rollback` set but it\'s not a function';
+		errorMessage = '"rollback" set but it\'s not a function';
 
 		return validateMigrationAndCheckError(migration, errorMessage);
 	});
@@ -84,7 +82,7 @@ describe('migrator validateMigration with suitable params', () => {
 	it('migration with non array tags should fail', () => {
 		migration = testUtils.makeMigration();
 		migration.tags = 1;
-		errorMessage = '`tags` set but it\'s not an array';
+		errorMessage = '"tags" set but it\'s not an array';
 
 		return validateMigrationAndCheckError(migration, errorMessage);
 	});

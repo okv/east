@@ -1,5 +1,3 @@
-'use strict';
-
 const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../testUtils');
@@ -43,7 +41,7 @@ describe(describeTitle, () => {
 				expect(err).ok();
 				expect(err).an(Error);
 				expect(err.message).equal(
-					'Error register plugin: Some register error'
+					'Error during plugin registration: Some register error'
 				);
 			});
 	});

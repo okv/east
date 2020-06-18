@@ -1,5 +1,3 @@
-'use strict';
-
 exports.execAsync = require('./execAsync');
 exports.cleanSnapshotData = require('./cleanSnapshotData');
 exports.getBinPath = require('./getBinPath');
@@ -18,3 +16,4 @@ exports.createAdapter = require('./createAdapter');
 exports.createEastrc = require('./createEastrc');
 exports.createEnv = require('./createEnv');
 exports.destroyEnv = require('./destroyEnv');
+exports.isEsmSupported = require('./isEsmSupported');

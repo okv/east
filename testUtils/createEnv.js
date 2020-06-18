@@ -1,30 +1,43 @@
-'use strict';
-
 const pathUtils = require('path');
-const fse = require('fs-extra');
+const fs = require('fs');
 const _ = require('underscore');
+const pathExists = require('path-exists');
 const getTestDirPath = require('./getTestDirPath');
 const createMigrator = require('./createMigrator');
 const createEastrc = require('./createEastrc');
 
-module.exports = (params) => {
-	params = params || {};
-
+module.exports = (params = {}) => {
 	let dir;
 	let migrator;
 	let configPath;
 	let templatePath;
+	let packageJsonPath;
 
 	return Promise.resolve()
 		.then(() => {
 			const testDir = getTestDirPath();
 			dir = pathUtils.join(testDir, `env-${process.env.TAP_CHILD_ID}`);
 
-			return fse.pathExists(dir);
+			return pathExists(dir);
 		})
 		.then((dirExists) => {
 			if (!dirExists) {
-				return fse.mkdir(dir);
+				return fs.promises.mkdir(dir);
+			}
+		})
+		.then(() => {
+			if (
+				params.migratorParams &&
+				params.migratorParams.configureParams &&
+				params.migratorParams.configureParams.esModules
+			) {
+				packageJsonPath = pathUtils.join(dir, 'package.json');
+
+				return fs.promises.writeFile(
+					packageJsonPath,
+					'{"type": "module"}',
+					'utf-8'
+				);
 			}
 		})
 		.then(() => {
@@ -35,9 +48,10 @@ module.exports = (params) => {
 			) {
 				templatePath = pathUtils.join(dir, 'template.js');
 
-				return fse.writeFile(
+				return fs.promises.writeFile(
 					templatePath,
-					params.migratorParams.configureParams.templateText
+					params.migratorParams.configureParams.templateText,
+					'utf-8'
 				);
 			}
 		})
@@ -58,6 +72,16 @@ module.exports = (params) => {
 				migratorParams.configureParams.template = templatePath;
 				delete migratorParams.configureParams.templateText;
 			}
+			if (migratorParams.configureParams.dir) {
+				migratorParams.configureParams.dir = pathUtils.join(
+					dir, migratorParams.configureParams.dir
+				);
+			}
+			if (migratorParams.configureParams.sourceDir) {
+				migratorParams.configureParams.sourceDir = pathUtils.join(
+					dir, migratorParams.configureParams.sourceDir
+				);
+			}
 
 			return createMigrator(migratorParams);
 		})
@@ -68,6 +92,7 @@ module.exports = (params) => {
 			dir,
 			migrator,
 			configPath,
-			templatePath
+			templatePath,
+			packageJsonPath
 		}));
 };

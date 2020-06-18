@@ -1,5 +1,3 @@
-'use strict';
-
 const pathUtils = require('path');
 const tap = require('tap');
 const expect = require('expect.js');

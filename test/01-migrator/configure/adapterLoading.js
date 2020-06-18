@@ -1,8 +1,7 @@
-'use strict';
-
 const _ = require('underscore');
 const tap = require('tap');
 const expect = require('expect.js');
+const pathUtils = require('path');
 const Migrator = require('../../../lib/migrator');
 const testUtils = require('../../../testUtils');
 
@@ -18,35 +17,86 @@ describe('migrator configure adapter loading', () => {
 		Adapter.prototype = testUtils.createAdapter({withCallbacMethods: true});
 	});
 
-	it('should try migrator-related path first then CWD-related', () => {
+	it('should load module related to cwd when related path is passed', () => {
 		const paths = [];
 
 		return Promise.resolve()
 			.then(() => {
 				const migrator = new Migrator();
 
-				migrator._tryLoadModule = (path) => {
+				migrator._loadModule = (path) => {
 					paths.push(path);
 
-					return paths.length === 2 ? Adapter : new Error('Whatever.');
+					if (paths.length === 1) {
+						return Promise.resolve(Adapter);
+					} else {
+						return Promise.reject(new Error('Whatever.'));
+					}
 				};
 
-				return migrator.configure({adapter: 'X', loadConfig: false});
+				return migrator.configure({adapter: 'some/path', loadConfig: false});
 			})
 			.then(() => {
-				expect(paths[0]).eql('X');
-				expect(paths[1].substr(-2, 2)).eql('/X');
+				expect(paths[0]).eql(
+					pathUtils.join(process.cwd(), 'some', 'path')
+				);
 			});
 	});
 
-	it('should throw an error when both paths can not be resolved', () => {
+	it('should load module by abs path when abs path is passed', () => {
+		const paths = [];
+
 		return Promise.resolve()
 			.then(() => {
 				const migrator = new Migrator();
 
-				migrator._tryLoadModule = () => {
-					throw new Error('Whatever.');
+				migrator._loadModule = (path) => {
+					paths.push(path);
+
+					if (paths.length === 1) {
+						return Promise.resolve(Adapter);
+					} else {
+						return Promise.reject(new Error('Whatever.'));
+					}
 				};
+
+				return migrator.configure({adapter: '/tmp/some/path', loadConfig: false});
+			})
+			.then(() => {
+				expect(paths[0]).eql('/tmp/some/path');
+			});
+	});
+
+	it('should load module by name when module name is passed', () => {
+		const paths = [];
+
+		return Promise.resolve()
+			.then(() => {
+				const migrator = new Migrator();
+
+				migrator._loadModule = (path) => {
+					paths.push(path);
+
+					if (paths.length === 1) {
+						return Promise.resolve(Adapter);
+					} else {
+						return Promise.reject(new Error('Whatever.'));
+					}
+				};
+
+				return migrator.configure({adapter: '@scope/package', loadConfig: false});
+			})
+			.then(() => {
+				expect(paths[0]).eql('@scope/package');
+			});
+	});
+
+	it('should throw an error when cannot load module', () => {
+		return Promise.resolve()
+			.then(() => {
+				const migrator = new Migrator();
+
+				migrator._loadModule = () => Promise.reject(new Error('Whatever.'));
 
 				return migrator.configure({adapter: 'X', loadConfig: false});
 			})
@@ -56,13 +106,15 @@ describe('migrator configure adapter loading', () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err).an(Error);
-				expect(err.message).equal('Whatever.');
+				expect(err.message).match(
+					/Error during adapter creation: Whatever\./
+				);
 			});
 	});
 
 	it('should promisify adapter methods', () => {
 		const migrator = new Migrator();
-		migrator._tryLoadModule = () => Adapter;
+		migrator._loadModule = () => Promise.resolve(Adapter);
 		const adapterMethodNames = [
 			'connect',
 			'disconnect',
@@ -117,7 +169,7 @@ describe('migrator configure adapter loading', () => {
 				expect(err).ok();
 				expect(err).an(Error);
 				expect(err.message).equal(
-					'Error constructing adapter:Some error'
+					'Error during adapter creation: Some error'
 				);
 			});
 	});

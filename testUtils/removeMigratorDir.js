@@ -1,31 +1,43 @@
-'use strict';
-
 const pathUtils = require('path');
-const fse = require('fs-extra');
+const fs = require('fs');
+const pathExists = require('path-exists');
 const removeMigrations = require('./removeMigrations');
 const unmarkMigrationsExecuted = require('./unmarkMigrationsExecuted');
 
 module.exports = (migrator) => {
-	const migrationsFilePath = pathUtils.join(
-		migrator.params.dir,
-		'.migrations'
-	);
+	const {dir, sourceDir} = migrator.params;
+	const migrationsFilePath = pathUtils.join(dir, '.migrations');
 	let dirExists;
+	let sourceDirExists;
 
 	return Promise.resolve()
 		.then(() => {
-			return fse.pathExists(migrator.params.dir);
+			return Promise.all([
+				pathExists(dir),
+				pathExists(sourceDir)
+			]);
 		})
-		.then((exists) => {
-			dirExists = exists;
+		.then(([dirExistsResult, sourceDirExistsResult]) => {
+			dirExists = dirExistsResult;
+			sourceDirExists = sourceDirExistsResult;
 		})
 		.then(() => {
+			const allMigrationPromises = [];
 			if (dirExists) {
-				return migrator.getAllMigrationNames();
+				allMigrationPromises.push(migrator.getAllMigrationNames('executable'));
 			}
+			if (sourceDirExists) {
+				allMigrationPromises.push(migrator.getAllMigrationNames('source'));
+			}
+			return Promise.all(allMigrationPromises);
 		})
-		.then((names) => {
-			if (names && names.length) {
+		.then(([executableNames, sourceNames]) => {
+			const namesSet = new Set();
+			if (executableNames) executableNames.forEach((name) => namesSet.add(name));
+			if (sourceNames) sourceNames.forEach((name) => namesSet.add(name));
+
+			if (namesSet.size) {
+				const names = Array.from(namesSet.values());
 				return Promise.all([
 					removeMigrations({migrator, names}),
 					unmarkMigrationsExecuted({migrator, names})
@@ -34,17 +46,22 @@ module.exports = (migrator) => {
 		})
 		.then(() => {
 			if (dirExists) {
-				return fse.pathExists(migrationsFilePath);
+				return pathExists(migrationsFilePath);
 			}
 		})
 		.then((fileExists) => {
 			if (fileExists) {
-				return fse.unlink(migrationsFilePath);
+				return fs.promises.unlink(migrationsFilePath);
 			}
 		})
 		.then(() => {
-			if (dirExists) {
-				return fse.rmdir(migrator.params.dir);
-			}
+			const dirPathsSet = new Set();
+			if (dirExists) dirPathsSet.add(dir);
+			if (sourceDirExists) dirPathsSet.add(sourceDir);
+			const dirPaths = Array.from(dirPathsSet.values());
+
+			return Promise.all(
+				dirPaths.map((dirPath) => fs.promises.rmdir(dirPath))
+			);
 		});
 };

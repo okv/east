@@ -1,10 +1,6 @@
-'use strict';
-
 const removeMigratorDir = require('./removeMigratorDir');
 
-module.exports = (params) => {
-	const migrator = params.migrator;
-
+module.exports = ({migrator}) => {
 	return Promise.resolve()
 		.then(() => migrator.disconnect())
 		.then(() => removeMigratorDir(migrator))

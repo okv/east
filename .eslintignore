@@ -3,3 +3,6 @@ lib/migrationTemplate.js
 migrations/
 tap-snapshots
 test/env-*/
+
+# prevent parsing error, because of `import` token
+lib/migrator/methods/_loadModule.js

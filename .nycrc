@@ -9,6 +9,8 @@
 		"coverage/**",
 		"migrations/**",
 		"lib/migrationTemplate.js",
+		"lib/migrationTemplate.mjs",
+		"lib/migrationTemplate.ts",
 		".remarkrc*.js"
 	]
 }

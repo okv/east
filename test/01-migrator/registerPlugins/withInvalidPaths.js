@@ -1,5 +1,3 @@
-'use strict';
-
 const tap = require('tap');
 const expect = require('expect.js');
 const testUtils = require('../../../testUtils');
@@ -19,9 +17,9 @@ describe(describeTitle, () => {
 
 		migratorMock._createAdapter = () => testUtils.createAdapter();
 
-		migratorMock._tryLoadModule = (path) => {
-			return new Error(`Can't load path ${path}`);
-		};
+		migratorMock._loadModule = (path) => Promise.reject(
+			new Error(`Can't load path ${path}`)
+		);
 	});
 
 	it('should throw an error', () => {
@@ -35,8 +33,9 @@ describe(describeTitle, () => {
 			.catch((err) => {
 				expect(err).ok();
 				expect(err).an(Error);
-				expect(err.message).match(/^Error loading plugin from all paths:/);
-				expect(err.message).match(/Can't load path/);
+				expect(err.message).match(
+					/Error during plugin registration: Can't load path/
+				);
 			});
 	});
 });
