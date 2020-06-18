@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
+Nothing here, all changes are released.
+
+## [2.0.0][] - 2020-06-18
+
 ### Added
 - Support ES Modules for config, migrations, adapter and plugins via `--es-modules` flag
 - Support for transpiled languages via `--source-dir`, `--source-migration-extension`,
@@ -124,7 +128,8 @@ or function which returns promise)
 ### Removed
 - dropped node.js 0.10 support, node.js >= 4 is required
 
-[Unreleased]: https://github.com/okv/east/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/okv/east/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/okv/east/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/okv/east/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/okv/east/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/okv/east/compare/v1.1.0...v1.1.1
