@@ -17,6 +17,7 @@ Current parameters: {
     "migrationNumberFormat": "sequentialNumber",
     "trace": true,
     "loadConfig": true,
+    "esModules": false,
     "template": "[Migration template]"
 }
 
