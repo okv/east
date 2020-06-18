@@ -4,7 +4,7 @@ east - node.js database migration tool for different databases (extensible via
 [adapters](#adapters)) with [transpiled languages support (e.g. TypeScript)](#typescript-and-other-transpiled-languages-support).
 
 east connects to the db using particular adapter (mongodb, sqlite, postgres,
-mysql, couchbase), keeps track of executed migrations by storing their names
+mysql, couchbase, couchdb), keeps track of executed migrations by storing their names
 inside db and makes connect to the db available inside `migrate` and `rollback`
 functions. east encourages you to use for migrations driver/syntax with which
 you are already familiar with (apparently you use it for work with db at your
@@ -552,7 +552,8 @@ east --config .eastrc.mjs --es-modules list
 ```
 
 When migration files as es module are desired `--migration-extension` and
-`--source-migration-extension` set to mjs could be used.
+`--source-migration-extension` set to "mjs" could be used.
+
 
 
 ## License
