@@ -106,7 +106,7 @@ Action.prototype.execute = function execute(params) {
 			return this.migrationManager.disconnect();
 		})
 		.then(() => {
-			if (this.opts.exits) process.exit();
+			if (this.opts.exit) process.exit();
 		});
 };
 
