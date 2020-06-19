@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing here, all changes are released.
 
+## [2.0.1][] - 2020-06-19
+
+### Fixed
+- Auto exit migration feature (completed migration will exit even if there are
+some timers in nodejs event loop) which was accidentally broken in 2.0.0
+
 ## [2.0.0][] - 2020-06-18
 
 ### Added
@@ -128,7 +134,8 @@ or function which returns promise)
 ### Removed
 - dropped node.js 0.10 support, node.js >= 4 is required
 
-[Unreleased]: https://github.com/okv/east/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/okv/east/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/okv/east/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/okv/east/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/okv/east/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/okv/east/compare/v1.1.1...v1.2.0
