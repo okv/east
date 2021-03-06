@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
-Nothing here, all changes are released.
+### Changed
+- dev: update tap to 14.11.0
 
 ## [2.0.1][] - 2020-06-19
 
