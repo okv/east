@@ -59,7 +59,7 @@
     "remark-lint-maximum-line-length": "2.0.0",
     "remark-preset-lint-consistent": "3.0.0",
     "remark-preset-lint-recommended": "4.0.0",
-    "tap": "12.7.0",
+    "tap": "14.11.0",
     "ts-node": "8.9.1",
     "typescript": "3.8.3"
   },
