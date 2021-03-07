@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
-Nothing here, all changes are released.
+### Changed
+- dev: update tap to 14.11.0
+- dev: calculate code coverage with c8 (instead of tap and istanbul)
+- dev: replace `makeCodeCoverageSummaryReport` and `makeCodeCoverageDetailReport`
+package.json scripts with `coverage` script
 
 ## [2.0.1][] - 2020-06-19
 

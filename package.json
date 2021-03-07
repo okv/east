@@ -26,8 +26,7 @@
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 20 --bail --jobs-auto",
     "test": "npm run testSpecified test",
     "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run testSpecified test",
-    "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
-    "makeCodeCoverageSummaryReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
+    "coverage": "c8 --reporter text-summary --reporter html --reporter lcov npm run testSpecified test -- --reporter dot",
     "lintChangelog": "remark --rc-path .remarkrc-lintChangelog.js --frail > /dev/null CHANGELOG.md",
     "lintTsMigrationTemplate": "tsc lib/migrationTemplate.ts --noEmit",
     "lintTsTypes": "tsc lib/index.d.ts",
@@ -48,6 +47,7 @@
     "underscore": "1.9.1"
   },
   "devDependencies": {
+    "c8": "7.6.0",
     "coveralls": "3.1.0",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.1.0",
@@ -59,7 +59,7 @@
     "remark-lint-maximum-line-length": "2.0.0",
     "remark-preset-lint-consistent": "3.0.0",
     "remark-preset-lint-recommended": "4.0.0",
-    "tap": "12.7.0",
+    "tap": "14.11.0",
     "ts-node": "8.9.1",
     "typescript": "3.8.3"
   },
