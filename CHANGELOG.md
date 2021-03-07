@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dev: replace `makeCodeCoverageSummaryReport` and `makeCodeCoverageDetailReport`
 package.json scripts with `coverage` script
 
+### Fixed
+- Minimum required Node.js version updated from 10.0.0 to 10.17.0 (it's a minimum
+version for proper usage (without warnings about using `fs.promises`, etc))
+
 ## [2.0.1][] - 2020-06-19
 
 ### Fixed

@@ -34,7 +34,7 @@ Following subjects described below:
 
 ## Node.js compatibility
 
-east itself requires node.js >= 10 to work.
+east itself requires node.js >= 10.17.0 to work.
 
 Please note that particular adapter may have other requirements (see
 documentation for specific adapter).
