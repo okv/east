@@ -15,7 +15,6 @@ script:
     nodeVersionMajor=`node -e "console.log(process.versions.node.split('.')[0])"`;
 
     if [ $nodeVersionMajor -eq 14 ]; then
-      npm run makeCodeCoverageSummaryReport;
       npm run makeCodeCoverageDetailReport;
       coveralls < coverage/lcov.info;
     else

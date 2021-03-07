@@ -26,8 +26,8 @@
     "testSpecified": "tap --reporter spec --no-coverage --color --timeout 20 --bail --jobs-auto",
     "test": "npm run testSpecified test",
     "makeTestSnapshots": "TAP_SNAPSHOT=1 npm run testSpecified test",
-    "makeCodeCoverageDetailReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report html --no-browser test && echo \"*** Code coverage report done, checkout ./coverage dir\"",
-    "makeCodeCoverageSummaryReport": "npm run testSpecified test -- --reporter dot --coverage --coverage-report text-summary test | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
+    "makeCodeCoverageDetailReport": "c8 --reporter text-summary --reporter html --reporter lcov npm run testSpecified test -- --reporter dot && echo \"*** Code coverage report done, checkout ./coverage dir\"",
+    "makeCodeCoverageSummaryReport": "c8 --reporter text-summary npm run testSpecified test -- --reporter dot | sed -re 's/(Statements|Branches|Functions|Lines)/\\1 code coverage/g'",
     "lintChangelog": "remark --rc-path .remarkrc-lintChangelog.js --frail > /dev/null CHANGELOG.md",
     "lintTsMigrationTemplate": "tsc lib/migrationTemplate.ts --noEmit",
     "lintTsTypes": "tsc lib/index.d.ts",
@@ -48,6 +48,7 @@
     "underscore": "1.9.1"
   },
   "devDependencies": {
+    "c8": "7.6.0",
     "coveralls": "3.1.0",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.1.0",
