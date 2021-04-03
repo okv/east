@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
+Everything is released
+
+## [2.0.2][] - 2021-03-30
+
 ### Changed
+- Update underscore to 1.12.1
 - dev: update tap to 14.11.0
 - dev: calculate code coverage with c8 (instead of tap and istanbul)
 - dev: replace `makeCodeCoverageSummaryReport` and `makeCodeCoverageDetailReport`
@@ -143,7 +148,8 @@ or function which returns promise)
 ### Removed
 - dropped node.js 0.10 support, node.js >= 4 is required
 
-[Unreleased]: https://github.com/okv/east/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/okv/east/compare/v2.0.2...HEAD
+[2.0.2]: https://github.com/okv/east/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/okv/east/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/okv/east/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/okv/east/compare/v1.2.0...v1.3.0
