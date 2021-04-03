@@ -1,4 +1,4 @@
-name: Node.js current LTS CI
+name: Node.js Current LTS Linux CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -20,6 +20,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+
     - run: npm run lint
     - run: npm run coverage
-    - run: coveralls < coverage/lcov.info
+    - run: node_modules/.bin/coveralls < coverage/lcov.info
