@@ -5,7 +5,7 @@ testUtils
 migrations
 .eslintignore
 .eslintrc.json
-.travis.yml
+.github/
 .c8rc
 coverage
 tap-snapshots
