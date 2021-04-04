@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - dev: Travis CI replaced with GitHub actions
-- dev: Coveralls dev dependency is removed (Coveralls GitHub Action is used instead)
+- dev: Coveralls dev dependency is removed (Coveralls GitHub Action is used
+instead)
 
 ## [2.0.2][] - 2021-03-30
 
