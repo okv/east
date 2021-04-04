@@ -12,7 +12,7 @@ application) and doesn't provide universal api for working with any kind of
 database.
 
 [![Npm version](https://img.shields.io/npm/v/east.svg)](https://www.npmjs.org/package/east)
-[![Build Status](https://travis-ci.org/okv/east.svg?branch=master)](https://travis-ci.org/okv/east)
+[![Build Status](https://github.com/okv/east/actions/workflows/nodejs-current-lts-linux.yml/badge.svg?branch=master)]
 [![Coverage Status](https://coveralls.io/repos/github/okv/east/badge.svg)](https://coveralls.io/github/okv/east)
 [![Known Vulnerabilities](https://snyk.io/test/npm/east/badge.svg)](https://snyk.io/test/npm/east)
 
