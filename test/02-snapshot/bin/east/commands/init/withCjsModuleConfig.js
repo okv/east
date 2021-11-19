@@ -12,7 +12,7 @@ if (!testUtils.isEsmSupported()) {
 	tap.grep = [/.*/];
 }
 
-const describeTitle = 'bin/east init with es module config';
+const describeTitle = 'bin/east init with cjs module config';
 
 describe(describeTitle, () => {
 	let commandResult;
@@ -30,10 +30,10 @@ describe(describeTitle, () => {
 	before(() => {
 		return Promise.resolve()
 			.then(() => {
-				configPath = pathUtils.join(testEnv.dir, '.eastrc.mjs');
+				configPath = pathUtils.join(testEnv.dir, '.eastrc.js');
 				return fs.promises.writeFile(
 					configPath,
-					'export default {timeout: 123456789};',
+					'module.exports = {timeout: 123456789};',
 					'utf-8'
 				);
 			});
@@ -49,7 +49,7 @@ describe(describeTitle, () => {
 				const binPath = testUtils.getBinPath('east');
 
 				return testUtils.execAsync(
-					`"${binPath}" init --config "${configPath}" --trace --es-modules`,
+					`"${binPath}" init --config "${configPath}" --trace`,
 					{cwd: testEnv.dir}
 				);
 			})

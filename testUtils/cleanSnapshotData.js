@@ -15,7 +15,7 @@ const adapterPathRegExp = new RegExp(
 	'g'
 );
 const configPathRegExp = new RegExp(
-	'/.+?/eastrc(\\.mjs)?',
+	'/.+?/\\.eastrc(\\.js|\\.json|\\.mjs)?',
 	'g'
 );
 
