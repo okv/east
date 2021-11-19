@@ -14,6 +14,10 @@ const adapterPathRegExp = new RegExp(
 	'/.+?/adapter\\.js',
 	'g'
 );
+const configPathRegExp = new RegExp(
+	'/.+?/\\.eastrc(\\.js|\\.json|\\.mjs)?',
+	'g'
+);
 
 module.exports = (data) => {
 	return (
@@ -21,5 +25,6 @@ module.exports = (data) => {
 			.replace(migrationTemplateRegExp, '[Migration template]')
 			.replace(eastStackTraceRegExp, '[East source stack trace]')
 			.replace(adapterPathRegExp, '[Adapter path]')
+			.replace(configPathRegExp, '[Config path]')
 	);
 };
