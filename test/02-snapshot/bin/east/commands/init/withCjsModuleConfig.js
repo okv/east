@@ -6,12 +6,6 @@ const testUtils = require('../../../../../../testUtils');
 
 tap.mochaGlobals();
 
-// skip this test if es modules are not supported
-if (!testUtils.isEsmSupported()) {
-	tap.grepInvert = 1;
-	tap.grep = [/.*/];
-}
-
 const describeTitle = 'bin/east init with cjs module config';
 
 describe(describeTitle, () => {
