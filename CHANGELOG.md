@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
+Everything is released for now.
+
+## [2.0.3][] - 2021-11-20
+
 ### Changed
 - dev: Travis CI replaced with GitHub actions
 - dev: Coveralls dev dependency is removed (Coveralls GitHub Action is used
@@ -158,7 +162,8 @@ or function which returns promise)
 ### Removed
 - dropped node.js 0.10 support, node.js >= 4 is required
 
-[Unreleased]: https://github.com/okv/east/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/okv/east/compare/v2.0.3...HEAD
+[2.0.3]: https://github.com/okv/east/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/okv/east/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/okv/east/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/okv/east/compare/v1.3.0...v2.0.0
