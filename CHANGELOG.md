@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dev: Travis CI replaced with GitHub actions
 - dev: Coveralls dev dependency is removed (Coveralls GitHub Action is used
 instead)
+- dev: update some dev dependencies (lodash, hosted-git-info, glob-parent,
+path-parse) to get rid of some vulnerabilities
+- dev: add more test cases for config in different formats
+
+### Fixed
+
+- ES Modules format support for config file has been fixed
 
 ## [2.0.2][] - 2021-03-30
 
