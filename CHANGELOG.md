@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased][]
 
-Everything is released for now.
+### Changed
+- dev: update remark to 14.0.2, remark-cli to 10.0.1
 
 ## [2.0.3][] - 2021-11-20
 
