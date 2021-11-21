@@ -53,7 +53,7 @@
     "eslint-plugin-import": "2.20.2",
     "expect.js": "0.3.1",
     "remark": "14.0.2",
-    "remark-changelog": "0.1.2",
+    "remark-changelog": "1.2.1",
     "remark-cli": "10.0.1",
     "remark-lint-maximum-line-length": "2.0.0",
     "remark-preset-lint-consistent": "3.0.0",

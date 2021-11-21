@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased][]
 
 ### Changed
-- dev: some dev dependencies updated: remark to 14.0.2, remark-cli to 10.0.1,
-c8 to 7.10.0
+- dev: some dev dependencies were updated (remark to 14.0.2, remark-cli to 
+10.0.1, remark-changelog to 1.2.1, c8 to 7.10.0)
 
 ## [2.0.3][] - 2021-11-20
 
