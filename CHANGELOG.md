@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - dev: some dev dependencies were updated (remark to 14.0.2, remark-cli to 
 10.0.1, remark-changelog to 1.2.1, c8 to 7.10.0)
+- dev: ci config updated: current lts is Node.js 16 and current is Node.js 17
+now
 
 ## [2.0.3][] - 2021-11-20
 
